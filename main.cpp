@@ -124,8 +124,11 @@ int main() {
   while (window.isOpen()) {
     sf::Event event;
     while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed)
+      if (event.type == sf::Event::Closed ||
+          (event.type == sf::Event::KeyReleased &&
+           event.key.code == sf::Keyboard::Escape)) {
         window.close();
+      }
     }
 
     mouse_position = sf::Mouse::getPosition(window);
