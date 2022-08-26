@@ -67,6 +67,7 @@ int main() {
   block_say_for_n_seconds.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD});
   block_say_for_n_seconds.add_node({"seconds", NODE_TYPE::LABEL});
   block_say_for_n_seconds.position = {200.0f, 300.0f};
+  block_say_for_n_seconds._recalculate_rect();
 
   blocks.push_back(block_say_for_n_seconds);
 
