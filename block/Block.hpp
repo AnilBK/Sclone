@@ -28,6 +28,8 @@ private:
 
   sf::RectangleShape block_rect;
 
+  bool dragging = false;
+
   std::vector<NODE> childrens;
 
   float get_node_size_x(const NODE *node);
@@ -43,8 +45,8 @@ public:
 
   // Maybe use some dirty flag ???
   void _recalculate_rect();
+  void _process_events(sf::Event event);
 
-  void _process_inputs(sf::Event event);
   void Render();
 };
 

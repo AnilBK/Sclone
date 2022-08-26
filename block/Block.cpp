@@ -9,9 +9,7 @@ Block::Block() {
 float Block::get_node_size_x(const NODE *node) {
   if (node->type == NODE_TYPE::LABEL) {
     return text_rect_size(node->text).x;
-  }
-
-  if (node->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
+  } else if (node->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
     return line_input_field_rect_size().x;
   }
 
@@ -46,6 +44,11 @@ void Block::draw_line_input_attach_field(const sf::Vector2f p_position) {
 }
 
 void Block::Render() {
+  if (dragging) {
+    position = (sf::Vector2f)mouse_position;
+    block_rect.setPosition(position);
+  }
+
   // Draw the background rect.
   window.draw(block_rect);
 
@@ -56,12 +59,30 @@ void Block::Render() {
       draw_text(child.text, pos);
       pos.x += text_rect_size(child.text).x;
       pos.x += spacing;
-    }
-
-    if (child.type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
+    } else if (child.type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
       draw_line_input_attach_field(pos);
       pos.x += line_input_field_rect_size().x;
       pos.x += spacing;
+    }
+  }
+}
+
+void Block::_process_events(sf::Event event) {
+  if (event.type == sf::Event::MouseButtonPressed) {
+    // Left to drag, right to undrag.
+    // We may use left to undrag as wll, but those clicks occur so fast,
+    // mostly it causes toggle on/off/on.. conditions.
+    if (event.mouseButton.button == sf::Mouse::Left) {
+      if (!dragging && isMouseOverSprite(block_rect)) {
+        dragging = true;
+      }
+    } else if (event.mouseButton.button == sf::Mouse::Right) {
+      if (dragging) {
+        dragging = false;
+        // For some reason, this vvv has to be done here.
+        position = (sf::Vector2f)mouse_position;
+        block_rect.setPosition(position);
+      }
     }
   }
 }

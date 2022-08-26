@@ -85,8 +85,9 @@ int main() {
 
     window.clear(sf::Color(0, 255, 204));
 
-    // draw_text("Hello World", {200.0f, 200.0f});
-    // draw_line_input_attach_field({250.0f, 200.0f});
+    for (auto &block : blocks) {
+      block._process_events(event);
+    }
 
     for (auto block : blocks) {
       block.Render();
