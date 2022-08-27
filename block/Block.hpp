@@ -45,7 +45,7 @@ public:
   void draw_button(const sf::Vector2f p_position,
                    const sf::Vector2f p_size = {30, 40});
 
-  sf::Vector2f line_input_field_rect_size() { return {25, 35}; }
+  sf::Vector2f line_input_field_rect_size() { return {75, 35}; }
   void draw_line_input_attach_field(const sf::Vector2f p_position);
 
   // Maybe use some dirty flag ???

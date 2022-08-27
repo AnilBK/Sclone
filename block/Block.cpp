@@ -15,6 +15,10 @@ float Block::get_node_size_x(const NODE *node) {
   if (node->type == NODE_TYPE::LABEL) {
     return text_rect_size(node->text).x;
   } else if (node->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
+    if (node->text != "") {
+      return std::max(text_rect_size(node->text).x,
+                      line_input_field_rect_size().x);
+    }
     return line_input_field_rect_size().x;
   } else if (node->type == NODE_TYPE::BUTTON) {
     sf::Vector2f text_box_size{text_rect_size(node->text)};
@@ -74,7 +78,14 @@ void Block::Render() {
       pos.x += spacing;
     } else if (child.type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
       draw_line_input_attach_field(pos);
-      pos.x += line_input_field_rect_size().x;
+      if (child.text != "") {
+        // Usually empty for line input attach field so.
+        draw_text(child.text, pos);
+        pos.x += std::max(text_rect_size(child.text).x,
+                          line_input_field_rect_size().x);
+      } else {
+        pos.x += line_input_field_rect_size().x;
+      }
       pos.x += spacing;
     } else if (child.type == NODE_TYPE::BUTTON) {
       sf::Vector2f text_box_size{text_rect_size(child.text)};
