@@ -16,6 +16,11 @@ float Block::get_node_size_x(const NODE *node) {
     return text_rect_size(node->text).x;
   } else if (node->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
     return line_input_field_rect_size().x;
+  } else if (node->type == NODE_TYPE::BUTTON) {
+    sf::Vector2f text_box_size{text_rect_size(node->text)};
+    sf::Vector2f btn_size{std::max(text_box_size.x, button_rect_size().x) + 5,
+                          std::max(text_box_size.y, button_rect_size().y)};
+    return btn_size.x;
   }
 
   return 0.0f;
@@ -47,6 +52,15 @@ void Block::draw_line_input_attach_field(const sf::Vector2f p_position) {
   window.draw(r);
 }
 
+void Block::draw_button(const sf::Vector2f p_position,
+                        const sf::Vector2f p_size) {
+  sf::RectangleShape r;
+  r.setPosition(p_position);
+  r.setSize(p_size);
+  r.setFillColor(sf::Color(192, 195, 198, 255));
+  window.draw(r);
+}
+
 void Block::Render() {
   // Draw the background rect.
   window.draw(block_rect);
@@ -61,6 +75,14 @@ void Block::Render() {
     } else if (child.type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
       draw_line_input_attach_field(pos);
       pos.x += line_input_field_rect_size().x;
+      pos.x += spacing;
+    } else if (child.type == NODE_TYPE::BUTTON) {
+      sf::Vector2f text_box_size{text_rect_size(child.text)};
+      sf::Vector2f btn_size{std::max(text_box_size.x, button_rect_size().x) + 5,
+                            std::max(text_box_size.y, button_rect_size().y)};
+      draw_button(pos, btn_size);
+      draw_text(child.text, pos);
+      pos.x += btn_size.x;
       pos.x += spacing;
     }
   }

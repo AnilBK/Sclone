@@ -69,7 +69,19 @@ int main() {
   block_say_for_n_seconds.set_position({200.0f, 300.0f});
   block_say_for_n_seconds._recalculate_rect();
 
+  Block block_go_to_xy;
+  block_go_to_xy.add_node({"Go to ", NODE_TYPE::LABEL});
+  block_go_to_xy.add_node({"x", NODE_TYPE::LABEL});
+  block_go_to_xy.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD});
+  block_go_to_xy.add_node({"y", NODE_TYPE::LABEL});
+  block_go_to_xy.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD});
+  block_go_to_xy.add_node({"Pick^", NODE_TYPE::BUTTON}); // Position Picker.
+
+  block_go_to_xy.set_position({200.0f, 400.0f});
+  block_go_to_xy._recalculate_rect();
+
   blocks.push_back(block_say_for_n_seconds);
+  blocks.push_back(block_go_to_xy);
 
   while (window.isOpen()) {
     sf::Event event;

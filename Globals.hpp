@@ -10,7 +10,7 @@
     exit(1);                                                                   \
   }
 
-enum NODE_TYPE { LABEL, LINE_INPUT_ATTACH_FIELD };
+enum NODE_TYPE { LABEL, LINE_INPUT_ATTACH_FIELD, BUTTON };
 
 struct NODE {
   std::string text;
