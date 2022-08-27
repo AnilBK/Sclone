@@ -52,7 +52,7 @@ void Block::Render() {
   window.draw(block_rect);
 
   // Draw text and all other components.
-  sf::Vector2f pos = position;
+  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
   for (auto child : childrens) {
     if (child.type == NODE_TYPE::LABEL) {
       draw_text(child.text, pos);
