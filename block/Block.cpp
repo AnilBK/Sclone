@@ -107,15 +107,57 @@ void Block::_process_events(sf::Event event) {
     set_position((sf::Vector2f)mouse_position);
   }
 
+  for (auto &child : childrens) {
+    if (child.type == NODE_TYPE::BUTTON && child.text == "Pick^" &&
+        child.pressed) {
+      childrens[2].text = std::to_string(mouse_position.x) + " ";
+      childrens[4].text = std::to_string(mouse_position.y) + " ";
+    }
+  }
+
   if (event.type == sf::Event::MouseButtonPressed) {
     // Left to drag, right to undrag.
     // We may use left to undrag as wll, but those clicks occur so fast,
     // mostly it causes toggle on/off/on.. conditions.
     if (event.mouseButton.button == sf::Mouse::Left) {
+      // Process Node's callbacks, if any;
+      bool callback_called = false;
+      for (auto &child : childrens) {
+        if (child.type == NODE_TYPE::BUTTON && child.text == "Pick^") {
+          if (!child.pressed) {
+            child.pressed = true;
+          }
+          callback_called = true;
+        }
+        // TODO: Check if mouse is over the sprite.
+        //  if (child.callback) {
+        //   child.callback();
+        //  callback_called = true;
+        //}
+      }
+
+      if (callback_called) {
+        return;
+      }
+
       if (!dragging && isMouseOverSprite(block_rect)) {
         dragging = true;
       }
     } else if (event.mouseButton.button == sf::Mouse::Right) {
+
+      for (auto &child : childrens) {
+        if (child.type == NODE_TYPE::BUTTON && child.text == "Pick^") {
+          if (child.pressed) {
+            child.pressed = false;
+          }
+        }
+        // TODO: Check if mouse is over the sprite.
+        //  if (child.callback) {
+        //   child.callback();
+        //  callback_called = true;
+        //}
+      }
+
       if (dragging) {
         dragging = false;
       }

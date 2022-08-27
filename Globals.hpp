@@ -2,6 +2,7 @@
 #define GLOBALS_HPP
 
 #include <SFML/Graphics.hpp>
+#include <functional>
 #include <iostream>
 
 #define ERR_FAIL_COND_CRASH(m_cond, m_fail_message)                            \
@@ -15,6 +16,9 @@ enum NODE_TYPE { LABEL, LINE_INPUT_ATTACH_FIELD, BUTTON };
 struct NODE {
   std::string text;
   NODE_TYPE type;
+  // A Node like a button as a callback on mouse click.
+  std::function<void()> callback;
+  bool pressed = false;
 };
 
 extern sf::Vector2i mouse_position;

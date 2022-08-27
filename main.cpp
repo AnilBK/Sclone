@@ -75,7 +75,11 @@ int main() {
   block_go_to_xy.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD});
   block_go_to_xy.add_node({"y", NODE_TYPE::LABEL});
   block_go_to_xy.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD});
-  block_go_to_xy.add_node({"Pick^", NODE_TYPE::BUTTON}); // Position Picker.
+  block_go_to_xy.add_node({"Pick^", NODE_TYPE::BUTTON, []() {
+                             //   block_go_to_xy.childrens.at(1).text =
+                             //     " " + std::to_string(mouse_position.x);
+                             std::cout << "Button Pressed.\n";
+                           }}); // Position Picker.
 
   block_go_to_xy.set_position({200.0f, 400.0f});
   block_go_to_xy._recalculate_rect();

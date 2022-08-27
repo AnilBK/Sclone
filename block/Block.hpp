@@ -31,12 +31,14 @@ private:
   bool dragging = false;
   sf::Vector2f position;
 
-  std::vector<NODE> childrens;
+  // std::vector<NODE> childrens;
 
   float get_node_size_x(const NODE *node);
 
 public:
   Block();
+
+  std::vector<NODE> childrens;
 
   void set_position(const sf::Vector2f pos);
   void add_node(struct NODE p_node) { childrens.push_back(p_node); }
