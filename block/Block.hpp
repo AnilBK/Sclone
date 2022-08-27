@@ -29,15 +29,16 @@ private:
   sf::RectangleShape block_rect;
 
   bool dragging = false;
+  sf::Vector2f position;
 
   std::vector<NODE> childrens;
 
   float get_node_size_x(const NODE *node);
 
 public:
-  sf::Vector2f position;
-
   Block();
+
+  void set_position(const sf::Vector2f pos);
   void add_node(struct NODE p_node) { childrens.push_back(p_node); }
 
   sf::Vector2f line_input_field_rect_size() { return {25, 35}; }

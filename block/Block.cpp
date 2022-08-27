@@ -1,7 +1,12 @@
 #include "Block.hpp"
 
+void Block::set_position(const sf::Vector2f pos) {
+  position = pos;
+  block_rect.setPosition(position);
+}
+
 Block::Block() {
-  block_rect.setPosition({0.0f, 0.0f});
+  set_position({0.0f, 0.0f});
   block_rect.setSize(STARTING_BLOCK_SIZE);
   block_rect.setFillColor(sf::Color::Green);
 }
@@ -31,7 +36,6 @@ void Block::_recalculate_rect() {
   block_size.x += padding_left + padding_right;
   block_size.y += padding_up + padding_down;
 
-  block_rect.setPosition(position);
   block_rect.setSize(block_size);
 }
 
@@ -44,11 +48,6 @@ void Block::draw_line_input_attach_field(const sf::Vector2f p_position) {
 }
 
 void Block::Render() {
-  if (dragging) {
-    position = (sf::Vector2f)mouse_position;
-    block_rect.setPosition(position);
-  }
-
   // Draw the background rect.
   window.draw(block_rect);
 
@@ -68,6 +67,13 @@ void Block::Render() {
 }
 
 void Block::_process_events(sf::Event event) {
+  // For some reason, if we do this check on Render()
+  // then the value resets after we press right click.
+  // Weird.
+  if (dragging) {
+    set_position((sf::Vector2f)mouse_position);
+  }
+
   if (event.type == sf::Event::MouseButtonPressed) {
     // Left to drag, right to undrag.
     // We may use left to undrag as wll, but those clicks occur so fast,
@@ -79,9 +85,6 @@ void Block::_process_events(sf::Event event) {
     } else if (event.mouseButton.button == sf::Mouse::Right) {
       if (dragging) {
         dragging = false;
-        // For some reason, this vvv has to be done here.
-        position = (sf::Vector2f)mouse_position;
-        block_rect.setPosition(position);
       }
     }
   }

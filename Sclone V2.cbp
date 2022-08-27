@@ -30,6 +30,9 @@
 			<Add library="sfml-system" />
 			<Add directory="C:/SFML-2.5.1/lib" />
 		</Linker>
+		<Unit filename="Globals.hpp" />
+		<Unit filename="block/Block.cpp" />
+		<Unit filename="block/Block.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />
