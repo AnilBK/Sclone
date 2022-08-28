@@ -2,6 +2,7 @@
 #define BLOCK_HPP
 
 #include "../Globals.hpp"
+#include "NODE.hpp"
 #include <SFML/Graphics.hpp>
 
 // Final Block Output:
@@ -31,10 +32,6 @@ private:
   bool dragging = false;
   sf::Vector2f position;
 
-  // std::vector<NODE> childrens;
-
-  float get_node_size_x(const NODE *node);
-
 public:
   Block();
 
@@ -44,14 +41,13 @@ public:
   void add_node(struct NODE p_node) { childrens.push_back(p_node); }
 
   sf::Vector2f button_rect_size() { return {30, 40}; }
-  void draw_button(const sf::Vector2f p_position,
-                   const sf::Vector2f p_size = {30, 40});
 
   sf::Vector2f line_input_field_rect_size() { return {75, 35}; }
   void draw_line_input_attach_field(const sf::Vector2f p_position);
 
   // Maybe use some dirty flag ???
   void _recalculate_rect();
+  bool _process_left_click_on_children();
   void _process_events(sf::Event event);
 
   void Render();

@@ -33,6 +33,8 @@
 		<Unit filename="Globals.hpp" />
 		<Unit filename="block/Block.cpp" />
 		<Unit filename="block/Block.hpp" />
+		<Unit filename="block/NODE.cpp" />
+		<Unit filename="block/NODE.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<code_completion />

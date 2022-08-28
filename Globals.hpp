@@ -13,14 +13,6 @@
 
 enum NODE_TYPE { LABEL, LINE_INPUT_ATTACH_FIELD, BUTTON };
 
-struct NODE {
-  std::string text;
-  NODE_TYPE type;
-  // A Node like a button as a callback on mouse click.
-  std::function<void()> callback;
-  bool pressed = false;
-};
-
 extern sf::Vector2i mouse_position;
 
 extern sf::Font font;
@@ -40,7 +32,7 @@ static void init_global_font_and_label() {
   draw_text_label.setFillColor(sf::Color::Black);
 }
 
-static sf::Vector2f text_rect_size(const std::string str) {
+static sf::Vector2f text_rect_size(const std::string &str) {
   draw_text_label.setString(str);
   return {draw_text_label.getGlobalBounds().width,
           draw_text_label.getGlobalBounds().height};

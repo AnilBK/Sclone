@@ -11,32 +11,13 @@ Block::Block() {
   block_rect.setFillColor(sf::Color::Green);
 }
 
-float Block::get_node_size_x(const NODE *node) {
-  if (node->type == NODE_TYPE::LABEL) {
-    return text_rect_size(node->text).x;
-  } else if (node->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
-    if (node->text != "") {
-      return std::max(text_rect_size(node->text).x,
-                      line_input_field_rect_size().x);
-    }
-    return line_input_field_rect_size().x;
-  } else if (node->type == NODE_TYPE::BUTTON) {
-    sf::Vector2f text_box_size{text_rect_size(node->text)};
-    sf::Vector2f btn_size{std::max(text_box_size.x, button_rect_size().x) + 5,
-                          std::max(text_box_size.y, button_rect_size().y)};
-    return btn_size.x;
-  }
-
-  return 0.0f;
-}
-
 void Block::_recalculate_rect() {
   // sf::Vector2f block_position{position.x - padding_left,
   //                             position.y - padding_up};
   sf::Vector2f block_size = STARTING_BLOCK_SIZE;
 
   for (auto child : childrens) {
-    block_size.x += get_node_size_x(&child);
+    block_size.x += child.get_rect_size_x();
     block_size.x += spacing;
   }
 
@@ -48,23 +29,6 @@ void Block::_recalculate_rect() {
   block_rect.setSize(block_size);
 }
 
-void Block::draw_line_input_attach_field(const sf::Vector2f p_position) {
-  sf::RectangleShape r;
-  r.setPosition(p_position);
-  r.setSize(line_input_field_rect_size());
-  r.setFillColor(sf::Color::Red);
-  window.draw(r);
-}
-
-void Block::draw_button(const sf::Vector2f p_position,
-                        const sf::Vector2f p_size) {
-  sf::RectangleShape r;
-  r.setPosition(p_position);
-  r.setSize(p_size);
-  r.setFillColor(sf::Color(192, 195, 198, 255));
-  window.draw(r);
-}
-
 void Block::Render() {
   // Draw the background rect.
   window.draw(block_rect);
@@ -72,31 +36,28 @@ void Block::Render() {
   // Draw text and all other components.
   sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
   for (auto child : childrens) {
-    if (child.type == NODE_TYPE::LABEL) {
-      draw_text(child.text, pos);
-      pos.x += text_rect_size(child.text).x;
-      pos.x += spacing;
-    } else if (child.type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
-      draw_line_input_attach_field(pos);
-      if (child.text != "") {
-        // Usually empty for line input attach field so.
-        draw_text(child.text, pos);
-        pos.x += std::max(text_rect_size(child.text).x,
-                          line_input_field_rect_size().x);
-      } else {
-        pos.x += line_input_field_rect_size().x;
-      }
-      pos.x += spacing;
-    } else if (child.type == NODE_TYPE::BUTTON) {
-      sf::Vector2f text_box_size{text_rect_size(child.text)};
-      sf::Vector2f btn_size{std::max(text_box_size.x, button_rect_size().x) + 5,
-                            std::max(text_box_size.y, button_rect_size().y)};
-      draw_button(pos, btn_size);
-      draw_text(child.text, pos);
-      pos.x += btn_size.x;
-      pos.x += spacing;
-    }
+    child.Render(pos);
+    pos.x += child.get_rect_size_x();
+    pos.x += spacing;
   }
+}
+
+bool Block::_process_left_click_on_children() {
+  // Returns true if any of the child was pressed.
+  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+  // First process child inputs separately.
+  for (auto &child : childrens) {
+    if (child.is_mouse_over(pos)) {
+      if (child.left_click_action()) {
+        return true;
+      }
+    }
+
+    pos.x += child.get_rect_size_x();
+    pos.x += spacing;
+  }
+
+  return false;
 }
 
 void Block::_process_events(sf::Event event) {
@@ -108,8 +69,7 @@ void Block::_process_events(sf::Event event) {
   }
 
   for (auto &child : childrens) {
-    if (child.type == NODE_TYPE::BUTTON && child.text == "Pick^" &&
-        child.pressed) {
+    if (child.is_mouse_picker_button() && child.pressed) {
       childrens[2].text = std::to_string(mouse_position.x) + " ";
       childrens[4].text = std::to_string(mouse_position.y) + " ";
     }
@@ -117,45 +77,51 @@ void Block::_process_events(sf::Event event) {
 
   if (event.type == sf::Event::MouseButtonPressed) {
     // Left to drag, right to undrag.
-    // We may use left to undrag as wll, but those clicks occur so fast,
-    // mostly it causes toggle on/off/on.. conditions.
+    // We may use left to undrag as well, but those clicks occur so
+    // fast, mostly it causes toggle on/off/on.. conditions.
     if (event.mouseButton.button == sf::Mouse::Left) {
-      // Process Node's callbacks, if any;
-      bool callback_called = false;
-      for (auto &child : childrens) {
-        if (child.type == NODE_TYPE::BUTTON && child.text == "Pick^") {
-          if (!child.pressed) {
-            child.pressed = true;
-          }
-          callback_called = true;
-        }
-        // TODO: Check if mouse is over the sprite.
-        //  if (child.callback) {
-        //   child.callback();
-        //  callback_called = true;
-        //}
+      if (_process_left_click_on_children()) {
+        return;
       }
 
-      if (callback_called) {
+      if (std::any_of(childrens.begin(), childrens.end(),
+                      [](NODE n) { return n.pressed; })) {
         return;
       }
 
       if (!dragging && isMouseOverSprite(block_rect)) {
         dragging = true;
       }
-    } else if (event.mouseButton.button == sf::Mouse::Right) {
 
+      /*
+            // Process Node's callbacks, if any;
+            bool callback_called = false;
+            for (auto &child : childrens) {
+              if (child.type == NODE_TYPE::BUTTON && child.text == "Pick^") {
+                if (!child.pressed) {
+                  //  child.pressed = true;
+                  callback_called = true;
+                }
+                //          callback_called = true;
+              }
+              // TODO: Check if mouse is over the sprite.
+              //  if (child.callback) {
+              //   child.callback();
+              //  callback_called = true;
+              //}
+            }
+
+            if (callback_called) {
+              return;
+            }
+      */
+    } else if (event.mouseButton.button == sf::Mouse::Right) {
+      // TODO: All clicks outside a block should invalidate pressed state of any
+      // NODE.
       for (auto &child : childrens) {
-        if (child.type == NODE_TYPE::BUTTON && child.text == "Pick^") {
-          if (child.pressed) {
-            child.pressed = false;
-          }
+        if (child.pressed) {
+          child.pressed = false;
         }
-        // TODO: Check if mouse is over the sprite.
-        //  if (child.callback) {
-        //   child.callback();
-        //  callback_called = true;
-        //}
       }
 
       if (dragging) {
