@@ -30,6 +30,7 @@ struct NODE {
 
     return 35.0f;
   }
+
   //  This and above function should be merged sensibly.
   sf::Rect<float> get_rect(sf::Vector2f pos_at) {
     // const sf::Vector2f STARTING_BLOCK_SIZE{0.0f, 45.0f};

@@ -43,7 +43,7 @@ void Block::Render() {
 }
 
 bool Block::_process_left_click_on_children() {
-  // Returns true if any of the child was pressed.
+  // Returns true if any of the child performed 'press' action.
   sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
   // First process child inputs separately.
   for (auto &child : childrens) {
