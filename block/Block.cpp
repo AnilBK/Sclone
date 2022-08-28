@@ -60,6 +60,19 @@ bool Block::_process_left_click_on_children() {
   return false;
 }
 
+bool Block::_any_node_already_pressed() {
+  return std::any_of(childrens.begin(), childrens.end(),
+                     [](NODE n) { return n.pressed; });
+}
+
+void Block::_deselect_all_nodes() {
+  for (auto &child : childrens) {
+    if (child.pressed) {
+      child.pressed = false;
+    }
+  }
+}
+
 void Block::_process_events(sf::Event event) {
   // For some reason, if we do this check on Render()
   // then the value resets after we press right click.
@@ -80,15 +93,15 @@ void Block::_process_events(sf::Event event) {
     // We may use left to undrag as well, but those clicks occur so
     // fast, mostly it causes toggle on/off/on.. conditions.
     if (event.mouseButton.button == sf::Mouse::Left) {
+      if (_any_node_already_pressed()) {
+        _deselect_all_nodes();
+      }
+
       if (_process_left_click_on_children()) {
         return;
       }
 
-      if (std::any_of(childrens.begin(), childrens.end(),
-                      [](NODE n) { return n.pressed; })) {
-        return;
-      }
-
+      // No any internal blocks were clicked.
       if (!dragging && isMouseOverSprite(block_rect)) {
         dragging = true;
       }
@@ -118,11 +131,7 @@ void Block::_process_events(sf::Event event) {
     } else if (event.mouseButton.button == sf::Mouse::Right) {
       // TODO: All clicks outside a block should invalidate pressed state of any
       // NODE.
-      for (auto &child : childrens) {
-        if (child.pressed) {
-          child.pressed = false;
-        }
-      }
+      _deselect_all_nodes();
 
       if (dragging) {
         dragging = false;

@@ -50,6 +50,9 @@ public:
   bool _process_left_click_on_children();
   void _process_events(sf::Event event);
 
+  bool _any_node_already_pressed();
+  void _deselect_all_nodes();
+
   void Render();
 };
 
