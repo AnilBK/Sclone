@@ -16,6 +16,8 @@ struct NODE {
 
   sf::Vector2f line_input_field_rect_size() { return {75, 35}; }
 
+  // TODO:Create Individual GUI components like text boxes etc.
+
   sf::Vector2f rect_size() {
     if (type == NODE_TYPE::LABEL) {
       return {text_rect_size(text).x, min_size().y};

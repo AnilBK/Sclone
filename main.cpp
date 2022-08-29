@@ -1,5 +1,6 @@
 #include "Globals.hpp"
 #include "block/Block.hpp"
+#include "block/LineInput.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -65,6 +66,11 @@ int main() {
   show_mouse_pos_text.setFillColor(sf::Color::Black);
 #endif
 
+  LineInput sprite_name;
+  sprite_name.position = {250.0f, 35.0f};
+  sprite_name.input_text = "cat";
+  sprite_name.line_input_active = false;
+
   std::vector<Block> blocks;
 
   Block block_say_for_n_seconds;
@@ -108,15 +114,22 @@ int main() {
            event.key.code == sf::Keyboard::Escape)) {
         window.close();
       } else if (event.type == sf::Event::KeyReleased &&
-                 event.key.code == sf::Keyboard::G) {
+                 event.key.code == sf::Keyboard::LAlt) {
         // To Generate code.
         std::cout << "\n\n[Generated Code]\n";
         for (auto block : blocks) {
           if (block.output_code_callback) {
-            std::cout << block.output_code_callback(block) << "\n";
+            auto output_code = block.output_code_callback(block);
+            // auto sprite_name_str = sprite_name.input_text;
+            // output_code.replace("###sprite###", sprite_name_str);
+            // auto str_to_find = "###sprite###";
+
+            std::cout << output_code << "\n";
           }
         }
       }
+
+      sprite_name.handle_inputs(event);
     }
 
     mouse_position = sf::Mouse::getPosition(window);
@@ -141,6 +154,8 @@ int main() {
                                   " Y: " + std::to_string(mouse_position.y));
     window.draw(show_mouse_pos_text);
 #endif
+
+    sprite_name.Render();
 
     window.display();
   }
