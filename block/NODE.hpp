@@ -12,36 +12,32 @@ struct NODE {
   // std::function<void()> callback;
   bool pressed = false;
 
+  sf::Vector2f min_size() { return {35.0f, 45.0f}; }
+
   sf::Vector2f line_input_field_rect_size() { return {75, 35}; }
 
-  float get_rect_size_x() {
+  sf::Vector2f rect_size() {
     if (type == NODE_TYPE::LABEL) {
-      return text_rect_size(text).x;
+      return {text_rect_size(text).x, min_size().y};
     } else if (type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
       if (text != "") {
-        return std::max(text_rect_size(text).x, line_input_field_rect_size().x);
+        return {
+            std::max(text_rect_size(text).x, line_input_field_rect_size().x),
+            min_size().y};
       }
-      return line_input_field_rect_size().x;
+      return {line_input_field_rect_size().x, min_size().y};
     } else if (type == NODE_TYPE::BUTTON) {
-      sf::Vector2f size{30, 40};
       sf::Vector2f text_box_size{text_rect_size(text)};
-      sf::Vector2f btn_size{std::max(text_box_size.x, size.x) + 5,
-                            std::max(text_box_size.y, size.y)};
-      return btn_size.x;
+      sf::Vector2f btn_size{std::max(text_box_size.x, min_size().x) + 5,
+                            std::max(text_box_size.y, min_size().y)};
+      return btn_size;
     }
 
-    return 35.0f;
-  }
-
-  //  This and above function should be merged sensibly.
-  sf::Rect<float> get_rect(sf::Vector2f pos_at) {
-    // const sf::Vector2f STARTING_BLOCK_SIZE{0.0f, 45.0f};
-    sf::Vector2f size{get_rect_size_x(), 45.0f};
-    return {pos_at, size};
+    return min_size();
   }
 
   bool is_mouse_over(sf::Vector2f this_nodes_pos) {
-    sf::Vector2f size{get_rect_size_x(), 45.0f};
+    sf::Vector2f size = rect_size();
     return (mouse_position.x >= this_nodes_pos.x &&
             mouse_position.x <= this_nodes_pos.x + size.x) &&
            (mouse_position.y >= this_nodes_pos.y &&
@@ -96,7 +92,7 @@ struct NODE {
         draw_text(text, pos);
       }
     } else if (type == NODE_TYPE::BUTTON) {
-      sf::Vector2f size{30, 40};
+      sf::Vector2f size = min_size();
       sf::Vector2f text_box_size{text_rect_size(text)};
       sf::Vector2f btn_size{std::max(text_box_size.x, size.x) + 5,
                             std::max(text_box_size.y, size.y)};

@@ -17,7 +17,7 @@ void Block::_recalculate_rect() {
   sf::Vector2f block_size = STARTING_BLOCK_SIZE;
 
   for (auto child : childrens) {
-    block_size.x += child.get_rect_size_x();
+    block_size.x += child.rect_size().x;
     block_size.x += spacing;
   }
 
@@ -37,7 +37,7 @@ void Block::Render() {
   sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
   for (auto child : childrens) {
     child.Render(pos);
-    pos.x += child.get_rect_size_x();
+    pos.x += child.rect_size().x;
     pos.x += spacing;
   }
 }
@@ -53,7 +53,7 @@ bool Block::_process_left_click_on_children() {
       }
     }
 
-    pos.x += child.get_rect_size_x();
+    pos.x += child.rect_size().x;
     pos.x += spacing;
   }
 
