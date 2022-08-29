@@ -4,6 +4,8 @@
 #include "../Globals.hpp"
 #include "NODE.hpp"
 #include <SFML/Graphics.hpp>
+#include <functional>
+#include <optional>
 
 // Final Block Output:
 // VVVVVVVVVVVVVVVVVVVVVVVVVV
@@ -35,10 +37,26 @@ private:
 public:
   Block();
 
+  std::function<std::string(Block b)> output_code_callback;
   std::vector<NODE> childrens;
 
   void set_position(const sf::Vector2f pos);
   void add_node(struct NODE p_node) { childrens.push_back(p_node); }
+
+  std::optional<std::string> get_bound_value(const std::string &query) {
+    for (const auto &child : childrens) {
+      if (child.bind_string == query) {
+        // TODO : add a member get_value().
+        // So that get_value() can return a unique values according to need.
+        return child.text;
+      }
+    }
+
+    auto unbound_msg_str = "[Debug] String " + query + " Possibly Unbound.";
+    ERR_FAIL_COND_CRASH(false, unbound_msg_str);
+
+    return {};
+  }
 
   // Maybe use some dirty flag ???
   void _recalculate_rect();

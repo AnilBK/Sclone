@@ -6,6 +6,8 @@
 struct NODE {
   std::string text;
   NODE_TYPE type;
+  std::string bind_string;
+
   // A Node like a button has a callback on mouse click.
   // std::function<void()> callback;
   bool pressed = false;

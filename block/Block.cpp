@@ -83,8 +83,8 @@ void Block::_process_events(sf::Event event) {
 
   for (auto &child : childrens) {
     if (child.is_mouse_picker_button() && child.pressed) {
-      childrens[2].text = std::to_string(mouse_position.x) + " ";
-      childrens[4].text = std::to_string(mouse_position.y) + " ";
+      childrens[2].text = std::to_string(mouse_position.x);
+      childrens[4].text = std::to_string(mouse_position.y);
     }
   }
 
