@@ -48,18 +48,7 @@ public:
     childrens.push_back(std::move(u_block));
   }
 
-  std::optional<std::string> get_bound_value(const std::string &query) {
-    for (const auto &child : childrens) {
-      if (child->bind_string == query) {
-        return child->get_text();
-      }
-    }
-
-    auto unbound_msg_str = "[Debug] String \"" + query + "\" Possibly Unbound.";
-    ERR_FAIL_COND_CRASH(false, unbound_msg_str);
-
-    return {};
-  }
+  std::optional<std::string> get_bound_value(const std::string &query);
 
   // Maybe use some dirty flag ???
   void _recalculate_rect();

@@ -42,6 +42,19 @@ void Block::Render() {
   }
 }
 
+std::optional<std::string> Block::get_bound_value(const std::string &query) {
+  for (const auto &child : childrens) {
+    if (child->bind_string == query) {
+      return child->get_text();
+    }
+  }
+
+  auto unbound_msg_str = "[Debug] String \"" + query + "\" Possibly Unbound.";
+  ERR_FAIL_COND_CRASH(false, unbound_msg_str);
+
+  return {};
+}
+
 bool Block::_process_left_click_on_children(sf::Event event) {
   // Returns true if any of the child performed 'press' action.
   sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
