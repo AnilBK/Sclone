@@ -43,6 +43,16 @@ std::string code_sprite_say(Block block) {
   return "std::cout << \"" + message + "\" << \"\\n\";";
 }
 
+std::string code_sprite_change_x_by(Block block) {
+  auto x_offset = block.get_bound_value("x_offset").value();
+  return "sprite.move(sf::Vector2f(" + x_offset + ", 0.0f));";
+}
+
+std::string code_sprite_change_y_by(Block block) {
+  auto y_offset = block.get_bound_value("y_offset").value();
+  return "sprite.move(sf::Vector2f(0.0f, " + y_offset + "));";
+}
+
 int main() {
 
   init_global_font_and_label();
@@ -98,8 +108,26 @@ int main() {
   block_go_to_xy.set_position({200.0f, 600.0f});
   block_go_to_xy._recalculate_rect();
 
+  Block block_change_x_by;
+  block_change_x_by.add_node(LabelNode("Change X By"));
+  block_change_x_by.add_node(LineInputAttachFieldNode("", "x_offset"));
+  block_change_x_by.output_code_callback = code_sprite_change_x_by;
+
+  block_change_x_by.set_position({200.0f, 400.0f});
+  block_change_x_by._recalculate_rect();
+
+  Block block_change_y_by;
+  block_change_y_by.add_node(LabelNode("Change Y By"));
+  block_change_y_by.add_node(LineInputAttachFieldNode("", "y_offset"));
+  block_change_y_by.output_code_callback = code_sprite_change_y_by;
+
+  block_change_y_by.set_position({200.0f, 480.0f});
+  block_change_y_by._recalculate_rect();
+
   blocks.push_back(block_say);
   blocks.push_back(block_go_to_xy);
+  blocks.push_back(block_change_x_by);
+  blocks.push_back(block_change_y_by);
 
   while (window.isOpen()) {
     sf::Event event;
