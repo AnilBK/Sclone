@@ -86,9 +86,14 @@ void Block::_process_events(sf::Event event) {
   }
 
   bool rect_dirty = false;
+  bool any_line_inputs_pressed = false;
+
   for (auto &child : childrens) {
     if (child->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
       child->_process_event(event);
+      if (child->pressed) {
+        any_line_inputs_pressed = true;
+      }
     }
 
     if (child->type != NODE_TYPE::BUTTON) {
@@ -106,7 +111,12 @@ void Block::_process_events(sf::Event event) {
     }
   }
 
-  if (rect_dirty) {
+  // BUG: Typing on a LineInput Node should trigger recalculation of rect.
+  // Workaround: We always _recalculate rect like below
+  // Also, if LineInput Node isn't selected then there's no change i.e it's rect
+  // can change.
+  // any_line_inputs_pressed -> workaround variable.
+  if (rect_dirty || any_line_inputs_pressed) {
     _recalculate_rect();
   }
 

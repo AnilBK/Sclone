@@ -26,7 +26,7 @@
 class Block {
 
 private:
-  const float spacing = 5, padding_left = 5, padding_right = 5, padding_up = 5,
+  const float spacing = 10, padding_left = 5, padding_right = 5, padding_up = 5,
               padding_down = 5;
   const sf::Vector2f STARTING_BLOCK_SIZE{0.0f, 45.0f};
 

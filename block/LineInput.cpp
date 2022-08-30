@@ -45,7 +45,6 @@ void LineInput::_draw_button(const sf::Vector2f p_position,
   r.setPosition(p_position);
   r.setSize(p_size);
   r.setFillColor(color);
-  r.setFillColor(sf::Color::White);
   // A shadow when a button is highlighted.
   if (line_input_active) {
     r.setOutlineThickness(2.5);
@@ -54,7 +53,6 @@ void LineInput::_draw_button(const sf::Vector2f p_position,
     r.setOutlineThickness(2.0);
     r.setOutlineColor(sf::Color(91, 91, 91, 255));
   }
-
   window.draw(r);
 }
 
@@ -74,35 +72,8 @@ void LineInput::Render() {
 
   _draw_button(position, rect_size());
   draw_text(get_text() + (show_cursor ? '_' : ' '), position);
-
-  // This isn't draw.
-  // We just set text here
-  // so that we can use in _get_rect() below.
-  /*
-  text.setString(get_text() + (show_cursor ? '_' : ' '));
-
-
-  blocks_common_label.setString(get_text() + (show_cursor ? '_' : ' '));
-  blocks_common_label.setPosition(text.getPosition());
-  window->draw(blocks_common_label);
-  */
 }
 
 // We can't use text.getString(), as text object contains _ or _ to show the
 // blinking cursor.
 std::string LineInput::get_text() { return prefix + input_text; }
-
-sf::RectangleShape LineInput::_get_rect() {
-  sf::RectangleShape highlight_block_top;
-  // highlight_block_top.setPosition(text.getPosition() + sf::Vector2f(5.0,
-  // 0.0));
-  highlight_block_top.setPosition(position + sf::Vector2f(5.0, 0.0));
-  highlight_block_top.setSize({217, 50});
-  highlight_block_top.setFillColor(sf::Color(200, 200, 200, 220));
-
-  // An empty text box has some size by default.
-  // float w = std::max(min_size.x, (float)(text.getLocalBounds().width + 5.0));
-  // highlight_block_top.setSize({w, 50});
-
-  return highlight_block_top;
-}
