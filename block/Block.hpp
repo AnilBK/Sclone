@@ -51,9 +51,7 @@ public:
   std::optional<std::string> get_bound_value(const std::string &query) {
     for (const auto &child : childrens) {
       if (child->bind_string == query) {
-        // TODO : add a member get_value().
-        // So that get_value() can return a unique values according to need.
-        return child->text;
+        return child->get_text();
       }
     }
 

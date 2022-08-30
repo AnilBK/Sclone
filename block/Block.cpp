@@ -91,13 +91,13 @@ void Block::_process_events(sf::Event event) {
       continue;
     }
 
-    if (child->text != "Pick^") {
+    if (child->get_text() != "Pick^") {
       continue;
     }
 
     if (child->pressed) {
-      childrens[2]->text = std::to_string(mouse_position.x);
-      childrens[4]->text = std::to_string(mouse_position.y);
+      childrens[2]->set_text(std::to_string(mouse_position.x));
+      childrens[4]->set_text(std::to_string(mouse_position.y));
       rect_dirty = true;
     }
   }

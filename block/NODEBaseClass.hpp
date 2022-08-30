@@ -4,8 +4,11 @@
 #include "../Globals.hpp"
 
 class NODEBaseClass {
-public:
+
+protected:
   std::string text;
+
+public:
   NODE_TYPE type;
   std::string bind_string;
   bool pressed = false;
@@ -26,6 +29,9 @@ public:
            (mouse_position.y >= this_nodes_pos.y &&
             mouse_position.y <= this_nodes_pos.y + size.y);
   };
+
+  virtual std::string get_text() { return text; }
+  virtual void set_text(const std::string &str) { text = str; }
 
   virtual bool left_click_action() { return false; };
 
