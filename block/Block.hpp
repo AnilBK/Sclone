@@ -63,7 +63,7 @@ public:
 
   // Maybe use some dirty flag ???
   void _recalculate_rect();
-  bool _process_left_click_on_children();
+  bool _process_left_click_on_children(sf::Event event);
   void _process_events(sf::Event event);
 
   bool _any_node_already_pressed();

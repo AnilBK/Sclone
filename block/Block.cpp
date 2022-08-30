@@ -42,7 +42,7 @@ void Block::Render() {
   }
 }
 
-bool Block::_process_left_click_on_children() {
+bool Block::_process_left_click_on_children(sf::Event event) {
   // Returns true if any of the child performed 'press' action.
   sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
   // First process child inputs separately.
@@ -87,6 +87,10 @@ void Block::_process_events(sf::Event event) {
 
   bool rect_dirty = false;
   for (auto &child : childrens) {
+    if (child->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD) {
+      child->_process_event(event);
+    }
+
     if (child->type != NODE_TYPE::BUTTON) {
       continue;
     }
@@ -115,7 +119,7 @@ void Block::_process_events(sf::Event event) {
         _deselect_all_nodes();
       }
 
-      if (_process_left_click_on_children()) {
+      if (_process_left_click_on_children(event)) {
         return;
       }
 
@@ -147,8 +151,8 @@ void Block::_process_events(sf::Event event) {
             }
       */
     } else if (event.mouseButton.button == sf::Mouse::Right) {
-      // TODO: All clicks outside a block should invalidate pressed state of any
-      // NODE.
+      // TODO: All clicks outside a block should invalidate pressed state of
+      // any NODE.
       _deselect_all_nodes();
 
       if (dragging) {

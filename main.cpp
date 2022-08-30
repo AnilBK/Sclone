@@ -134,10 +134,6 @@ int main() {
 
     window.clear(sf::Color(0, 255, 204));
 
-    for (auto &block : blocks) {
-      block._process_events(event);
-    }
-
     for (auto block : blocks) {
       block.Render();
     }

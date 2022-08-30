@@ -2,6 +2,7 @@
 #define NODEBASECLASS_HPP
 
 #include "../Globals.hpp"
+#include "LineInput.hpp"
 
 class NODEBaseClass {
 
@@ -34,6 +35,8 @@ public:
   virtual void set_text(const std::string &str) { text = str; }
 
   virtual bool left_click_action() { return false; };
+
+  virtual void _process_event(sf::Event event){};
 
   virtual void Render(sf::Vector2f pos) = 0;
 };
@@ -98,46 +101,35 @@ public:
 };
 
 class LineInputAttachFieldNode : public NODEBaseClass {
+
+private:
+  LineInput text_area;
+
 public:
   LineInputAttachFieldNode(std::string p_text_str, std::string p_bind_str = "")
       : NODEBaseClass(p_text_str, p_bind_str) {
     type = NODE_TYPE::LINE_INPUT_ATTACH_FIELD;
+    text_area.line_input_active = false;
   }
 
-  sf::Vector2f rect_size() override {
-    auto size = min_size();
-    if (text != "") {
-      size.x = std::max(text_rect_size(text).x, min_size().x);
-    }
-    return size;
-  }
+  sf::Vector2f rect_size() override { return text_area.rect_size(); }
+
+  std::string get_text() override { return text_area.input_text; }
+  void set_text(const std::string &str) { text_area.input_text = str; }
 
   bool left_click_action() override {
     pressed = true;
+    text_area.line_input_active = true;
     return true;
   }
 
-  void _draw_line_input_attach_field(const sf::Vector2f p_position) {
-    sf::RectangleShape r;
-    r.setPosition(p_position);
-    r.setSize(rect_size());
-    r.setFillColor(sf::Color::White);
-    // A shadow when a button is highlighted.
-    if (pressed) {
-      r.setOutlineThickness(2.5);
-      r.setOutlineColor(sf::Color(31, 142, 255, 255));
-    } else {
-      r.setOutlineThickness(2.0);
-      r.setOutlineColor(sf::Color(91, 91, 91, 255));
-    }
-    window.draw(r);
+  void _process_event(sf::Event event) override {
+    text_area.handle_inputs(event);
   }
 
   void Render(sf::Vector2f pos) override {
-    _draw_line_input_attach_field(pos);
-    if (text != "") { // Usually empty for line input attach field so.
-      draw_text(text, pos);
-    }
+    text_area.position = pos;
+    text_area.Render();
   }
 };
 
