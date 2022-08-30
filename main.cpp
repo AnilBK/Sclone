@@ -124,6 +124,10 @@ int main() {
       }
 
       sprite_name.handle_inputs(event);
+
+      for (auto &block : blocks) {
+        block._process_events(event);
+      }
     }
 
     mouse_position = sf::Mouse::getPosition(window);
