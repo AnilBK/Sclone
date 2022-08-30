@@ -10,14 +10,13 @@ protected:
   std::string text;
 
 public:
-  NODE_TYPE type;
+  NODE_TYPE type = NODE_TYPE::PLACEHOLDER;
   std::string bind_string;
   bool pressed = false;
 
-  NODEBaseClass(std::string p_text_str, std::string p_bind_str = "") {
-    text = p_text_str;
-    bind_string = p_bind_str;
-  };
+  NODEBaseClass(const std::string &p_text_str,
+                const std::string &p_bind_str = "")
+      : text(p_text_str), bind_string(p_bind_str){};
 
   sf::Vector2f min_size() { return {35.0f, 45.0f}; }
 
@@ -43,7 +42,7 @@ public:
 
 class LabelNode : public NODEBaseClass {
 public:
-  LabelNode(std::string p_text_str, std::string p_bind_str = "")
+  LabelNode(const std::string &p_text_str, const std::string &p_bind_str = "")
       : NODEBaseClass(p_text_str, p_bind_str) {
     type = NODE_TYPE::LABEL;
   }
@@ -57,7 +56,7 @@ public:
 
 class ButtonNode : public NODEBaseClass {
 public:
-  ButtonNode(std::string p_text_str, std::string p_bind_str = "")
+  ButtonNode(const std::string &p_text_str, const std::string &p_bind_str = "")
       : NODEBaseClass(p_text_str, p_bind_str) {
     type = NODE_TYPE::BUTTON;
   }
@@ -106,7 +105,8 @@ private:
   LineInput text_area;
 
 public:
-  LineInputAttachFieldNode(std::string p_text_str, std::string p_bind_str = "")
+  LineInputAttachFieldNode(const std::string &p_text_str,
+                           const std::string &p_bind_str = "")
       : NODEBaseClass(p_text_str, p_bind_str) {
     type = NODE_TYPE::LINE_INPUT_ATTACH_FIELD;
     text_area.line_input_active = false;
@@ -115,7 +115,7 @@ public:
   sf::Vector2f rect_size() override { return text_area.rect_size(); }
 
   std::string get_text() override { return text_area.input_text; }
-  void set_text(const std::string &str) { text_area.input_text = str; }
+  void set_text(const std::string &str) override { text_area.input_text = str; }
 
   bool left_click_action() override {
     pressed = true;

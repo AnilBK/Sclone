@@ -11,7 +11,7 @@
     exit(1);                                                                   \
   }
 
-enum NODE_TYPE { LABEL, LINE_INPUT_ATTACH_FIELD, BUTTON };
+enum NODE_TYPE { PLACEHOLDER, LABEL, LINE_INPUT_ATTACH_FIELD, BUTTON };
 
 extern sf::Vector2i mouse_position;
 
