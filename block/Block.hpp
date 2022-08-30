@@ -2,9 +2,10 @@
 #define BLOCK_HPP
 
 #include "../Globals.hpp"
-#include "NODE.hpp"
+#include "NODEBaseClass.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
+#include <memory>
 #include <optional>
 
 // Final Block Output:
@@ -38,21 +39,25 @@ public:
   Block();
 
   std::function<std::string(Block b)> output_code_callback;
-  std::vector<NODE> childrens;
+  std::vector<std::shared_ptr<NODEBaseClass>> childrens;
 
   void set_position(const sf::Vector2f pos);
-  void add_node(struct NODE p_node) { childrens.push_back(p_node); }
+
+  template <class T> void add_node(T node_class) {
+    auto u_block = std::make_shared<T>(node_class);
+    childrens.push_back(std::move(u_block));
+  }
 
   std::optional<std::string> get_bound_value(const std::string &query) {
     for (const auto &child : childrens) {
-      if (child.bind_string == query) {
+      if (child->bind_string == query) {
         // TODO : add a member get_value().
         // So that get_value() can return a unique values according to need.
-        return child.text;
+        return child->text;
       }
     }
 
-    auto unbound_msg_str = "[Debug] String " + query + " Possibly Unbound.";
+    auto unbound_msg_str = "[Debug] String \"" + query + "\" Possibly Unbound.";
     ERR_FAIL_COND_CRASH(false, unbound_msg_str);
 
     return {};

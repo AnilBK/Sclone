@@ -1,6 +1,7 @@
 #include "Globals.hpp"
 #include "block/Block.hpp"
 #include "block/LineInput.hpp"
+#include "block/NODEBaseClass.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -37,8 +38,9 @@ std::string code_sprite_set_position(Block block) {
   return "sprite.setPosition(" + x_pos + ", " + y_pos + ");";
 }
 
-std::string code_sprite_say(const Block &block) {
-  return "std::cout << \"Unimplemented Message.\\n\";";
+std::string code_sprite_say(Block block) {
+  auto message = block.get_bound_value("message").value();
+  return "std::cout << \"" + message + "\" << \"\\n\";";
 }
 
 int main() {
@@ -73,37 +75,30 @@ int main() {
 
   std::vector<Block> blocks;
 
-  Block block_say_for_n_seconds;
   //   Label("Say")
-  //     LineInputAttachField(text_variable)
-  //       Label("for")
-  //         LineInputAttachField(time_variable)
-  //           Label("seconds").
-  block_say_for_n_seconds.add_node({"Say", NODE_TYPE::LABEL});
-  block_say_for_n_seconds.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD});
-  block_say_for_n_seconds.add_node({"for", NODE_TYPE::LABEL});
-  block_say_for_n_seconds.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD});
-  block_say_for_n_seconds.add_node({"seconds", NODE_TYPE::LABEL});
-  block_say_for_n_seconds.output_code_callback = code_sprite_say;
+  //     LineInputAttachField(message)
+  // The user input is bound to ^^^^^
+  Block block_say;
+  block_say.add_node(LabelNode("Say"));
+  block_say.add_node(LineInputAttachFieldNode("", "message"));
+  block_say.output_code_callback = code_sprite_say;
 
-  block_say_for_n_seconds.set_position({200.0f, 300.0f});
-  block_say_for_n_seconds._recalculate_rect();
+  block_say.set_position({200.0f, 300.0f});
+  block_say._recalculate_rect();
 
   Block block_go_to_xy;
-  block_go_to_xy.add_node({"Go to ", NODE_TYPE::LABEL});
-  block_go_to_xy.add_node({"x", NODE_TYPE::LABEL});
-  block_go_to_xy.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD, "x"});
-  block_go_to_xy.add_node({"y", NODE_TYPE::LABEL});
-  block_go_to_xy.add_node({"", NODE_TYPE::LINE_INPUT_ATTACH_FIELD, "y"});
-  block_go_to_xy.add_node({"Pick^", NODE_TYPE::BUTTON});
+  block_go_to_xy.add_node(LabelNode("Go to"));
+  block_go_to_xy.add_node(LabelNode("X"));
+  block_go_to_xy.add_node(LineInputAttachFieldNode("", "x"));
+  block_go_to_xy.add_node(LabelNode("Y"));
+  block_go_to_xy.add_node(LineInputAttachFieldNode("", "y"));
+  block_go_to_xy.add_node(ButtonNode("Pick^"));
   block_go_to_xy.output_code_callback = code_sprite_set_position;
 
-  // std::cout << block_go_to_xy.output_code_callback(block_go_to_xy) << "\n";
-
-  block_go_to_xy.set_position({200.0f, 400.0f});
+  block_go_to_xy.set_position({200.0f, 600.0f});
   block_go_to_xy._recalculate_rect();
 
-  blocks.push_back(block_say_for_n_seconds);
+  blocks.push_back(block_say);
   blocks.push_back(block_go_to_xy);
 
   while (window.isOpen()) {
@@ -123,7 +118,6 @@ int main() {
             // auto sprite_name_str = sprite_name.input_text;
             // output_code.replace("###sprite###", sprite_name_str);
             // auto str_to_find = "###sprite###";
-
             std::cout << output_code << "\n";
           }
         }

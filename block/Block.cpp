@@ -16,8 +16,8 @@ void Block::_recalculate_rect() {
   //                             position.y - padding_up};
   sf::Vector2f block_size = STARTING_BLOCK_SIZE;
 
-  for (auto child : childrens) {
-    block_size.x += child.rect_size().x;
+  for (const auto &child : childrens) {
+    block_size.x += child->rect_size().x;
     block_size.x += spacing;
   }
 
@@ -35,9 +35,9 @@ void Block::Render() {
 
   // Draw text and all other components.
   sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
-  for (auto child : childrens) {
-    child.Render(pos);
-    pos.x += child.rect_size().x;
+  for (const auto &child : childrens) {
+    child->Render(pos);
+    pos.x += child->rect_size().x;
     pos.x += spacing;
   }
 }
@@ -46,14 +46,14 @@ bool Block::_process_left_click_on_children() {
   // Returns true if any of the child performed 'press' action.
   sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
   // First process child inputs separately.
-  for (auto &child : childrens) {
-    if (child.is_mouse_over(pos)) {
-      if (child.left_click_action()) {
+  for (const auto &child : childrens) {
+    if (child->is_mouse_over(pos)) {
+      if (child->left_click_action()) {
         return true;
       }
     }
 
-    pos.x += child.rect_size().x;
+    pos.x += child->rect_size().x;
     pos.x += spacing;
   }
 
@@ -61,14 +61,18 @@ bool Block::_process_left_click_on_children() {
 }
 
 bool Block::_any_node_already_pressed() {
-  return std::any_of(childrens.begin(), childrens.end(),
-                     [](NODE n) { return n.pressed; });
+  for (auto &child : childrens) {
+    if (child->pressed) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void Block::_deselect_all_nodes() {
   for (auto &child : childrens) {
-    if (child.pressed) {
-      child.pressed = false;
+    if (child->pressed) {
+      child->pressed = false;
     }
   }
 }
@@ -81,11 +85,25 @@ void Block::_process_events(sf::Event event) {
     set_position((sf::Vector2f)mouse_position);
   }
 
+  bool rect_dirty = false;
   for (auto &child : childrens) {
-    if (child.is_mouse_picker_button() && child.pressed) {
-      childrens[2].text = std::to_string(mouse_position.x);
-      childrens[4].text = std::to_string(mouse_position.y);
+    if (child->type != NODE_TYPE::BUTTON) {
+      continue;
     }
+
+    if (child->text != "Pick^") {
+      continue;
+    }
+
+    if (child->pressed) {
+      childrens[2]->text = std::to_string(mouse_position.x);
+      childrens[4]->text = std::to_string(mouse_position.y);
+      rect_dirty = true;
+    }
+  }
+
+  if (rect_dirty) {
+    _recalculate_rect();
   }
 
   if (event.type == sf::Event::MouseButtonPressed) {

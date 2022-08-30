@@ -33,13 +33,12 @@
 		<Unit filename="Globals.hpp" />
 		<Unit filename="block/Block.cpp" />
 		<Unit filename="block/Block.hpp" />
+		<Unit filename="block/LineInput.cpp" />
+		<Unit filename="block/LineInput.hpp" />
 		<Unit filename="block/NODE.cpp" />
 		<Unit filename="block/NODE.hpp" />
+		<Unit filename="block/NODEBaseClass.hpp" />
 		<Unit filename="main.cpp" />
-		<Extensions>
-			<code_completion />
-			<envvars />
-			<debugger />
-		</Extensions>
+		<Extensions />
 	</Project>
 </CodeBlocks_project_file>
