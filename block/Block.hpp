@@ -36,8 +36,6 @@ private:
 
   BLOCK_TYPES block_type;
 
-  Block *next_block = nullptr;
-
   sf::FloatRect _previous_block_snap_rect();
   sf::FloatRect _next_block_snap_rect();
 
@@ -45,6 +43,7 @@ public:
   Block();
 
   bool dragging = false;
+  Block *next_block = nullptr;
 
   std::function<std::string(Block b)> output_code_callback;
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;

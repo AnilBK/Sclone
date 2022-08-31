@@ -183,6 +183,22 @@ int main() {
       }
     }
 
+    auto get_block_it_is_attached_to = [&blocks](Block *block_to_test) {
+      Block *parent = nullptr;
+
+      for (auto &block : blocks) {
+        if (&block.next_block == nullptr) {
+          continue;
+        }
+
+        if (block.next_block == block_to_test) {
+          parent = &block;
+          break;
+        }
+      }
+      return parent;
+    };
+
     bool is_any_block_being_dragged = current_dragging_block_ref != nullptr;
     if (is_any_block_being_dragged) {
       for (auto &block : blocks) {
@@ -194,6 +210,15 @@ int main() {
 
         if (block.can_mouse_snap_to_top()) {
           if (attach_block_requested) {
+            Block *parent = get_block_it_is_attached_to(&block);
+            if (parent != nullptr) {
+              // It is already attached to some block.
+              // So CurrentlyDraggedBlock will be attached to that parent.
+              parent->attach_block_next(current_dragging_block_ref);
+            }
+            // And that parent's previously attached block('block') will be
+            // attached to currently dragged block. Meaning we insert the
+            // currently dragged block between them two.
             current_dragging_block_ref->dragging = false;
             current_dragging_block_ref->attach_block_next(&block);
             continue;
