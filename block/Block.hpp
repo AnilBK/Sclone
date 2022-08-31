@@ -34,6 +34,8 @@ private:
 
   sf::Vector2f position;
 
+  BLOCK_TYPES block_type;
+
   Block *next_block = nullptr;
 
   sf::FloatRect _previous_block_snap_rect();
@@ -48,6 +50,8 @@ public:
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;
 
   void set_position(const sf::Vector2f pos);
+
+  void set_block_type(BLOCK_TYPES p_type) { block_type = p_type; }
 
   template <class T> void add_node(T node_class) {
     auto u_block = std::make_shared<T>(node_class);

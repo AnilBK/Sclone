@@ -12,6 +12,7 @@ void Block::set_position(const sf::Vector2f pos) {
 }
 
 Block::Block() {
+  block_type = BLOCK_TYPES::INSTRUCTION;
   set_position({0.0f, 0.0f});
   block_rect.setSize(STARTING_BLOCK_SIZE);
   block_rect.setFillColor(sf::Color::Green);
@@ -36,11 +37,12 @@ void Block::_recalculate_rect() {
 }
 
 bool Block::is_control_block() {
-  if (childrens.at(0)->get_text() == "When Program Starts") {
-    return true;
-  }
+  return block_type == BLOCK_TYPES::CONTROL;
+  // if (childrens.at(0)->get_text() == "When Program Starts") {
+  // return true;
+  // }
 
-  return false;
+  // return false;
 }
 
 sf::FloatRect Block::_previous_block_snap_rect() {

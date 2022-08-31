@@ -87,6 +87,7 @@ int main() {
 
   Block block_program_started;
   block_program_started.add_node(LabelNode("When Program Starts"));
+  block_program_started.set_block_type(BLOCK_TYPES::CONTROL);
 
   block_program_started.set_position({200.0f, 120.0f});
   block_program_started._recalculate_rect();
