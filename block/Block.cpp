@@ -3,6 +3,12 @@
 void Block::set_position(const sf::Vector2f pos) {
   position = pos;
   block_rect.setPosition(position);
+
+  if (next_block != nullptr) {
+    sf::Vector2f next_block_snap_position(_next_block_snap_rect().left,
+                                          _next_block_snap_rect().top);
+    next_block->set_position(next_block_snap_position);
+  }
 }
 
 Block::Block() {
@@ -37,12 +43,84 @@ bool Block::is_control_block() {
   return false;
 }
 
+sf::FloatRect Block::_previous_block_snap_rect() {
+  auto snap_rect_size = sf::Vector2f(block_rect.getSize().x, 10);
+  auto snap_rect_position =
+      block_rect.getPosition() - sf::Vector2f(0.0f, snap_rect_size.y);
+  return {snap_rect_position, snap_rect_size};
+}
+
+sf::FloatRect Block::_next_block_snap_rect() {
+  auto snap_rect_size = sf::Vector2f(block_rect.getSize().x, 10);
+  auto snap_rect_position =
+      block_rect.getPosition() + sf::Vector2f(0.0f, block_rect.getSize().y);
+  return {snap_rect_position, snap_rect_size};
+}
+
+void Block::show_previous_block_snap_hint() {
+  auto r = _previous_block_snap_rect();
+  auto r_pos = sf::Vector2f(r.left, r.top);
+  auto r_size = sf::Vector2f(r.width, r.height);
+
+  sf::RectangleShape previous_block_snap_hint;
+  previous_block_snap_hint.setPosition(r_pos);
+  previous_block_snap_hint.setSize(r_size);
+
+  previous_block_snap_hint.setFillColor(sf::Color::White);
+  window.draw(previous_block_snap_hint);
+}
+
+void Block::show_next_block_snap_hint() {
+  auto r = _next_block_snap_rect();
+  auto r_pos = sf::Vector2f(r.left, r.top);
+  auto r_size = sf::Vector2f(r.width, r.height);
+
+  sf::RectangleShape next_block_snap_hint;
+  next_block_snap_hint.setPosition(r_pos);
+  next_block_snap_hint.setSize(r_size);
+
+  next_block_snap_hint.setFillColor(sf::Color::White);
+  window.draw(next_block_snap_hint);
+}
+
+bool Block::can_mouse_snap_to_top() {
+  // if (previous != nullptr) {
+  // return false;
+  // }
+  if (is_control_block()) {
+    return false;
+  }
+
+  return _previous_block_snap_rect().contains((sf::Vector2f)mouse_position);
+}
+
+bool Block::can_mouse_snap_to_bottom() {
+  if (next_block != nullptr) {
+    return false;
+  }
+  return _next_block_snap_rect().contains((sf::Vector2f)mouse_position);
+}
+
+void Block::attach_block_next(Block *p_next_block) {
+  if (p_next_block == this) {
+    ERR_FAIL_COND_CRASH(false, "Children is same as parent.");
+  }
+
+  next_block = p_next_block;
+  set_position(position);
+  // Set same position again, so it's child's position can be updated too.
+}
+
 std::string Block::get_code() {
 
   std::string code;
 
   if (output_code_callback) {
     code += output_code_callback(*this);
+  }
+
+  if (next_block != nullptr) {
+    code += next_block->get_code();
   }
 
   return code;

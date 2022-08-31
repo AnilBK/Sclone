@@ -136,7 +136,11 @@ int main() {
   blocks.push_back(block_change_x_by);
   blocks.push_back(block_change_y_by);
 
+  blocks.at(1).attach_block_next(&blocks.at(2));
+
   while (window.isOpen()) {
+    bool middle_click = false;
+
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed ||
@@ -152,9 +156,11 @@ int main() {
             continue;
           }
           auto output_code = block.get_code();
-            std::cout << output_code << "\n";
-          }
+          std::cout << output_code << "\n";
         }
+      } else if (event.type == sf::Event::MouseButtonPressed &&
+                 event.mouseButton.button == sf::Mouse::Middle) {
+        middle_click = true;
       }
 
       sprite_name.handle_inputs(event);
@@ -168,6 +174,44 @@ int main() {
 
     window.clear(sf::Color(0, 255, 204));
 
+    Block *current_dragging_block_ref = nullptr;
+    for (auto &block : blocks) {
+      if (block.dragging) {
+        current_dragging_block_ref = &block;
+        break;
+      }
+    }
+
+    bool is_any_block_being_dragged = current_dragging_block_ref != nullptr;
+    if (is_any_block_being_dragged) {
+      for (auto &block : blocks) {
+        if (current_dragging_block_ref == &block) {
+          continue;
+        }
+
+        bool attach_block_requested = middle_click;
+
+        if (block.can_mouse_snap_to_top()) {
+          if (attach_block_requested) {
+            current_dragging_block_ref->dragging = false;
+            current_dragging_block_ref->attach_block_next(&block);
+            continue;
+          } else {
+            block.show_previous_block_snap_hint();
+          }
+        }
+
+        if (block.can_mouse_snap_to_bottom()) {
+          if (attach_block_requested) {
+            current_dragging_block_ref->dragging = false;
+            block.attach_block_next(current_dragging_block_ref);
+            continue;
+          } else {
+            block.show_next_block_snap_hint();
+          }
+        }
+      }
+    }
     for (auto block : blocks) {
       block.Render();
     }

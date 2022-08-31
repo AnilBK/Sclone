@@ -32,11 +32,17 @@ private:
 
   sf::RectangleShape block_rect;
 
-  bool dragging = false;
   sf::Vector2f position;
+
+  Block *next_block = nullptr;
+
+  sf::FloatRect _previous_block_snap_rect();
+  sf::FloatRect _next_block_snap_rect();
 
 public:
   Block();
+
+  bool dragging = false;
 
   std::function<std::string(Block b)> output_code_callback;
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;
@@ -49,6 +55,14 @@ public:
   }
 
   std::optional<std::string> get_bound_value(const std::string &query);
+
+  bool can_mouse_snap_to_top();
+  bool can_mouse_snap_to_bottom();
+
+  void attach_block_next(Block *p_next_block);
+
+  void show_previous_block_snap_hint();
+  void show_next_block_snap_hint();
 
   std::string get_code();
   bool is_control_block();
