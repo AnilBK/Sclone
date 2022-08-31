@@ -29,6 +29,25 @@ void Block::_recalculate_rect() {
   block_rect.setSize(block_size);
 }
 
+bool Block::is_control_block() {
+  if (childrens.at(0)->get_text() == "When Program Starts") {
+    return true;
+  }
+
+  return false;
+}
+
+std::string Block::get_code() {
+
+  std::string code;
+
+  if (output_code_callback) {
+    code += output_code_callback(*this);
+  }
+
+  return code;
+}
+
 void Block::Render() {
   // Draw the background rect.
   window.draw(block_rect);

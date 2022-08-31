@@ -85,6 +85,12 @@ int main() {
 
   std::vector<Block> blocks;
 
+  Block block_program_started;
+  block_program_started.add_node(LabelNode("When Program Starts"));
+
+  block_program_started.set_position({200.0f, 120.0f});
+  block_program_started._recalculate_rect();
+
   //   Label("Say")
   //     LineInputAttachField(message)
   // The user input is bound to ^^^^^
@@ -93,7 +99,7 @@ int main() {
   block_say.add_node(LineInputAttachFieldNode("", "message"));
   block_say.output_code_callback = code_sprite_say;
 
-  block_say.set_position({200.0f, 300.0f});
+  block_say.set_position({200.0f, 250.0f});
   block_say._recalculate_rect();
 
   Block block_go_to_xy;
@@ -124,6 +130,7 @@ int main() {
   block_change_y_by.set_position({200.0f, 480.0f});
   block_change_y_by._recalculate_rect();
 
+  blocks.push_back(block_program_started);
   blocks.push_back(block_say);
   blocks.push_back(block_go_to_xy);
   blocks.push_back(block_change_x_by);
@@ -141,11 +148,10 @@ int main() {
         // To Generate code.
         std::cout << "\n\n[Generated Code]\n";
         for (auto block : blocks) {
-          if (block.output_code_callback) {
-            auto output_code = block.output_code_callback(block);
-            // auto sprite_name_str = sprite_name.input_text;
-            // output_code.replace("###sprite###", sprite_name_str);
-            // auto str_to_find = "###sprite###";
+          if (!block.is_control_block()) {
+            continue;
+          }
+          auto output_code = block.get_code();
             std::cout << output_code << "\n";
           }
         }

@@ -50,6 +50,9 @@ public:
 
   std::optional<std::string> get_bound_value(const std::string &query);
 
+  std::string get_code();
+  bool is_control_block();
+
   // Maybe use some dirty flag ???
   void _recalculate_rect();
   bool _process_left_click_on_children(sf::Event event);
