@@ -12,10 +12,9 @@ void Block::set_position(const sf::Vector2f pos) {
 }
 
 Block::Block() {
-  block_type = BLOCK_TYPES::INSTRUCTION;
   set_position({0.0f, 0.0f});
   block_rect.setSize(STARTING_BLOCK_SIZE);
-  block_rect.setFillColor(sf::Color::Green);
+  set_block_type(BLOCK_TYPES::INSTRUCTION);
 }
 
 void Block::_recalculate_rect() {

@@ -50,7 +50,14 @@ public:
 
   void set_position(const sf::Vector2f pos);
 
-  void set_block_type(BLOCK_TYPES p_type) { block_type = p_type; }
+  void set_block_type(BLOCK_TYPES p_type) {
+    block_type = p_type;
+    if (block_type == BLOCK_TYPES::CONTROL) {
+      block_rect.setFillColor(sf::Color::Yellow);
+    } else {
+      block_rect.setFillColor(sf::Color::Green);
+    }
+  }
 
   template <class T> void add_node(T node_class) {
     auto u_block = std::make_shared<T>(node_class);
