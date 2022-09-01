@@ -253,7 +253,7 @@ int main() {
     window.draw(show_mouse_pos_text);
 #endif
 
-    sprite_name.Render();
+    // sprite_name.Render();
 
     window.display();
   }
