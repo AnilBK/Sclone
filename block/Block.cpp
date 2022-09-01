@@ -4,11 +4,22 @@ void Block::set_position(const sf::Vector2f pos) {
   position = pos;
   block_rect.setPosition(position);
 
-  if (block_inside != nullptr) {
+  if (attached_blocks.size() > 0) {
+    // VVVVV Works for the first block only.
+    auto snap_rect_size =
+        sf::Vector2f(block_rect.getSize().x, 10 + padding_up + padding_down);
+    auto snap_rect_position =
+        block_rect.getPosition() + sf::Vector2f(0, STARTING_BLOCK_SIZE.y);
+    sf::FloatRect _inside_block_snap_rect = {snap_rect_position,
+                                             snap_rect_size};
+
     sf::Vector2f inside_block_snap_position(
-        _inside_block_snap_rect().left + 15.0f,
-        _inside_block_snap_rect().top + padding_up);
-    block_inside->set_position(inside_block_snap_position);
+        _inside_block_snap_rect.left + 15.0f,
+        _inside_block_snap_rect.top + padding_up);
+
+    for (auto &attached_block : attached_blocks) {
+      attached_block->set_position(inside_block_snap_position);
+    }
   }
 
   if (next_block != nullptr) {
@@ -95,14 +106,6 @@ sf::FloatRect Block::_previous_block_snap_rect() {
   return {snap_rect_position, snap_rect_size};
 }
 
-sf::FloatRect Block::_inside_block_snap_rect() {
-  auto snap_rect_size =
-      sf::Vector2f(block_rect.getSize().x, 10 + padding_up + padding_down);
-  auto snap_rect_position =
-      block_rect.getPosition() + sf::Vector2f(0, STARTING_BLOCK_SIZE.y);
-  return {snap_rect_position, snap_rect_size};
-}
-
 sf::FloatRect Block::_next_block_snap_rect() {
 
   sf::Vector2f pos{0.0f, STARTING_BLOCK_SIZE.y};
@@ -138,19 +141,6 @@ void Block::show_previous_block_snap_hint() {
   window.draw(previous_block_snap_hint);
 }
 
-void Block::show_inside_block_snap_hint() {
-  auto r = _inside_block_snap_rect();
-  auto r_pos = sf::Vector2f(r.left, r.top);
-  auto r_size = sf::Vector2f(r.width, r.height);
-
-  sf::RectangleShape next_block_snap_hint;
-  next_block_snap_hint.setPosition(r_pos);
-  next_block_snap_hint.setSize(r_size);
-
-  next_block_snap_hint.setFillColor(sf::Color::White);
-  window.draw(next_block_snap_hint);
-}
-
 void Block::show_next_block_snap_hint() {
   auto r = _next_block_snap_rect();
   auto r_pos = sf::Vector2f(r.left, r.top);
@@ -164,6 +154,35 @@ void Block::show_next_block_snap_hint() {
   window.draw(next_block_snap_hint);
 }
 
+void Block::show_inside_snap_hints(bool attach_block_requested,
+                                   Block *current_dragging_block_ref) {
+
+  // We don't store positions of a Node.
+  // So we do this hack.
+  // As show_block_snap_hint_rect(pos) is 'BLOCK_ATTACH_NODE's' function,
+  // and it needs a position vector2f.
+  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+  for (auto &child : childrens) {
+    if (child->type == BLOCK_ATTACH_NODE) {
+      pos.x = position.x;
+      pos.y += 45.0f;
+      if (child->show_block_snap_hint_rect(pos)) {
+        if (attach_block_requested) {
+          attached_blocks.push_back(current_dragging_block_ref);
+          current_dragging_block_ref->dragging = false;
+          set_position(position); // Refresh for the newly added block.
+          return;
+        }
+      }
+      pos.x += 15;
+      continue;
+    }
+
+    pos.x += child->rect_size().x;
+    pos.x += spacing;
+  }
+}
+
 bool Block::can_mouse_snap_to_top() {
   // if (previous != nullptr) {
   // return false;
@@ -173,18 +192,6 @@ bool Block::can_mouse_snap_to_top() {
   }
 
   return _previous_block_snap_rect().contains((sf::Vector2f)mouse_position);
-}
-
-bool Block::can_mouse_snap_to_inside() {
-  if (!can_block_snap_inside) {
-    return false;
-  }
-
-  if (block_inside != nullptr) {
-    return false;
-  }
-
-  return _inside_block_snap_rect().contains((sf::Vector2f)mouse_position);
 }
 
 bool Block::can_mouse_snap_to_bottom() {
@@ -204,16 +211,6 @@ void Block::attach_block_next(Block *p_next_block) {
   // Set same position again, so it's child's position can be updated too.
 }
 
-void Block::attach_block_inside(Block *p_inside_block) {
-  if (p_inside_block == this) {
-    ERR_FAIL_COND_CRASH(false, "Children is same as parent.");
-  }
-
-  block_inside = p_inside_block;
-  set_position(position);
-  // Set same position again, so it's child's position can be updated too.
-}
-
 std::string Block::get_code() {
 
   std::string code;
@@ -226,8 +223,13 @@ std::string Block::get_code() {
     code += "{\n";
   }
 
-  if (block_inside != nullptr) {
-    code += block_inside->get_code();
+  if (attached_blocks.size() > 0) {
+    for (auto &attached_block : attached_blocks) {
+      if (attached_block == nullptr) {
+        continue;
+      }
+      code += attached_block->get_code();
+    }
   }
 
   if (can_block_snap_inside) {
@@ -254,6 +256,7 @@ void Block::Render() {
       pos.y += 45.0f;
       child->Render(pos);
       pos.x += 15;
+      pos.y += 90.0f;
       continue;
     }
 

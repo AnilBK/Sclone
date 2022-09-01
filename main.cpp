@@ -97,6 +97,9 @@ int main() {
   Block block_if;
   block_if.add_node(LabelNode("If (some condition)"));
   block_if.add_node(BlockAttachNode(""));
+  block_if.add_node(LabelNode("If (some condition)"));
+  block_if.add_node(BlockAttachNode(""));
+
   block_if.output_code_callback = code_sprite_if;
 
   block_if.set_position({780.0f, 25.0f});
@@ -250,14 +253,8 @@ int main() {
           }
         }
 
-        if (block.can_mouse_snap_to_inside()) {
-          if (attach_block_requested) {
-            current_dragging_block_ref->dragging = false;
-            block.attach_block_inside(current_dragging_block_ref);
-          } else {
-            block.show_inside_block_snap_hint();
-          }
-        }
+        block.show_inside_snap_hints(attach_block_requested,
+                                     current_dragging_block_ref);
       }
     }
     for (auto block : blocks) {

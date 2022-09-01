@@ -38,7 +38,6 @@ private:
   bool can_block_snap_inside = false;
 
   sf::FloatRect _previous_block_snap_rect();
-  sf::FloatRect _inside_block_snap_rect();
   sf::FloatRect _next_block_snap_rect();
 
 public:
@@ -47,7 +46,13 @@ public:
   bool dragging = false;
 
   Block *next_block = nullptr;
-  Block *block_inside = nullptr;
+  // These are the blocks that are attached inside a block.
+  // For a given block these exist only if 'BlockAttachNode' nodes are attached
+  // to it.
+  std::vector<Block *> attached_blocks;
+  // Make this vvvv function handle top and bottom snap highlights as well.
+  void show_inside_snap_hints(bool attach_block_requested,
+                              Block *current_dragging_block_ref);
 
   std::function<std::string(Block b)> output_code_callback;
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;
@@ -74,14 +79,11 @@ public:
   std::optional<std::string> get_bound_value(const std::string &query);
 
   bool can_mouse_snap_to_top();
-  bool can_mouse_snap_to_inside();
   bool can_mouse_snap_to_bottom();
 
   void attach_block_next(Block *p_next_block);
-  void attach_block_inside(Block *p_inside_block);
 
   void show_previous_block_snap_hint();
-  void show_inside_block_snap_hint();
   void show_next_block_snap_hint();
 
   std::string get_code();
