@@ -46,4 +46,23 @@ static void draw_text(const std::string &str, const sf::Vector2f p_position) {
   window.draw(draw_text_label);
 }
 
+static sf::FloatRect merge_rects(sf::FloatRect rect, sf::FloatRect p_rect) {
+  auto rect_pos = sf::Vector2f(rect.left, rect.top);
+  auto rect_size = sf::Vector2f(rect.width, rect.height);
+
+  auto p_rect_pos = sf::Vector2f(p_rect.left, p_rect.top);
+  auto p_rect_size = sf::Vector2f(p_rect.width, p_rect.height);
+
+  sf::Vector2f merged_rect_position = {std::min(p_rect_pos.x, rect_pos.x),
+                                       std::min(p_rect_pos.y, rect_pos.y)};
+
+  sf::Vector2f merged_rect_size = {
+      std::max(p_rect_pos.x + p_rect_size.x, rect_pos.x + rect_size.x) -
+          merged_rect_position.x,
+      std::max(p_rect_pos.y + p_rect_size.y, rect_pos.y + rect_size.y) -
+          merged_rect_position.y};
+
+  return sf::FloatRect(merged_rect_position, merged_rect_size);
+}
+
 #endif
