@@ -35,15 +35,19 @@ private:
   sf::Vector2f position;
 
   BLOCK_TYPES block_type;
+  bool can_block_snap_inside = false;
 
   sf::FloatRect _previous_block_snap_rect();
+  sf::FloatRect _inside_block_snap_rect();
   sf::FloatRect _next_block_snap_rect();
 
 public:
   Block();
 
   bool dragging = false;
+
   Block *next_block = nullptr;
+  Block *block_inside = nullptr;
 
   std::function<std::string(Block b)> output_code_callback;
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;
@@ -60,6 +64,9 @@ public:
   }
 
   template <class T> void add_node(T node_class) {
+    if (node_class.type == NODE_TYPE::BLOCK_ATTACH_NODE) {
+      can_block_snap_inside = true;
+    }
     auto u_block = std::make_shared<T>(node_class);
     childrens.push_back(std::move(u_block));
   }
@@ -67,11 +74,14 @@ public:
   std::optional<std::string> get_bound_value(const std::string &query);
 
   bool can_mouse_snap_to_top();
+  bool can_mouse_snap_to_inside();
   bool can_mouse_snap_to_bottom();
 
   void attach_block_next(Block *p_next_block);
+  void attach_block_inside(Block *p_inside_block);
 
   void show_previous_block_snap_hint();
+  void show_inside_block_snap_hint();
   void show_next_block_snap_hint();
 
   std::string get_code();

@@ -11,7 +11,13 @@
     exit(1);                                                                   \
   }
 
-enum NODE_TYPE { PLACEHOLDER, LABEL, LINE_INPUT_ATTACH_FIELD, BUTTON };
+enum NODE_TYPE {
+  PLACEHOLDER,
+  BLOCK_ATTACH_NODE,
+  LABEL,
+  LINE_INPUT_ATTACH_FIELD,
+  BUTTON
+};
 
 enum BLOCK_TYPES { CONTROL, INSTRUCTION };
 

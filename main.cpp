@@ -38,6 +38,8 @@ std::string code_sprite_set_position(Block block) {
   return "sprite.setPosition(" + x_pos + ", " + y_pos + ");";
 }
 
+std::string code_sprite_if(Block block) { return "if(some_condition)"; }
+
 std::string code_sprite_say(Block block) {
   auto message = block.get_bound_value("message").value();
   return "std::cout << \"" + message + "\" << \"\\n\";";
@@ -89,8 +91,16 @@ int main() {
   block_program_started.add_node(LabelNode("When Program Starts"));
   block_program_started.set_block_type(BLOCK_TYPES::CONTROL);
 
-  block_program_started.set_position({200.0f, 120.0f});
+  block_program_started.set_position({425.0f, 25.0f});
   block_program_started._recalculate_rect();
+
+  Block block_if;
+  block_if.add_node(LabelNode("If (some condition)"));
+  block_if.add_node(BlockAttachNode(""));
+  block_if.output_code_callback = code_sprite_if;
+
+  block_if.set_position({780.0f, 25.0f});
+  block_if._recalculate_rect();
 
   //   Label("Say")
   //     LineInputAttachField(message)
@@ -132,12 +142,13 @@ int main() {
   block_change_y_by._recalculate_rect();
 
   blocks.push_back(block_program_started);
+  blocks.push_back(block_if);
   blocks.push_back(block_say);
   blocks.push_back(block_go_to_xy);
   blocks.push_back(block_change_x_by);
   blocks.push_back(block_change_y_by);
 
-  blocks.at(1).attach_block_next(&blocks.at(2));
+  blocks.at(2).attach_block_next(&blocks.at(3));
 
   while (window.isOpen()) {
     bool middle_click = false;
@@ -156,7 +167,9 @@ int main() {
           if (!block.is_control_block()) {
             continue;
           }
+
           auto output_code = block.get_code();
+
           std::cout << output_code << "\n";
         }
       } else if (event.type == sf::Event::MouseButtonPressed &&
@@ -234,6 +247,15 @@ int main() {
             continue;
           } else {
             block.show_next_block_snap_hint();
+          }
+        }
+
+        if (block.can_mouse_snap_to_inside()) {
+          if (attach_block_requested) {
+            current_dragging_block_ref->dragging = false;
+            block.attach_block_inside(current_dragging_block_ref);
+          } else {
+            block.show_inside_block_snap_hint();
           }
         }
       }

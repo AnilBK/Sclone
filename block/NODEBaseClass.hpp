@@ -133,4 +133,33 @@ public:
   }
 };
 
+class BlockAttachNode : public NODEBaseClass {
+public:
+  BlockAttachNode(const std::string &p_text_str,
+                  const std::string &p_bind_str = "")
+      : NODEBaseClass(p_text_str, p_bind_str) {
+    type = NODE_TYPE::BLOCK_ATTACH_NODE;
+  }
+
+  sf::Vector2f rect_size() override { return {15, 2 * 45.0f}; }
+
+  void Render(sf::Vector2f pos) override {
+    // Draw the long vertical line on the left.
+    sf::RectangleShape r;
+    r.setPosition(pos);
+    r.setSize(rect_size());
+    r.setFillColor(sf::Color::Yellow);
+    window.draw(r);
+
+    // The horizontal block on the bottom.
+    // Which marks the end of the block.
+    sf::RectangleShape r2;
+    r2.setPosition(pos + sf::Vector2f{0.0, rect_size().y});
+    // A block is 45 units.
+    r2.setSize({300, 45.0f});
+    r2.setFillColor(sf::Color::Yellow);
+    window.draw(r2);
+  }
+};
+
 #endif // NODEBASECLASS_HPP
