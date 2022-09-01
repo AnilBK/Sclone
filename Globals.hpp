@@ -7,7 +7,8 @@
 
 #define ERR_FAIL_COND_CRASH(m_cond, m_fail_message)                            \
   if (!m_cond) {                                                               \
-    std::cout << m_fail_message << "\n";                                       \
+    std::cout << "\"" << __FILE__ << "\" :: " << __LINE__ << "\t"              \
+              << m_fail_message << "\n";                                       \
     exit(1);                                                                   \
   }
 
