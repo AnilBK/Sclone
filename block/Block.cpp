@@ -1,26 +1,55 @@
 #include "Block.hpp"
 
-void Block::set_position(const sf::Vector2f pos) {
-  position = pos;
-  block_rect.setPosition(position);
+void Block::_move_attached_blocks(sf::Vector2f p_pos) {
+  if (attached_blocks.size() == 0) {
+    return;
+  }
 
-  if (attached_blocks.size() > 0) {
-    // VVVVV Works for the first block only.
-    auto snap_rect_size =
-        sf::Vector2f(block_rect.getSize().x, 10 + padding_up + padding_down);
-    auto snap_rect_position =
-        block_rect.getPosition() + sf::Vector2f(0, STARTING_BLOCK_SIZE.y);
-    sf::FloatRect _inside_block_snap_rect = {snap_rect_position,
-                                             snap_rect_size};
+  // Since positions are already cached.
+  // TODO? Are positions cached always??
+  // TODO: Maybe create a cache of all positions and use that everywhere.
+  // Seems like that is the best thing to do.
+  std::vector<sf::Vector2f> attached_blocks_positions;
 
-    sf::Vector2f inside_block_snap_position(
-        _inside_block_snap_rect.left + 15.0f,
-        _inside_block_snap_rect.top + padding_up);
-
-    for (auto &attached_block : attached_blocks) {
-      attached_block->set_position(inside_block_snap_position);
+  for (auto &child : childrens) {
+    if (child->type == BLOCK_ATTACH_NODE) {
+      attached_blocks_positions.push_back(child->_pos +
+                                          sf::Vector2f(15.0f, 0.0f));
     }
   }
+
+  for (auto &[index, block_ptr] : attached_blocks) {
+    auto block_pos = attached_blocks_positions.at(index);
+    block_ptr->set_position(block_pos);
+  }
+}
+
+void Block::_regenerate_positions() {
+  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+
+  for (auto &child : childrens) {
+    if (child->type == BLOCK_ATTACH_NODE) {
+      pos.x = position.x; // Reset it's x to create a block on the next line.
+      pos.y += STARTING_BLOCK_SIZE.y;
+      child->_pos = pos;
+      pos.x += 15;
+      pos.y += 90.0f;
+      continue;
+    }
+    child->_pos = pos;
+    pos.x += child->rect_size().x + spacing;
+  }
+}
+
+void Block::set_position(const sf::Vector2f p_pos) {
+  position = p_pos;
+  block_rect.setPosition(position);
+
+  // If positions aren't regenrated now, then attached blocks lag by a frame.
+  // Because _move_attached_blocks() generates positions using old positions.
+  // and new position is only used in Render function to update.
+  _regenerate_positions();
+  _move_attached_blocks(p_pos);
 
   if (next_block != nullptr) {
     sf::Vector2f next_block_snap_position(_next_block_snap_rect().left,
@@ -32,39 +61,12 @@ void Block::set_position(const sf::Vector2f pos) {
 Block::Block() {
   set_position({0.0f, 0.0f});
   block_rect.setSize(STARTING_BLOCK_SIZE);
+  block_rect.setOutlineThickness(2.0f);
   set_block_type(BLOCK_TYPES::INSTRUCTION);
 }
 
 void Block::_recalculate_rect() {
-  /*
-  // sf::Vector2f block_position{position.x - padding_left,
-  //                             position.y - padding_up};
-  sf::Vector2f block_size = STARTING_BLOCK_SIZE;
-
-  for (const auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      block_size.y += child->rect_size().y / 2.0f;
-      // Reset it's x to create a block on the next line.
-      //  block_size.y += child->rect_size().y; should be this
-      //      pos.y += 45.0f;
-      continue;
-    }
-    // instead of adding merge two rects. because not all blocks are continous
-    // in a same row.
-    block_size.x += child->rect_size().x;
-    block_size.x += spacing;
-  }
-
-  // Margins
-  // Account for the block position decreased during padding.
-  block_size.x += padding_left + padding_right;
-  block_size.y += padding_up + padding_down;
-
-  block_rect.setSize(block_size);
-  */
-
   sf::Vector2f pos = position;
-
   sf::FloatRect merged_rect(pos, STARTING_BLOCK_SIZE);
 
   for (const auto &child : childrens) {
@@ -90,14 +92,7 @@ void Block::_recalculate_rect() {
   block_rect.setSize({merged_rect.width, merged_rect.height});
 }
 
-bool Block::is_control_block() {
-  return block_type == BLOCK_TYPES::CONTROL;
-  // if (childrens.at(0)->get_text() == "When Program Starts") {
-  // return true;
-  // }
-
-  // return false;
-}
+bool Block::is_control_block() { return block_type == BLOCK_TYPES::CONTROL; }
 
 sf::FloatRect Block::_previous_block_snap_rect() {
   auto snap_rect_size = sf::Vector2f(block_rect.getSize().x, 10);
@@ -107,7 +102,6 @@ sf::FloatRect Block::_previous_block_snap_rect() {
 }
 
 sf::FloatRect Block::_next_block_snap_rect() {
-
   sf::Vector2f pos{0.0f, STARTING_BLOCK_SIZE.y};
 
   for (const auto &child : childrens) {
@@ -154,32 +148,53 @@ void Block::show_next_block_snap_hint() {
   window.draw(next_block_snap_hint);
 }
 
-void Block::show_inside_snap_hints(bool attach_block_requested,
-                                   Block *current_dragging_block_ref) {
+void Block::process_inside_snap_hints(bool attach_block_requested,
+                                      Block *current_dragging_block_ref) {
+  // These two Lambdas functions below were implemented in the
+  // classe itself, but those gave rise to having a extra virtual function in
+  // the base class just for 'BlockAttachNode'.
+  auto _attachable_block_snap_hint_rect = [](sf::Vector2f pos) {
+    // The attachable block starts from the top left of the vertical 'L' shaped
+    // line.
+    // What is supposed to be snap highlight.
+    auto snap_rect_size = sf::Vector2f(250.0f, 10.0f);
+    auto snap_rect_position = pos + sf::Vector2f{15.0f, 0.0f};
+    return sf::FloatRect{snap_rect_position, snap_rect_size};
+  };
 
-  // We don't store positions of a Node.
-  // So we do this hack.
-  // As show_block_snap_hint_rect(pos) is 'BLOCK_ATTACH_NODE's' function,
-  // and it needs a position vector2f.
-  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+  auto _show_snap_for_attachable_block = [](sf::FloatRect r) {
+    // r is _attachable_block_snap_hint_rect.
+    auto r_pos = sf::Vector2f(r.left, r.top);
+    auto r_size = sf::Vector2f(r.width + 45, r.height);
+
+    sf::RectangleShape block_snap_hint;
+    block_snap_hint.setPosition(r_pos);
+    block_snap_hint.setSize(r_size);
+
+    block_snap_hint.setFillColor(sf::Color::White);
+    window.draw(block_snap_hint);
+  };
+
+  int i = 0;
   for (auto &child : childrens) {
     if (child->type == BLOCK_ATTACH_NODE) {
-      pos.x = position.x;
-      pos.y += 45.0f;
-      if (child->show_block_snap_hint_rect(pos)) {
+      auto r = _attachable_block_snap_hint_rect(child->_pos);
+      bool can_attach_inside = r.contains((sf::Vector2f)mouse_position);
+
+      if (can_attach_inside) {
+        _show_snap_for_attachable_block(r);
         if (attach_block_requested) {
-          attached_blocks.push_back(current_dragging_block_ref);
+          // TODO :: Check if the snap place is already occupied.
+          // TODO :: current dragging block ref should be pushed back where the
+          // snap hint is showing.
+          attached_blocks.push_back({i, current_dragging_block_ref});
           current_dragging_block_ref->dragging = false;
           set_position(position); // Refresh for the newly added block.
           return;
         }
       }
-      pos.x += 15;
-      continue;
+      i++;
     }
-
-    pos.x += child->rect_size().x;
-    pos.x += spacing;
   }
 }
 
@@ -224,16 +239,33 @@ std::string Block::get_code() {
   }
 
   if (attached_blocks.size() > 0) {
-    for (auto &attached_block : attached_blocks) {
-      if (attached_block == nullptr) {
-        continue;
+    // We create a string buffer that is the size of all attachable nodes.
+    // since nodes are paired with their respective indices.
+    // we get the blocks code and keep it in the respective index of the codes
+    // vector, so that it will be easy to iterate over.
+    auto n = attached_blocks.size();
+    std::vector<std::string> codes(n, "");
+
+    for (std::pair<int, Block *> &a_b : attached_blocks) {
+      auto index = a_b.first;
+      auto blocks_code = a_b.second->get_code();
+
+      codes.at(index) = blocks_code;
+    }
+
+    // Now we have got the generated code in proper order.
+    int i = 0;
+    for (auto gen_code : codes) {
+      code += gen_code;
+      if (i + 1 < codes.size()) {
+        code += "}else{";
       }
-      code += attached_block->get_code();
+      i++;
     }
   }
 
   if (can_block_snap_inside) {
-    code += "}\n";
+    code += "\n}\n";
   }
 
   if (next_block != nullptr) {
@@ -243,27 +275,59 @@ std::string Block::get_code() {
   return code;
 }
 
-void Block::Render() {
-  // Draw the background rect.
-  window.draw(block_rect);
+void Block::RenderRectsBackground() {
+  // Debug Code to toggle rendering of the block background.
+  static bool render_rect = true;
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+    render_rect = !render_rect;
+  }
 
-  // Draw text and all other components.
-  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
-  for (auto &child : childrens) {
+  if (!render_rect) {
+    return;
+  }
+
+  sf::RectangleShape block_bg;
+  block_bg.setOutlineThickness(2.0f);
+  block_bg.setPosition(position);
+  block_bg.setFillColor(block_rect.getFillColor());
+
+  sf::FloatRect merged_rect(position, STARTING_BLOCK_SIZE);
+
+  for (const auto &child : childrens) {
     if (child->type == BLOCK_ATTACH_NODE) {
-      // Make this changes in get_rect() as well.
-      pos.x = position.x; // Reset it's x to create a block on the next line.
-      pos.y += 45.0f;
-      child->Render(pos);
-      pos.x += 15;
-      pos.y += 90.0f;
-      continue;
+      // Render everything till now.
+      block_bg.setSize({merged_rect.width, merged_rect.height});
+      window.draw(block_bg);
+      return;
     }
 
-    child->Render(pos);
-    pos.x += child->rect_size().x;
-    pos.x += spacing;
+    sf::FloatRect current_rect(child->_pos, child->rect_size());
+    merged_rect = merge_rects(merged_rect, current_rect);
   }
+
+  // Margins
+  // Account for the block position decreased during padding.
+  merged_rect.width += padding_left + padding_right;
+  merged_rect.height += padding_up; // + padding_down;
+
+  block_bg.setSize({merged_rect.width, merged_rect.height});
+  window.draw(block_bg);
+}
+
+// Draw text and all other components.
+void Block::RenderComponents() {
+  // New Method-Save positions in 'NodeBaseClass' instead.
+  _regenerate_positions();
+  for (const auto &child : childrens) {
+    child->Render(child->_pos);
+  }
+}
+
+void Block::Render() {
+  // Draw the background rect.
+  // window.draw(block_rect);
+  RenderRectsBackground();
+  RenderComponents();
 }
 
 std::optional<std::string> Block::get_bound_value(const std::string &query) {
@@ -350,9 +414,8 @@ void Block::_process_events(sf::Event event) {
 
   // BUG: Typing on a LineInput Node should trigger recalculation of rect.
   // Workaround: We always _recalculate rect like below
-  // Also, if LineInput Node isn't selected then there's no change i.e it's rect
-  // can change.
-  // any_line_inputs_pressed -> workaround variable.
+  // Also, if LineInput Node isn't selected then there's no change i.e it's
+  // rect can change. any_line_inputs_pressed -> workaround variable.
   if (rect_dirty || any_line_inputs_pressed) {
     _recalculate_rect();
   }

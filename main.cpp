@@ -38,7 +38,9 @@ std::string code_sprite_set_position(Block block) {
   return "sprite.setPosition(" + x_pos + ", " + y_pos + ");";
 }
 
-std::string code_sprite_if(Block block) { return "if(some_condition)"; }
+std::string code_sprite_forever(Block block) { return "for(;;)"; }
+
+std::string code_sprite_if_else(Block block) { return "if(some_condition)"; }
 
 std::string code_sprite_say(Block block) {
   auto message = block.get_bound_value("message").value();
@@ -54,6 +56,10 @@ std::string code_sprite_change_y_by(Block block) {
   auto y_offset = block.get_bound_value("y_offset").value();
   return "sprite.move(sf::Vector2f(0.0f, " + y_offset + "));";
 }
+
+std::string code_input_w_pressed(Block block) { return "if(W pressed)"; }
+
+std::string code_input_s_pressed(Block block) { return "if(S pressed)"; }
 
 int main() {
 
@@ -94,15 +100,22 @@ int main() {
   block_program_started.set_position({425.0f, 25.0f});
   block_program_started._recalculate_rect();
 
+  Block block_forever;
+  block_forever.add_node(LabelNode("Forever"));
+  block_forever.add_node(BlockAttachNode(""));
+  block_forever.output_code_callback = code_sprite_forever;
+
+  block_forever.set_position({425.0f, 95.0f});
+  block_forever._recalculate_rect();
+
   Block block_if;
   block_if.add_node(LabelNode("If (some condition)"));
   block_if.add_node(BlockAttachNode(""));
-  block_if.add_node(LabelNode("If (some condition)"));
+  block_if.add_node(LabelNode("Else (some condition)"));
   block_if.add_node(BlockAttachNode(""));
+  block_if.output_code_callback = code_sprite_if_else;
 
-  block_if.output_code_callback = code_sprite_if;
-
-  block_if.set_position({780.0f, 25.0f});
+  block_if.set_position({950.0f, 25.0f});
   block_if._recalculate_rect();
 
   //   Label("Say")
@@ -113,7 +126,7 @@ int main() {
   block_say.add_node(LineInputAttachFieldNode("", "message"));
   block_say.output_code_callback = code_sprite_say;
 
-  block_say.set_position({200.0f, 250.0f});
+  block_say.set_position({70.0f, 250.0f});
   block_say._recalculate_rect();
 
   Block block_go_to_xy;
@@ -125,7 +138,7 @@ int main() {
   block_go_to_xy.add_node(ButtonNode("Pick^"));
   block_go_to_xy.output_code_callback = code_sprite_set_position;
 
-  block_go_to_xy.set_position({200.0f, 600.0f});
+  block_go_to_xy.set_position({70.0f, 600.0f});
   block_go_to_xy._recalculate_rect();
 
   Block block_change_x_by;
@@ -133,7 +146,7 @@ int main() {
   block_change_x_by.add_node(LineInputAttachFieldNode("", "x_offset"));
   block_change_x_by.output_code_callback = code_sprite_change_x_by;
 
-  block_change_x_by.set_position({200.0f, 400.0f});
+  block_change_x_by.set_position({70.0f, 400.0f});
   block_change_x_by._recalculate_rect();
 
   Block block_change_y_by;
@@ -141,17 +154,36 @@ int main() {
   block_change_y_by.add_node(LineInputAttachFieldNode("", "y_offset"));
   block_change_y_by.output_code_callback = code_sprite_change_y_by;
 
-  block_change_y_by.set_position({200.0f, 480.0f});
+  block_change_y_by.set_position({70.0f, 480.0f});
   block_change_y_by._recalculate_rect();
 
+  Block block_w_pressed;
+  block_w_pressed.add_node(LabelNode("If W Pressed"));
+  block_w_pressed.add_node(BlockAttachNode(""));
+  block_w_pressed.output_code_callback = code_input_w_pressed;
+
+  block_w_pressed.set_position({640.0f, 450.0f});
+  block_w_pressed._recalculate_rect();
+
+  Block block_s_pressed;
+  block_s_pressed.add_node(LabelNode("If S Pressed"));
+  block_s_pressed.add_node(BlockAttachNode(""));
+  block_s_pressed.output_code_callback = code_input_s_pressed;
+
+  block_s_pressed.set_position({950.0f, 450.0f});
+  block_s_pressed._recalculate_rect();
+
   blocks.push_back(block_program_started);
+  blocks.push_back(block_forever);
   blocks.push_back(block_if);
   blocks.push_back(block_say);
   blocks.push_back(block_go_to_xy);
   blocks.push_back(block_change_x_by);
   blocks.push_back(block_change_y_by);
+  blocks.push_back(block_w_pressed);
+  blocks.push_back(block_s_pressed);
 
-  blocks.at(2).attach_block_next(&blocks.at(3));
+  blocks.at(3).attach_block_next(&blocks.at(4));
 
   while (window.isOpen()) {
     bool middle_click = false;
@@ -253,10 +285,11 @@ int main() {
           }
         }
 
-        block.show_inside_snap_hints(attach_block_requested,
-                                     current_dragging_block_ref);
+        block.process_inside_snap_hints(attach_block_requested,
+                                        current_dragging_block_ref);
       }
     }
+
     for (auto block : blocks) {
       block.Render();
     }

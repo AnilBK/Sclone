@@ -13,6 +13,7 @@ public:
   NODE_TYPE type = NODE_TYPE::PLACEHOLDER;
   std::string bind_string;
   bool pressed = false;
+  sf::Vector2f _pos{0.0f, 0.0f};
 
   NODEBaseClass(const std::string &p_text_str,
                 const std::string &p_bind_str = "")
@@ -38,12 +39,6 @@ public:
   virtual void _process_event(sf::Event event){};
 
   virtual void Render(sf::Vector2f pos) = 0;
-
-  // Only needed for 'BlockAttachNode' class.
-  // We're not doing dynamic cast so add it here.
-  // TODO: reconsider the need of this function,
-  // as it is used by a single derieved class.
-  virtual bool show_block_snap_hint_rect(sf::Vector2f pos) { return false; }
 };
 
 class LabelNode : public NODEBaseClass {
@@ -54,7 +49,7 @@ public:
   }
 
   sf::Vector2f rect_size() override {
-    return {text_rect_size(text).x, min_size().y};
+    return {std::max(text_rect_size(text).x, min_size().x) + 15, min_size().y};
   }
 
   void Render(sf::Vector2f pos) override { draw_text(text, pos); }
@@ -156,40 +151,6 @@ public:
   }
 
   sf::Vector2f rect_size() override { return {15, 2 * 45.0f}; }
-
-  sf::FloatRect _block_snap_hint_rect(sf::Vector2f pos) {
-    // The attachable block starts from the top left of the vertical 'L' shaped
-    // line.
-    // What is supposed to be snap highlight.
-    auto snap_rect_size = sf::Vector2f(250.0f, 15.0f);
-    auto snap_rect_position = pos + sf::Vector2f{15.0f, 0.0f};
-    return {snap_rect_position, snap_rect_size};
-  }
-
-  // Returns true if a block can snap.
-  // Otherwise Renders the snap hint and return false;
-  bool show_block_snap_hint_rect(sf::Vector2f pos) override {
-
-    auto r = _block_snap_hint_rect(pos);
-    // TODO::Really think of this weird design.
-    // Other snaps are handled by Block class.
-    // But for this derieved class, we handle it here by passing a pos.
-    if (!r.contains((sf::Vector2f)mouse_position)) {
-      return false;
-    }
-
-    auto r_pos = sf::Vector2f(r.left, r.top);
-    auto r_size = sf::Vector2f(r.width, r.height);
-
-    sf::RectangleShape block_snap_hint;
-    block_snap_hint.setPosition(r_pos);
-    block_snap_hint.setSize(r_size);
-
-    block_snap_hint.setFillColor(sf::Color::Black);
-    window.draw(block_snap_hint);
-
-    return true;
-  }
 
   void Render(sf::Vector2f pos) override {
     // Draw the long vertical line on the left.

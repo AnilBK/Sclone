@@ -39,6 +39,8 @@ private:
 
   sf::FloatRect _previous_block_snap_rect();
   sf::FloatRect _next_block_snap_rect();
+  void _regenerate_positions();
+  void _move_attached_blocks(sf::Vector2f p_pos);
 
 public:
   Block();
@@ -49,15 +51,22 @@ public:
   // These are the blocks that are attached inside a block.
   // For a given block these exist only if 'BlockAttachNode' nodes are attached
   // to it.
-  std::vector<Block *> attached_blocks;
+
+  // We store which 'BlockAttachNode' index is it referencing to.
+  // While looping  through the childrens vector.
+  // We just know it's a 'BlockAttachNode' node.
+  // But we don't know which block is actually attached to it.
+  // so we store a index.
+  // TODO: do this by some other approach, like strings maybe.
+  std::vector<std::pair<int, Block *>> attached_blocks;
   // Make this vvvv function handle top and bottom snap highlights as well.
-  void show_inside_snap_hints(bool attach_block_requested,
-                              Block *current_dragging_block_ref);
+  void process_inside_snap_hints(bool attach_block_requested,
+                                 Block *current_dragging_block_ref);
 
   std::function<std::string(Block b)> output_code_callback;
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;
 
-  void set_position(const sf::Vector2f pos);
+  void set_position(const sf::Vector2f p_pos);
 
   void set_block_type(BLOCK_TYPES p_type) {
     block_type = p_type;
@@ -71,6 +80,7 @@ public:
   template <class T> void add_node(T node_class) {
     if (node_class.type == NODE_TYPE::BLOCK_ATTACH_NODE) {
       can_block_snap_inside = true;
+      block_rect.setFillColor(sf::Color::Yellow);
     }
     auto u_block = std::make_shared<T>(node_class);
     childrens.push_back(std::move(u_block));
@@ -98,6 +108,8 @@ public:
   void _deselect_all_nodes();
 
   void Render();
+  void RenderRectsBackground();
+  void RenderComponents();
 };
 
 #endif
