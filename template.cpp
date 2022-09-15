@@ -44,6 +44,8 @@ int main() {
       }
     }
 
+    window.clear();
+
     //###MAINLOOP_CODE###
 
     velocity = {0.0f, 0.0f};
@@ -71,7 +73,6 @@ int main() {
     auto deltaTime = frameClock.restart();
     player.move(velocity * deltaTime.asSeconds());
 
-    window.clear();
     window.draw(player);
 
     //###RENDER_CODE###

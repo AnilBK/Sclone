@@ -66,6 +66,114 @@ std::string code_input_s_pressed(Block block) {
   return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))";
 }
 
+// In these primitive renderers,
+// We create a scope to avoid multiple definations for same sprite drawn
+// multiple times using the same name.
+std::string code_sprite_draw_line(Block block) {
+  /*
+    //Draw a line.
+    sf::Vertex vertices[2] = {
+        sf::Vertex({50.0,50.0}, sf::Color::Red),
+        sf::Vertex({500.0,500.0}, sf::Color::Green)
+    };
+
+    window.draw(vertices, 2, sf::Lines);
+  */
+  auto start_pos = block.get_bound_value("starting_pos").value();
+  auto end_pos = block.get_bound_value("ending_pos").value();
+
+  std::string code = "";
+  code += "{ \n";
+  code += "   sf::Vertex vertices[2] = {";
+  code += "       sf::Vertex({" + start_pos + "}, sf::Color::Red),";
+  code += "       sf::Vertex({" + end_pos + "}, sf::Color::Green)";
+  code += "   }; \n";
+  code += "   window.draw(vertices, 2, sf::Lines);\n";
+  code += "} \n";
+
+  return code;
+}
+
+std::string code_sprite_draw_circle(Block block) {
+  /*
+    //Draw a circle.
+    sf::CircleShape circle;
+    circle.setPosition({50.0,50.0});
+    circle.setRadius(10.0f);
+
+    window.draw(circle);
+  */
+  auto centre = block.get_bound_value("centre").value();
+  auto radius = block.get_bound_value("radius").value();
+
+  std::string code = "";
+  code += "{ \n";
+  code += "   sf::CircleShape circle;\n";
+  code += "   circle.setPosition({" + centre + "});\n";
+  code += "   circle.setRadius(" + radius + ");\n";
+  code += "   window.draw(circle);\n";
+  code += "} \n";
+
+  return code;
+}
+
+std::string code_sprite_draw_rectangle(Block block) {
+  /*
+    //Draw a rectangle.
+    sf::RectangleShape rectangle;
+    rectangle.setPosition({50.0,50.0});
+    rectangle.setSize({200.0f, 200.0f});
+
+    window.draw(rectangle);
+  */
+  auto top_left = block.get_bound_value("top_left").value();
+  auto rect_size = block.get_bound_value("rect_size").value();
+
+  std::string code = "";
+  code += "{ \n";
+  code += "   sf::RectangleShape rectangle;\n";
+  code += "   rectangle.setPosition({" + top_left + "});\n";
+  code += "   rectangle.setSize({" + rect_size + "});\n";
+  code += "   window.draw(rectangle);\n";
+  code += "} \n";
+
+  return code;
+}
+
+std::string code_sprite_draw_triangle(Block block) {
+  /*
+  //Draw A triangle.
+  // https://www.sfml-dev.org/tutorials/2.5/graphics-shape.php
+
+  //  create an empty shape
+  sf::ConvexShape convex;
+
+  // resize it to 3 points
+  convex.setPointCount(3);
+
+  // define the points
+  convex.setPoint(0, sf::Vector2f(0.f, 0.f));
+  convex.setPoint(1, sf::Vector2f(150.f, 10.f));
+  convex.setPoint(2, sf::Vector2f(120.f, 90.f));
+  */
+  auto first_point = block.get_bound_value("first_point").value();
+  auto second_point = block.get_bound_value("second_point").value();
+  auto third_point = block.get_bound_value("third_point").value();
+
+  std::string code = "";
+  code += "{ \n";
+  code += "   sf::ConvexShape triangle;\n";
+  code += "   triangle.setPointCount(3);\n";
+
+  code += "   triangle.setPoint(0,{" + first_point + "});\n";
+  code += "   triangle.setPoint(1,{" + second_point + "});\n";
+  code += "   triangle.setPoint(2,{" + third_point + "});\n\n";
+  code += "   window.draw(triangle);\n";
+  code += "} \n";
+
+  return code;
+}
+
 void generate_code(const std::vector<Block> &blocks,
                    std::string default_sprite_name) {
 
@@ -249,7 +357,7 @@ int main() {
   block_w_pressed.add_node(BlockAttachNode(""));
   block_w_pressed.output_code_callback = code_input_w_pressed;
 
-  block_w_pressed.set_position({640.0f, 450.0f});
+  block_w_pressed.set_position({640.0f, 560.0f});
   block_w_pressed._recalculate_rect();
 
   Block block_s_pressed;
@@ -257,8 +365,55 @@ int main() {
   block_s_pressed.add_node(BlockAttachNode(""));
   block_s_pressed.output_code_callback = code_input_s_pressed;
 
-  block_s_pressed.set_position({950.0f, 450.0f});
+  block_s_pressed.set_position({950.0f, 560.0f});
   block_s_pressed._recalculate_rect();
+
+  // 'Draw Primitive Shape' Blocks.
+  Block block_draw_line;
+  block_draw_line.add_node(LabelNode("Draw Line"));
+  block_draw_line.add_node(LabelNode("From"));
+  block_draw_line.add_node(LineInputAttachFieldNode("", "starting_pos"));
+  block_draw_line.add_node(LabelNode("To"));
+  block_draw_line.add_node(LineInputAttachFieldNode("", "ending_pos"));
+  block_draw_line.output_code_callback = code_sprite_draw_line;
+
+  block_draw_line.set_position({430.0f, 310.0f});
+  block_draw_line._recalculate_rect();
+
+  Block block_draw_circle;
+  block_draw_circle.add_node(LabelNode("Draw Circle"));
+  block_draw_circle.add_node(LabelNode("At"));
+  block_draw_circle.add_node(LineInputAttachFieldNode("", "centre"));
+  block_draw_circle.add_node(LabelNode("Radius"));
+  block_draw_circle.add_node(LineInputAttachFieldNode("", "radius"));
+  block_draw_circle.output_code_callback = code_sprite_draw_circle;
+
+  block_draw_circle.set_position({430.0f, 370.0f});
+  block_draw_circle._recalculate_rect();
+
+  Block block_draw_rectangle;
+  block_draw_rectangle.add_node(LabelNode("Draw Rectangle"));
+  block_draw_rectangle.add_node(LabelNode("At Top Left Pos"));
+  block_draw_rectangle.add_node(LineInputAttachFieldNode("", "top_left"));
+  block_draw_rectangle.add_node(LabelNode("Size"));
+  block_draw_rectangle.add_node(LineInputAttachFieldNode("", "rect_size"));
+  block_draw_rectangle.output_code_callback = code_sprite_draw_rectangle;
+
+  block_draw_rectangle.set_position({430.0f, 435.0f});
+  block_draw_rectangle._recalculate_rect();
+
+  Block block_draw_triangle;
+  block_draw_triangle.add_node(LabelNode("Draw Triangle"));
+  block_draw_triangle.add_node(LabelNode("P1"));
+  block_draw_triangle.add_node(LineInputAttachFieldNode("", "first_point"));
+  block_draw_triangle.add_node(LabelNode("P2"));
+  block_draw_triangle.add_node(LineInputAttachFieldNode("", "second_point"));
+  block_draw_triangle.add_node(LabelNode("P3"));
+  block_draw_triangle.add_node(LineInputAttachFieldNode("", "third_point"));
+  block_draw_triangle.output_code_callback = code_sprite_draw_triangle;
+
+  block_draw_triangle.set_position({430.0f, 490.0f});
+  block_draw_triangle._recalculate_rect();
 
   blocks.push_back(block_program_started);
   blocks.push_back(block_forever);
@@ -269,6 +424,11 @@ int main() {
   blocks.push_back(block_change_y_by);
   blocks.push_back(block_w_pressed);
   blocks.push_back(block_s_pressed);
+
+  blocks.push_back(block_draw_line);
+  blocks.push_back(block_draw_circle);
+  blocks.push_back(block_draw_rectangle);
+  blocks.push_back(block_draw_triangle);
 
   // blocks.at(3).attach_block_next(&blocks.at(4));
 

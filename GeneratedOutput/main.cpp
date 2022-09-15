@@ -55,7 +55,34 @@ int main() {
       }
     }
 
-    cat.setPosition(cat.getPosition().x, cat.getPosition().y);
+    window.clear();
+
+    {
+      sf::Vertex vertices[2] = {sf::Vertex({0, 0}, sf::Color::Red),
+                                sf::Vertex({1000, 1000}, sf::Color::Green)};
+      window.draw(vertices, 2, sf::Lines);
+    }
+    {
+      sf::CircleShape circle;
+      circle.setPosition({200, 200});
+      circle.setRadius(100);
+      window.draw(circle);
+    }
+    {
+      sf::RectangleShape rectangle;
+      rectangle.setPosition({50, 500});
+      rectangle.setSize({400, 400});
+      window.draw(rectangle);
+    }
+    {
+      sf::ConvexShape triangle;
+      triangle.setPointCount(3);
+      triangle.setPoint(0, {1000, 100});
+      triangle.setPoint(1, {300, 100});
+      triangle.setPoint(2, {500, 10});
+
+      window.draw(triangle);
+    }
 
     velocity = {0.0f, 0.0f};
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
@@ -82,7 +109,6 @@ int main() {
     auto deltaTime = frameClock.restart();
     player.move(velocity * deltaTime.asSeconds());
 
-    window.clear();
     window.draw(player);
 
     window.draw(cat);
