@@ -3,6 +3,7 @@
 #include "block/LineInput.hpp"
 #include "block/NODEBaseClass.hpp"
 #include <SFML/Graphics.hpp>
+#include <fstream>
 #include <iostream>
 
 #define SHOW_FPS
@@ -35,10 +36,10 @@ std::string code_sprite_set_position(Block block) {
   //"y" -> block.childrens.at(4).text
   auto x_pos = block.get_bound_value("x").value();
   auto y_pos = block.get_bound_value("y").value();
-  return "sprite.setPosition(" + x_pos + ", " + y_pos + ");";
+  return "##SPRITE_NAME##.setPosition(" + x_pos + ", " + y_pos + ");";
 }
 
-std::string code_sprite_forever(Block block) { return "for(;;)"; }
+std::string code_sprite_forever(Block block) { return ""; } //"for(;;)"; }
 
 std::string code_sprite_if_else(Block block) { return "if(some_condition)"; }
 
@@ -49,20 +50,99 @@ std::string code_sprite_say(Block block) {
 
 std::string code_sprite_change_x_by(Block block) {
   auto x_offset = block.get_bound_value("x_offset").value();
-  return "sprite.move(sf::Vector2f(" + x_offset + ", 0.0f));";
+  return "##SPRITE_NAME##.move(sf::Vector2f(" + x_offset + ", 0.0f));";
 }
 
 std::string code_sprite_change_y_by(Block block) {
   auto y_offset = block.get_bound_value("y_offset").value();
-  return "sprite.move(sf::Vector2f(0.0f, " + y_offset + "));";
+  return "##SPRITE_NAME##.move(sf::Vector2f(0.0f, " + y_offset + "));";
 }
 
-std::string code_input_w_pressed(Block block) { return "if(W pressed)"; }
+std::string code_input_w_pressed(Block block) {
+  return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))";
+}
 
-std::string code_input_s_pressed(Block block) { return "if(S pressed)"; }
+std::string code_input_s_pressed(Block block) {
+  return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))";
+}
+
+void generate_code(const std::vector<Block> &blocks,
+                   std::string default_sprite_name) {
+
+  std::string init_code = "";
+  std::string main_loop_code = "";
+  std::string spr_render_code = "window.draw(##SPRITE_NAME##);";
+
+  std::cout << "\n\n[Generated Code]\n";
+  for (auto block : blocks) {
+    if (!block.is_control_block()) {
+      continue;
+    }
+
+    auto output_code = block.get_code();
+
+    // Shortcut in the editor to get position of the current sprite.
+    // This applies to code everywhere, so we perform the replace operation
+    // right here.
+    replaceAll(output_code, "#POS#", "##SPRITE_NAME##.getPosition()");
+
+    // The first child of "Forever" Block has text "Forever".
+    bool is_forever_block =
+        std::any_of(block.childrens.begin(), block.childrens.end(),
+                    [](std::shared_ptr<NODEBaseClass> b) {
+                      return b->get_text() == "Forever";
+                    });
+
+    if (is_forever_block) {
+      // The generated code should be in the main loop.
+      std::cout << "[MainLoopBlock]\n";
+      // Remove the braces from the generated code, to get the actual code to
+      // write.
+      remove_first_occurence(output_code, '{');
+      remove_last_occurence(output_code, '}');
+
+      main_loop_code += output_code;
+    } else {
+      // The generated code should be before the main loop.
+      init_code += output_code;
+    }
+
+    std::cout << output_code;
+  }
+
+  std::ifstream code_template("template.cpp");
+  std::string template_code((std::istreambuf_iterator<char>(code_template)),
+                            (std::istreambuf_iterator<char>()));
+
+  auto spr_init_code = std::string(
+      "sf::Texture ##SPRITE_NAME##_texture;"
+      "if (!##SPRITE_NAME##_texture.loadFromFile(\"cat.png\")) {"
+      "   std::cerr << \"Error while loading texture\" << std::endl;"
+      "   return -1;"
+      " }"
+      "##SPRITE_NAME##_texture.setSmooth(true);\n\n"
+      "sf::Sprite ##SPRITE_NAME##;"
+      "##SPRITE_NAME##.setTexture(##SPRITE_NAME##_texture);      "
+      "sf::FloatRect ##SPRITE_NAME##Size = "
+      "##SPRITE_NAME##.getGlobalBounds();        "
+      "##SPRITE_NAME##.setOrigin(##SPRITE_NAME##Size.width / 2., "
+      "##SPRITE_NAME##Size.height / 2.); "
+      "##SPRITE_NAME##.setPosition(window.getSize().x / 2., "
+      "window.getSize().y / 2.);");
+
+  spr_init_code += "\n" + init_code;
+
+  replaceAll(template_code, "//###INIT_CODES###", spr_init_code);
+  replaceAll(template_code, "//###MAINLOOP_CODE###", main_loop_code);
+  replaceAll(template_code, "//###RENDER_CODE###", spr_render_code);
+  replaceAll(template_code, "##SPRITE_NAME##", default_sprite_name);
+
+  std::ofstream generated_file("E:\\Sclone 2.0\\GeneratedOutput\\main.cpp");
+  generated_file << template_code;
+  generated_file.close();
+}
 
 int main() {
-
   init_global_font_and_label();
 
   height = sf::VideoMode::getDesktopMode().height;
@@ -103,6 +183,8 @@ int main() {
   Block block_forever;
   block_forever.add_node(LabelNode("Forever"));
   block_forever.add_node(BlockAttachNode(""));
+  block_forever.set_block_type(BLOCK_TYPES::CONTROL);
+
   block_forever.output_code_callback = code_sprite_forever;
 
   block_forever.set_position({425.0f, 95.0f});
@@ -183,7 +265,7 @@ int main() {
   blocks.push_back(block_w_pressed);
   blocks.push_back(block_s_pressed);
 
-  blocks.at(3).attach_block_next(&blocks.at(4));
+  // blocks.at(3).attach_block_next(&blocks.at(4));
 
   while (window.isOpen()) {
     bool middle_click = false;
@@ -196,17 +278,7 @@ int main() {
         window.close();
       } else if (event.type == sf::Event::KeyReleased &&
                  event.key.code == sf::Keyboard::LAlt) {
-        // To Generate code.
-        std::cout << "\n\n[Generated Code]\n";
-        for (auto block : blocks) {
-          if (!block.is_control_block()) {
-            continue;
-          }
-
-          auto output_code = block.get_code();
-
-          std::cout << output_code << "\n";
-        }
+        generate_code(blocks, sprite_name.get_text());
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
@@ -251,6 +323,11 @@ int main() {
     if (is_any_block_being_dragged) {
       for (auto &block : blocks) {
         if (current_dragging_block_ref == &block) {
+          continue;
+        }
+
+        // Control Blocks don't attach to anything.
+        if (current_dragging_block_ref->is_control_block()) {
           continue;
         }
 
@@ -305,7 +382,7 @@ int main() {
     window.draw(show_mouse_pos_text);
 #endif
 
-    // sprite_name.Render();
+    sprite_name.Render();
 
     window.display();
   }

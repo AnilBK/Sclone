@@ -72,4 +72,36 @@ static sf::FloatRect merge_rects(sf::FloatRect rect, sf::FloatRect p_rect) {
   return sf::FloatRect(merged_rect_position, merged_rect_size);
 }
 
+// https://stackoverflow.com/questions/4643512/replace-substring-with-another-substring-c
+static void replaceAll(std::string &s, const std::string &search,
+                       const std::string &replace) {
+  for (size_t pos = 0;; pos += replace.length()) {
+    // Locate the substring to replace
+    pos = s.find(search, pos);
+    if (pos == std::string::npos)
+      break;
+    // Replace by erasing and inserting
+    s.erase(pos, search.length());
+    s.insert(pos, replace);
+  }
+}
+
+static void remove_first_occurence(std::string &s, char ch) {
+  for (int i = 0; i < s.length(); i++) {
+    if (s[i] == ch) {
+      s.erase(s.begin() + i);
+      break;
+    }
+  }
+}
+
+static void remove_last_occurence(std::string &s, char ch) {
+  for (int i = s.length() - 1; i >= 0; i--) {
+    if (s[i] == ch) {
+      s.erase(s.begin() + i);
+      break;
+    }
+  }
+}
+
 #endif
