@@ -81,10 +81,15 @@ void generate_code(const std::vector<Block> &blocks,
 
     auto output_code = block.get_code();
 
-    // Shortcut in the editor to get position of the current sprite.
-    // This applies to code everywhere, so we perform the replace operation
-    // right here.
+    // EDITOR SHORCUT MACROS:
+    //  Shortcut in the editor to get position of the current sprite.
+    //  This applies to code everywhere, so we perform the replace operation
+    //  right here.
     replaceAll(output_code, "#POS#", "##SPRITE_NAME##.getPosition()");
+    replaceAll(output_code, "#WIN_W#", "width");
+    replaceAll(output_code, "#WIN_H#", "height");
+    replaceAll(output_code, "#M_X#", "sf::Mouse::getPosition(window).x");
+    replaceAll(output_code, "#M_Y#", "sf::Mouse::getPosition(window).y");
 
     // The first child of "Forever" Block has text "Forever".
     bool is_forever_block =
