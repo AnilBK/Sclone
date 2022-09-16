@@ -41,7 +41,10 @@ std::string code_sprite_set_position(Block block) {
 
 std::string code_sprite_forever(Block block) { return ""; } //"for(;;)"; }
 
-std::string code_sprite_if_else(Block block) { return "if(some_condition)"; }
+std::string code_sprite_if_else(Block block) {
+  auto condition = block.get_bound_value("condition").value();
+  return "if(" + condition + ")";
+}
 
 std::string code_sprite_say(Block block) {
   auto message = block.get_bound_value("message").value();
@@ -304,9 +307,10 @@ int main() {
   block_forever._recalculate_rect();
 
   Block block_if;
-  block_if.add_node(LabelNode("If (some condition)"));
+  block_if.add_node(LabelNode("If Condition"));
+  block_if.add_node(LineInputAttachFieldNode("", "condition"));
   block_if.add_node(BlockAttachNode(""));
-  block_if.add_node(LabelNode("Else (some condition)"));
+  block_if.add_node(LabelNode("Else "));
   block_if.add_node(BlockAttachNode(""));
   block_if.output_code_callback = code_sprite_if_else;
 
