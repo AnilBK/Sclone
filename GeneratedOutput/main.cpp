@@ -39,20 +39,6 @@ int main() {
   sf::FloatRect catSize = cat.getGlobalBounds();
   cat.setOrigin(catSize.width / 2., catSize.height / 2.);
   cat.setPosition(window.getSize().x / 2., window.getSize().y / 2.);
-  if (cat.getPosition().x > 45) {
-    {
-      sf::Vertex vertices[2] = {sf::Vertex({45, 45}, sf::Color::Red),
-                                sf::Vertex({55, 55}, sf::Color::Green)};
-      window.draw(vertices, 2, sf::Lines);
-    }
-  } else {
-    {
-      sf::CircleShape circle;
-      circle.setPosition({45, 55});
-      circle.setRadius(45);
-      window.draw(circle);
-    }
-  }
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -70,6 +56,10 @@ int main() {
     }
 
     window.clear();
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+      cat.move(sf::Vector2f(1, 0.0f));
+    }
 
     velocity = {0.0f, 0.0f};
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {

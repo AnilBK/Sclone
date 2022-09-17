@@ -63,28 +63,18 @@ Block block_if() {
   return block_if;
 }
 
-Block block_w_pressed() {
-  Block block_w_pressed;
-  block_w_pressed.add_node(LabelNode("If W Pressed"));
-  block_w_pressed.add_node(BlockAttachNode(""));
-  block_w_pressed.output_code_callback = code_input_w_pressed;
-  block_w_pressed.function_identifier = "block_w_pressed";
+Block block_key_pressed() {
+  Block block_key_pressed;
+  block_key_pressed.add_node(LabelNode("If"));
+  block_key_pressed.add_node(DropDownNode("", "selected_key"));
+  block_key_pressed.add_node(LabelNode("Pressed"));
+  block_key_pressed.add_node(BlockAttachNode(""));
+  block_key_pressed.output_code_callback = code_input_key_pressed;
+  block_key_pressed.function_identifier = "block_key_pressed";
 
-  // block_w_pressed.set_position({640.0f, 560.0f});
-  block_w_pressed._recalculate_rect();
-  return block_w_pressed;
-}
-
-Block block_s_pressed() {
-  Block block_s_pressed;
-  block_s_pressed.add_node(LabelNode("If S Pressed"));
-  block_s_pressed.add_node(BlockAttachNode(""));
-  block_s_pressed.output_code_callback = code_input_s_pressed;
-  block_s_pressed.function_identifier = "block_s_pressed";
-
-  // block_s_pressed.set_position({950.0f, 560.0f});
-  block_s_pressed._recalculate_rect();
-  return block_s_pressed;
+  // block_key_pressed.set_position({640.0f, 560.0f});
+  block_key_pressed._recalculate_rect();
+  return block_key_pressed;
 }
 
 // Motion Blocks

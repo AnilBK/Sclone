@@ -36,6 +36,8 @@
 		<Unit filename="block/Block.hpp" />
 		<Unit filename="block/Button.cpp" />
 		<Unit filename="block/Button.hpp" />
+		<Unit filename="block/DropDown.cpp" />
+		<Unit filename="block/DropDown.hpp" />
 		<Unit filename="block/LineInput.cpp" />
 		<Unit filename="block/LineInput.hpp" />
 		<Unit filename="block/NODEBaseClass.hpp" />

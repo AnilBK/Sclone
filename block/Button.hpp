@@ -1,12 +1,10 @@
 #ifndef BUTTON_HPP
 #define BUTTON_HPP
 
+#include "../Globals.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-#include "../Globals.hpp"
-
-// GUI Class to get a input field.
 class Button {
 
 private:

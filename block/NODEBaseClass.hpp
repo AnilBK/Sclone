@@ -2,6 +2,7 @@
 #define NODEBASECLASS_HPP
 
 #include "../Globals.hpp"
+#include "Dropdown.hpp"
 #include "LineInput.hpp"
 
 class NODEBaseClass {
@@ -131,6 +132,39 @@ public:
   void Render(sf::Vector2f pos) override {
     text_area.position = pos;
     text_area.Render();
+  }
+};
+
+class DropDownNode : public NODEBaseClass {
+
+private:
+  DropDown dropdown;
+
+public:
+  DropDownNode(const std::string &p_text_str,
+               const std::string &p_bind_str = "")
+      : NODEBaseClass(p_text_str, p_bind_str) {
+    type = NODE_TYPE::DROP_DOWN;
+    dropdown.items.clear();
+    dropdown.items = {"W", "S", "A", "D"};
+  }
+
+  sf::Vector2f rect_size() override { return dropdown.rect_size(); }
+
+  std::string get_text() override { return dropdown.get_text(); }
+
+  bool left_click_action() override {
+    // dropdown.dropdown_clicked = true;
+    return true;
+  }
+
+  void _process_event(sf::Event event) override {
+    dropdown.handle_inputs(event);
+  }
+
+  void Render(sf::Vector2f pos) override {
+    dropdown.position = pos;
+    dropdown.Render();
   }
 };
 

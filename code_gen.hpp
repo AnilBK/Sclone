@@ -35,12 +35,9 @@ std::string code_sprite_change_y_by(Block block) {
   return "##SPRITE_NAME##.move(sf::Vector2f(0.0f, " + y_offset + "));";
 }
 
-std::string code_input_w_pressed(Block block) {
-  return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::W))";
-}
-
-std::string code_input_s_pressed(Block block) {
-  return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::S))";
+std::string code_input_key_pressed(Block block) {
+  auto key = block.get_bound_value("selected_key").value();
+  return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::" + key + "))";
 }
 
 // In these primitive renderers,

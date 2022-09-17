@@ -118,7 +118,7 @@ int main() {
     BIND_BLOCK("block_program_started", BUILT_IN_BLOCKS::block_program_started);
     BIND_BLOCK("block_forever", BUILT_IN_BLOCKS::block_forever);
     BIND_BLOCK("block_if", BUILT_IN_BLOCKS::block_if);
-    BIND_BLOCK("block_w_pressed", BUILT_IN_BLOCKS::block_w_pressed);
+    BIND_BLOCK("block_key_pressed", BUILT_IN_BLOCKS::block_key_pressed);
     BIND_BLOCK("block_s_pressed", BUILT_IN_BLOCKS::block_s_pressed);
 
     BIND_BLOCK("block_go_to_xy", BUILT_IN_BLOCKS::block_go_to_xy);
@@ -142,8 +142,7 @@ int main() {
   BIND_BLOCK(BUILT_IN_BLOCKS::block_program_started);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_forever);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_if);
-  BIND_BLOCK(BUILT_IN_BLOCKS::block_w_pressed);
-  BIND_BLOCK(BUILT_IN_BLOCKS::block_s_pressed);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_key_pressed);
 
   BIND_BLOCK(BUILT_IN_BLOCKS::block_go_to_xy);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_change_x_by);
@@ -172,8 +171,7 @@ int main() {
   Block block_program_started = BUILT_IN_BLOCKS::block_program_started();
   Block block_forever = BUILT_IN_BLOCKS::block_forever();
   Block block_if = BUILT_IN_BLOCKS::block_if();
-  Block block_w_pressed = BUILT_IN_BLOCKS::block_w_pressed();
-  Block block_s_pressed = BUILT_IN_BLOCKS::block_s_pressed();
+  Block block_key_pressed = BUILT_IN_BLOCKS::block_key_pressed();
 
   Block block_go_to_xy = BUILT_IN_BLOCKS::block_go_to_xy();
   Block block_change_x_by = BUILT_IN_BLOCKS::block_change_x_by();
@@ -246,8 +244,7 @@ int main() {
   editor_blocks.push_back(block_say);
   editor_blocks.push_back(block_forever);
   editor_blocks.push_back(block_if);
-  editor_blocks.push_back(block_w_pressed);
-  editor_blocks.push_back(block_s_pressed);
+  editor_blocks.push_back(block_key_pressed);
 
   editor_blocks.push_back(block_go_to_xy);
   editor_blocks.push_back(block_change_x_by);
