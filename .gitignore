@@ -7,3 +7,6 @@ obj/
 *.layout
 generated_code.py
 GeneratedOutput/alaska.ttf
+OpenSans-Regular.ttf
+.gitignore
+OpenSans-Semibold.ttf

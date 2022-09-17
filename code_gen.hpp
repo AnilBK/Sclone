@@ -152,7 +152,7 @@ std::string code_sprite_draw_triangle(Block block) {
 }
 
 void generate_code(const std::vector<Block> &blocks,
-                   std::string default_sprite_name) {
+                   const std::string &default_sprite_name) {
 
   std::string init_code = "";
   std::string main_loop_code = "";

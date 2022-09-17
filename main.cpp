@@ -1,8 +1,9 @@
+#include "BuiltInBlocks.hpp"
 #include "Globals.hpp"
 #include "block/Block.hpp"
+#include "block/Button.hpp"
 #include "block/LineInput.hpp"
 #include "block/NODEBaseClass.hpp"
-#include "code_gen.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -30,6 +31,48 @@ float get_fps() {
   return fps;
 }
 #endif
+
+// A bounded function returns a 'Block'.
+using Block_fn = std::function<Block()>;
+std::vector<std::pair<std::string, Block_fn>> bound_blocks;
+
+// Bound a function pointer to the given string.
+void BIND_BLOCK(std::string bind_string, Block_fn fn_that_returns_the_block) {
+  for (auto b_block : bound_blocks) {
+    auto b_bind_string = b_block.first;
+    if (b_bind_string == bind_string) {
+      auto already_bound_msg_str = "[Debug] String \"" + bind_string +
+                                   "\" Previously bound to some function.";
+      ERR_FAIL_COND_CRASH(false, already_bound_msg_str);
+    }
+  }
+
+  bound_blocks.push_back({bind_string, fn_that_returns_the_block});
+}
+
+// A 'Block_fn' returns the block.
+// The returned block contains the function identifer string which identifies
+// that block. Bind that return string to the function that generated the block
+// in the first place.
+void BIND_BLOCK(Block_fn fn_that_returns_the_block) {
+  auto bind_string = fn_that_returns_the_block().function_identifier;
+  BIND_BLOCK(bind_string, fn_that_returns_the_block);
+}
+
+// Return the function pointer bound with the given string.
+std::optional<Block_fn> GET_BOUND_BLOCK_FN(const std::string &query) {
+  for (const auto &block : bound_blocks) {
+    auto name = block.first;
+    if (name == query) {
+      return block.second;
+    }
+  }
+
+  auto unbound_msg_str = "[Debug] Function \"" + query + "\" Possibly Unbound.";
+  ERR_FAIL_COND_CRASH(false, unbound_msg_str);
+
+  return {};
+}
 
 int main() {
   init_global_font_and_label();
@@ -60,153 +103,163 @@ int main() {
   sprite_name.input_text = "cat";
   sprite_name.line_input_active = false;
 
+  // All these bindings because a 'Block' has shared_ptr stuffs.
+  // Duplicating a block just messes everything.
+  // I guess will be fine in the long run.
+
+  // IMPORTANT: 'Bind String' should be same as 'Function Identifiers' contained
+  // in the 'block' returned by that function. We use this identifiers to query
+  // the function at runtime. Maybe move the identifiers to 'Built in
+  // blocks.hpp'.
+  // This problem is solved by BIND_BLOCK which gets the bind string itself.
+
+  /*
+    BIND_BLOCK("block_say", BUILT_IN_BLOCKS::block_say);
+    BIND_BLOCK("block_program_started", BUILT_IN_BLOCKS::block_program_started);
+    BIND_BLOCK("block_forever", BUILT_IN_BLOCKS::block_forever);
+    BIND_BLOCK("block_if", BUILT_IN_BLOCKS::block_if);
+    BIND_BLOCK("block_w_pressed", BUILT_IN_BLOCKS::block_w_pressed);
+    BIND_BLOCK("block_s_pressed", BUILT_IN_BLOCKS::block_s_pressed);
+
+    BIND_BLOCK("block_go_to_xy", BUILT_IN_BLOCKS::block_go_to_xy);
+    BIND_BLOCK("block_change_x_by", BUILT_IN_BLOCKS::block_change_x_by);
+    BIND_BLOCK("block_change_y_by", BUILT_IN_BLOCKS::block_change_y_by);
+
+    BIND_BLOCK("block_draw_line", BUILT_IN_BLOCKS::block_draw_line);
+    BIND_BLOCK("block_draw_circle", BUILT_IN_BLOCKS::block_draw_circle);
+    BIND_BLOCK("block_draw_rectangle", BUILT_IN_BLOCKS::block_draw_rectangle);
+    BIND_BLOCK("block_draw_triangle", BUILT_IN_BLOCKS::block_draw_triangle);
+  */
+
+  // Same as Above.
+  // But We don't need to manually place strings in this case.
+  // The only difference being it fetches the bind string at run time unless
+  // optimized by the compiler.
+  // The only disadvantage is it calls the function to get the bind string and
+  // binds it.
+
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_say);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_program_started);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_forever);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_if);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_w_pressed);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_s_pressed);
+
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_go_to_xy);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_change_x_by);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_change_y_by);
+
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_draw_line);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_draw_circle);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_draw_rectangle);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_draw_triangle);
+
+  /*
+    // Case 1:
+    //  Get the function pointer and call the function which returns the block.
+    Block block_say = GET_BOUND_BLOCK_FN("block_say").value()();
+    // Case 2:
+    //  These are editor blocks, that means we can assign the functions at
+    // compile time. No need to iterate through the entire vector comparing the
+    // strings.
+    Block block_say = BUILT_IN_BLOCKS::block_say();
+
+    // Both are valid cases.
+    // Case 1 is definitely suited for run time function quering.
+  */
+
+  Block block_say = BUILT_IN_BLOCKS::block_say();
+  Block block_program_started = BUILT_IN_BLOCKS::block_program_started();
+  Block block_forever = BUILT_IN_BLOCKS::block_forever();
+  Block block_if = BUILT_IN_BLOCKS::block_if();
+  Block block_w_pressed = BUILT_IN_BLOCKS::block_w_pressed();
+  Block block_s_pressed = BUILT_IN_BLOCKS::block_s_pressed();
+
+  Block block_go_to_xy = BUILT_IN_BLOCKS::block_go_to_xy();
+  Block block_change_x_by = BUILT_IN_BLOCKS::block_change_x_by();
+  Block block_change_y_by = BUILT_IN_BLOCKS::block_change_y_by();
+
+  Block block_draw_line = BUILT_IN_BLOCKS::block_draw_line();
+  Block block_draw_circle = BUILT_IN_BLOCKS::block_draw_circle();
+  Block block_draw_rectangle = BUILT_IN_BLOCKS::block_draw_rectangle();
+  Block block_draw_triangle = BUILT_IN_BLOCKS::block_draw_triangle();
+
+  sf::Font alaska;
+  ERR_FAIL_COND_CRASH(alaska.loadFromFile("alaska.ttf"),
+                      "Error Loading Font \"alaska\".");
+
+  BLOCKS_TAB_NAME currently_selected_tab = BLOCKS_TAB_NAME::TAB_CONTROL;
+
+  sf::RectangleShape blocks_tab;
+  blocks_tab.setPosition(800, 85);
+  blocks_tab.setSize({width - 800, height - 100});
+  blocks_tab.setFillColor(sf::Color(204, 204, 204));
+
+  // Buttons can have individual colors.
+  // But let's not give them.
+  // Since they are a part of a tab bar, every buttons should have a same color.
+  Button BTNControlBlock("Control Blocks", alaska);
+  BTNControlBlock.setPosition({800, 25});
+
+  Button BTNDrawBlock("Draw Blocks", alaska);
+  BTNDrawBlock.setPosition({1020, 25});
+
+  Button BTNMotionBlock("Motion", alaska);
+  BTNMotionBlock.setPosition({1220, 25});
+
+  // A mini 'tab-bar' switcher.
+  auto select_tab = [&BTNControlBlock, &BTNDrawBlock,
+                     &BTNMotionBlock](Button &currently_selected_tab_button) {
+    // Unfill all the tabs.
+    BTNControlBlock.button_fill_color = sf::Color::Green;
+    BTNDrawBlock.button_fill_color = sf::Color::Green;
+    BTNMotionBlock.button_fill_color = sf::Color::Green;
+    // Fill back the selected tab.
+    currently_selected_tab_button.button_fill_color = sf::Color(200, 200, 200);
+  };
+
+  BTNControlBlock.clicked_callback = [&currently_selected_tab, &BTNControlBlock,
+                                      select_tab]() {
+    currently_selected_tab = BLOCKS_TAB_NAME::TAB_CONTROL;
+    select_tab(BTNControlBlock);
+  };
+
+  BTNDrawBlock.clicked_callback = [&currently_selected_tab, &BTNDrawBlock,
+                                   select_tab]() {
+    currently_selected_tab = BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES;
+    select_tab(BTNDrawBlock);
+  };
+
+  BTNMotionBlock.clicked_callback = [&currently_selected_tab, &BTNMotionBlock,
+                                     select_tab]() {
+    currently_selected_tab = BLOCKS_TAB_NAME::TAB_MOTION;
+    select_tab(BTNMotionBlock);
+  };
+
+  // Just to select that block and fill it with color.
+  BTNControlBlock.clicked_callback();
+
+  //'editor blocks' are the blocks found in different tabs,that helps to create
+  // new blocks. That new blocks are then added to 'blocks' vector.
+  std::vector<Block> editor_blocks;
+  editor_blocks.push_back(block_program_started);
+  editor_blocks.push_back(block_say);
+  editor_blocks.push_back(block_forever);
+  editor_blocks.push_back(block_if);
+  editor_blocks.push_back(block_w_pressed);
+  editor_blocks.push_back(block_s_pressed);
+
+  editor_blocks.push_back(block_go_to_xy);
+  editor_blocks.push_back(block_change_x_by);
+  editor_blocks.push_back(block_change_y_by);
+
+  editor_blocks.push_back(block_draw_line);
+  editor_blocks.push_back(block_draw_circle);
+  editor_blocks.push_back(block_draw_rectangle);
+  editor_blocks.push_back(block_draw_triangle);
+
+  //'blocks' are user created blocks.
   std::vector<Block> blocks;
-
-  Block block_program_started;
-  block_program_started.add_node(LabelNode("When Program Starts"));
-  block_program_started.set_block_type(BLOCK_TYPES::CONTROL);
-
-  block_program_started.set_position({425.0f, 25.0f});
-  block_program_started._recalculate_rect();
-
-  Block block_forever;
-  block_forever.add_node(LabelNode("Forever"));
-  block_forever.add_node(BlockAttachNode(""));
-  block_forever.set_block_type(BLOCK_TYPES::CONTROL);
-
-  block_forever.output_code_callback = code_sprite_forever;
-
-  block_forever.set_position({425.0f, 95.0f});
-  block_forever._recalculate_rect();
-
-  Block block_if;
-  block_if.add_node(LabelNode("If Condition"));
-  block_if.add_node(LineInputAttachFieldNode("", "condition"));
-  block_if.add_node(BlockAttachNode(""));
-  block_if.add_node(LabelNode("Else "));
-  block_if.add_node(BlockAttachNode(""));
-  block_if.output_code_callback = code_sprite_if_else;
-
-  block_if.set_position({950.0f, 25.0f});
-  block_if._recalculate_rect();
-
-  //   Label("Say")
-  //     LineInputAttachField(message)
-  // The user input is bound to ^^^^^
-  Block block_say;
-  block_say.add_node(LabelNode("Say"));
-  block_say.add_node(LineInputAttachFieldNode("", "message"));
-  block_say.output_code_callback = code_sprite_say;
-
-  block_say.set_position({70.0f, 250.0f});
-  block_say._recalculate_rect();
-
-  Block block_go_to_xy;
-  block_go_to_xy.add_node(LabelNode("Go to"));
-  block_go_to_xy.add_node(LabelNode("X"));
-  block_go_to_xy.add_node(LineInputAttachFieldNode("", "x"));
-  block_go_to_xy.add_node(LabelNode("Y"));
-  block_go_to_xy.add_node(LineInputAttachFieldNode("", "y"));
-  block_go_to_xy.add_node(ButtonNode("Pick^"));
-  block_go_to_xy.output_code_callback = code_sprite_set_position;
-
-  block_go_to_xy.set_position({70.0f, 600.0f});
-  block_go_to_xy._recalculate_rect();
-
-  Block block_change_x_by;
-  block_change_x_by.add_node(LabelNode("Change X By"));
-  block_change_x_by.add_node(LineInputAttachFieldNode("", "x_offset"));
-  block_change_x_by.output_code_callback = code_sprite_change_x_by;
-
-  block_change_x_by.set_position({70.0f, 400.0f});
-  block_change_x_by._recalculate_rect();
-
-  Block block_change_y_by;
-  block_change_y_by.add_node(LabelNode("Change Y By"));
-  block_change_y_by.add_node(LineInputAttachFieldNode("", "y_offset"));
-  block_change_y_by.output_code_callback = code_sprite_change_y_by;
-
-  block_change_y_by.set_position({70.0f, 480.0f});
-  block_change_y_by._recalculate_rect();
-
-  Block block_w_pressed;
-  block_w_pressed.add_node(LabelNode("If W Pressed"));
-  block_w_pressed.add_node(BlockAttachNode(""));
-  block_w_pressed.output_code_callback = code_input_w_pressed;
-
-  block_w_pressed.set_position({640.0f, 560.0f});
-  block_w_pressed._recalculate_rect();
-
-  Block block_s_pressed;
-  block_s_pressed.add_node(LabelNode("If S Pressed"));
-  block_s_pressed.add_node(BlockAttachNode(""));
-  block_s_pressed.output_code_callback = code_input_s_pressed;
-
-  block_s_pressed.set_position({950.0f, 560.0f});
-  block_s_pressed._recalculate_rect();
-
-  // 'Draw Primitive Shape' Blocks.
-  Block block_draw_line;
-  block_draw_line.add_node(LabelNode("Draw Line"));
-  block_draw_line.add_node(LabelNode("From"));
-  block_draw_line.add_node(LineInputAttachFieldNode("", "starting_pos"));
-  block_draw_line.add_node(LabelNode("To"));
-  block_draw_line.add_node(LineInputAttachFieldNode("", "ending_pos"));
-  block_draw_line.output_code_callback = code_sprite_draw_line;
-
-  block_draw_line.set_position({430.0f, 310.0f});
-  block_draw_line._recalculate_rect();
-
-  Block block_draw_circle;
-  block_draw_circle.add_node(LabelNode("Draw Circle"));
-  block_draw_circle.add_node(LabelNode("At"));
-  block_draw_circle.add_node(LineInputAttachFieldNode("", "centre"));
-  block_draw_circle.add_node(LabelNode("Radius"));
-  block_draw_circle.add_node(LineInputAttachFieldNode("", "radius"));
-  block_draw_circle.output_code_callback = code_sprite_draw_circle;
-
-  block_draw_circle.set_position({430.0f, 370.0f});
-  block_draw_circle._recalculate_rect();
-
-  Block block_draw_rectangle;
-  block_draw_rectangle.add_node(LabelNode("Draw Rectangle"));
-  block_draw_rectangle.add_node(LabelNode("At Top Left Pos"));
-  block_draw_rectangle.add_node(LineInputAttachFieldNode("", "top_left"));
-  block_draw_rectangle.add_node(LabelNode("Size"));
-  block_draw_rectangle.add_node(LineInputAttachFieldNode("", "rect_size"));
-  block_draw_rectangle.output_code_callback = code_sprite_draw_rectangle;
-
-  block_draw_rectangle.set_position({430.0f, 435.0f});
-  block_draw_rectangle._recalculate_rect();
-
-  Block block_draw_triangle;
-  block_draw_triangle.add_node(LabelNode("Draw Triangle"));
-  block_draw_triangle.add_node(LabelNode("P1"));
-  block_draw_triangle.add_node(LineInputAttachFieldNode("", "first_point"));
-  block_draw_triangle.add_node(LabelNode("P2"));
-  block_draw_triangle.add_node(LineInputAttachFieldNode("", "second_point"));
-  block_draw_triangle.add_node(LabelNode("P3"));
-  block_draw_triangle.add_node(LineInputAttachFieldNode("", "third_point"));
-  block_draw_triangle.output_code_callback = code_sprite_draw_triangle;
-
-  block_draw_triangle.set_position({430.0f, 490.0f});
-  block_draw_triangle._recalculate_rect();
-
-  blocks.push_back(block_program_started);
-  blocks.push_back(block_forever);
-  blocks.push_back(block_if);
-  blocks.push_back(block_say);
-  blocks.push_back(block_go_to_xy);
-  blocks.push_back(block_change_x_by);
-  blocks.push_back(block_change_y_by);
-  blocks.push_back(block_w_pressed);
-  blocks.push_back(block_s_pressed);
-
-  blocks.push_back(block_draw_line);
-  blocks.push_back(block_draw_circle);
-  blocks.push_back(block_draw_rectangle);
-  blocks.push_back(block_draw_triangle);
-
   // blocks.at(3).attach_block_next(&blocks.at(4));
 
   while (window.isOpen()) {
@@ -227,6 +280,10 @@ int main() {
       }
 
       sprite_name.handle_inputs(event);
+
+      BTNControlBlock.handle_inputs(event);
+      BTNDrawBlock.handle_inputs(event);
+      BTNMotionBlock.handle_inputs(event);
 
       for (auto &block : blocks) {
         block._process_events(event);
@@ -309,6 +366,50 @@ int main() {
       }
     }
 
+    window.draw(blocks_tab);
+    BTNControlBlock.Render();
+    BTNDrawBlock.Render();
+    BTNMotionBlock.Render();
+
+    sf::Vector2f block_in_tabs_draw_position =
+        blocks_tab.getPosition() + sf::Vector2f(50, 50);
+
+    // These are editor blocks which are for spawning new blocks.
+    for (auto &block : editor_blocks) {
+      if (block.TabItBelongsToName != currently_selected_tab) {
+        continue;
+      }
+
+      block.set_position(block_in_tabs_draw_position);
+      // block._recalculate_rect();
+      block.Render();
+      // window.draw(block.block_rect);
+      block_in_tabs_draw_position.y += 100;
+      // TODO:maybe use + _next_block_snap_rect() but that iterates all over
+      // it's child use that once its cached.
+    }
+
+    if (!is_any_block_being_dragged &&
+        sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+      for (auto block : editor_blocks) {
+        if (block.TabItBelongsToName != currently_selected_tab) {
+          continue;
+        }
+
+        // Spawn New Block.
+        if (isMouseOverSprite(block.block_rect)) {
+          // auto spawned_block = GET_BOUND_BLOCK_FN("block_forever").value()();
+          auto spawned_block =
+              GET_BOUND_BLOCK_FN(block.function_identifier).value()();
+          spawned_block.set_position((sf::Vector2f)mouse_position);
+          spawned_block.dragging = true;
+          blocks.push_back(spawned_block);
+          break;
+        }
+      }
+    }
+
+    // These are user defined blocks.
     for (auto block : blocks) {
       block.Render();
     }

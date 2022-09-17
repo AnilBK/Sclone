@@ -30,8 +30,6 @@ private:
               padding_down = 5;
   const sf::Vector2f STARTING_BLOCK_SIZE{0.0f, 45.0f};
 
-  sf::RectangleShape block_rect;
-
   sf::Vector2f position;
 
   BLOCK_TYPES block_type;
@@ -47,6 +45,13 @@ public:
 
   bool dragging = false;
 
+  sf::RectangleShape block_rect;
+
+  // This is the tab name in the editor where this block can be spawned from..
+  // std::string TabItBelongsToName = "Control";
+  // String would be flexible but use enums for speed now.
+  BLOCKS_TAB_NAME TabItBelongsToName = BLOCKS_TAB_NAME::TAB_CONTROL;
+
   Block *next_block = nullptr;
   // These are the blocks that are attached inside a block.
   // For a given block these exist only if 'BlockAttachNode' nodes are attached
@@ -59,6 +64,10 @@ public:
   // so we store a index.
   // TODO: do this by some other approach, like strings maybe.
   std::vector<std::pair<int, Block *>> attached_blocks;
+
+  // We use this block identifier to spawn new blocks.
+  std::string function_identifier = "block_default";
+
   // Make this vvvv function handle top and bottom snap highlights as well.
   void process_inside_snap_hints(bool attach_block_requested,
                                  Block *current_dragging_block_ref);

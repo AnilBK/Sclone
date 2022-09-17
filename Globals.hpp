@@ -22,6 +22,9 @@ enum NODE_TYPE {
 
 enum BLOCK_TYPES { CONTROL, INSTRUCTION };
 
+// Tab where a block belongs to in the editor.
+enum BLOCKS_TAB_NAME { TAB_CONTROL, TAB_MOTION, TAB_DRAW_PRIMITIVES };
+
 extern sf::Vector2i mouse_position;
 
 extern sf::Font font;

@@ -30,12 +30,16 @@
 			<Add library="sfml-system" />
 			<Add directory="C:/SFML-2.5.1/lib" />
 		</Linker>
+		<Unit filename="BuiltInBlocks.hpp" />
 		<Unit filename="Globals.hpp" />
 		<Unit filename="block/Block.cpp" />
 		<Unit filename="block/Block.hpp" />
+		<Unit filename="block/Button.cpp" />
+		<Unit filename="block/Button.hpp" />
 		<Unit filename="block/LineInput.cpp" />
 		<Unit filename="block/LineInput.hpp" />
 		<Unit filename="block/NODEBaseClass.hpp" />
+		<Unit filename="code_gen.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions />
 	</Project>
