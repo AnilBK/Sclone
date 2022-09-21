@@ -22,7 +22,14 @@ std::string code_sprite_if_else(Block block) {
 
 std::string code_sprite_say(Block block) {
   auto message = block.get_bound_value("message").value();
-  return "std::cout << \"" + message + "\" << \"\\n\";";
+  auto message_visible_length = block.get_bound_value("length").value();
+
+  if (message == "" || message.empty()) {
+    message_visible_length = "1.0f";
+  }
+
+  return "add_bubble_message(&##SPRITE_NAME##," + message_visible_length +
+         ", \"" + message + "\");";
 }
 
 std::string code_sprite_change_x_by(Block block) {

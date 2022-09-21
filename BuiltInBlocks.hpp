@@ -14,6 +14,10 @@ Block block_say() {
   Block block_say;
   block_say.add_node(LabelNode("Say"));
   block_say.add_node(LineInputAttachFieldNode("", "message"));
+  block_say.add_node(LabelNode("For"));
+  block_say.add_node(LineInputAttachFieldNode("", "length"));
+  block_say.add_node(LabelNode("Seconds"));
+
   block_say.output_code_callback = code_sprite_say;
   block_say.function_identifier = "block_say";
 

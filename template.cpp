@@ -5,6 +5,91 @@
 #include <cmath>
 #include <iostream>
 
+sf::Font font;
+sf::RenderWindow window;
+
+// BUBBLE-SPEECH_BEGIN
+sf::Text bubble;
+void init_bubble_label() {
+  bubble.setFont(font);
+  bubble.setCharacterSize(32);
+  bubble.setPosition(sf::Vector2f(20, 20));
+  bubble.setFillColor(sf::Color::White);
+}
+
+class bubble_message {
+public:
+  sf::Sprite *target_sprite_ptr;
+  float length; // Show the message for this much seconds.
+  std::string message;
+};
+
+bool bubble_sys_update_required = true;
+float bubble_message_system_timer = 0.0f;
+std::vector<bubble_message> bubble_messages;
+
+void add_bubble_message(sf::Sprite *target_sprite_ptr, float length,
+                        std::string message) {
+  bubble_message new_msg;
+  new_msg.target_sprite_ptr = target_sprite_ptr;
+  new_msg.length = length;
+  new_msg.message = message;
+  bubble_messages.push_back(new_msg);
+
+  bubble_sys_update_required = true;
+}
+
+void update_bubble_message_system(float delta_time) {
+  // No messages in the queue.
+  // So,no update required.
+  if (!bubble_sys_update_required) {
+    return;
+  }
+
+  if (bubble_messages.empty()) {
+    return;
+  }
+
+  auto bubble_msg = bubble_messages.front();
+  auto msg_target_sprite = bubble_msg.target_sprite_ptr;
+  auto msg_length = bubble_msg.length;
+  auto msg = bubble_msg.message;
+
+  if (msg_target_sprite == nullptr) {
+    return;
+  }
+
+  bubble.setString(msg);
+  auto buble_rect = bubble.getGlobalBounds();
+  auto bubble_size_x = buble_rect.width;
+
+  // Orient the text message so that the centre of the text is vertically above
+  // the sprite's centre.
+  bubble.setPosition(
+      msg_target_sprite->getPosition() +
+      sf::Vector2f((msg_target_sprite->getGlobalBounds().width * 0.5f) -
+                       (bubble_size_x * 0.5f),
+                   -msg_target_sprite->getGlobalBounds().height));
+  window.draw(bubble);
+
+  bubble_message_system_timer += delta_time;
+
+  if (bubble_message_system_timer >= msg_length) {
+    // Reset the timer.
+    bubble_message_system_timer = 0.0f;
+    // Remove that message from the system.
+    bubble_messages.erase(bubble_messages.begin());
+    // If no message remain in the system, reset everything and disable the
+    // system.
+    if (bubble_messages.empty()) {
+      bubble_message_system_timer = 0.0f;
+      bubble_sys_update_required = false;
+    }
+  }
+}
+
+// BUBBLE-SPEECH_END
+
 sf::Vector2f normalized(sf::Vector2f vec) {
   float l = (vec.x * vec.x) + (vec.y * vec.y);
   if (l != 0.0f) {
@@ -16,7 +101,13 @@ sf::Vector2f normalized(sf::Vector2f vec) {
 };
 
 int main() {
-  sf::RenderWindow window;
+  if (!font.loadFromFile("alaska.ttf")) {
+    std::cout << "Error Loading Font. \n";
+    exit(1);
+  }
+
+  init_bubble_label();
+
   int height = sf::VideoMode::getDesktopMode().height;
   int width = sf::VideoMode::getDesktopMode().width;
   window.create(sf::VideoMode(width, height), "SClone Generated Output");
@@ -76,6 +167,8 @@ int main() {
     window.draw(player);
 
     //###RENDER_CODE###
+
+    update_bubble_message_system(deltaTime.asSeconds());
 
     window.display();
   }
