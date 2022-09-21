@@ -59,6 +59,11 @@ void Block::set_position(const sf::Vector2f p_pos) {
 }
 
 Block::Block() {
+  static int c_count = 0;
+  std::cout << "[" << c_count << "] Created object: " << function_identifier
+            << "\n";
+  c_count++;
+
   set_position({0.0f, 0.0f});
   block_rect.setSize(STARTING_BLOCK_SIZE);
   block_rect.setOutlineThickness(2.0f);

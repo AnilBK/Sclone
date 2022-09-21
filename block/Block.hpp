@@ -43,6 +43,13 @@ private:
 public:
   Block();
 
+  ~Block() {
+    static int d_count = 0;
+    std::cout << "[" << d_count << "] Destroyed object: " << function_identifier
+              << "\n";
+    d_count++;
+  }
+
   bool dragging = false;
 
   sf::RectangleShape block_rect;
