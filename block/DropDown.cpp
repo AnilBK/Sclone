@@ -49,8 +49,6 @@ void DropDown::Render() {
   sf::Vector2f draw_position = position;
 
   if (!dropdown_clicked) {
-    sf::Vector2f draw_position = position;
-
     auto text = get_text();
     auto content_size = rect_size();
 
