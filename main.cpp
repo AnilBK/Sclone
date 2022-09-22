@@ -4,6 +4,7 @@
 #include "block/Button.hpp"
 #include "block/LineInput.hpp"
 #include "block/NODEBaseClass.hpp"
+#include "block/TabBar.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -256,57 +257,15 @@ int main() {
 
   int mouse_offset = 0;
 
-  BLOCKS_TAB_NAME currently_selected_tab = BLOCKS_TAB_NAME::TAB_CONTROL;
+  auto tab_pos = sf::Vector2f(800, 25);
+  auto tab_size = sf::Vector2f(width - tab_pos.x, height - tab_pos.y);
+  TabBar built_in_blocks_tab_bar(tab_pos, tab_size);
 
-  sf::RectangleShape blocks_tab;
-  blocks_tab.setPosition(800, 85);
-  blocks_tab.setSize({static_cast<float>(width - 800.0f),
-                      static_cast<float>(height - 100.0f)});
-  blocks_tab.setFillColor(sf::Color(204, 204, 204));
-
-  // Buttons can have individual colors.
-  // But let's not give them.
-  // Since they are a part of a tab bar, every buttons should have a same color.
-  Button BTNControlBlock("Control Blocks", alaska);
-  BTNControlBlock.setPosition({800, 25});
-
-  Button BTNDrawBlock("Draw Blocks", alaska);
-  BTNDrawBlock.setPosition({1020, 25});
-
-  Button BTNMotionBlock("Motion", alaska);
-  BTNMotionBlock.setPosition({1220, 25});
-
-  // A mini 'tab-bar' switcher.
-  auto select_tab = [&BTNControlBlock, &BTNDrawBlock,
-                     &BTNMotionBlock](Button &currently_selected_tab_button) {
-    // Unfill all the tabs.
-    BTNControlBlock.button_fill_color = sf::Color::Green;
-    BTNDrawBlock.button_fill_color = sf::Color::Green;
-    BTNMotionBlock.button_fill_color = sf::Color::Green;
-    // Fill back the selected tab.
-    currently_selected_tab_button.button_fill_color = sf::Color(200, 200, 200);
-  };
-
-  BTNControlBlock.clicked_callback = [&currently_selected_tab, &BTNControlBlock,
-                                      select_tab]() {
-    currently_selected_tab = BLOCKS_TAB_NAME::TAB_CONTROL;
-    select_tab(BTNControlBlock);
-  };
-
-  BTNDrawBlock.clicked_callback = [&currently_selected_tab, &BTNDrawBlock,
-                                   select_tab]() {
-    currently_selected_tab = BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES;
-    select_tab(BTNDrawBlock);
-  };
-
-  BTNMotionBlock.clicked_callback = [&currently_selected_tab, &BTNMotionBlock,
-                                     select_tab]() {
-    currently_selected_tab = BLOCKS_TAB_NAME::TAB_MOTION;
-    select_tab(BTNMotionBlock);
-  };
-
-  // Just to select that block and fill it with color.
-  BTNControlBlock.clicked_callback();
+  built_in_blocks_tab_bar.add_tab("Control Blocks");
+  built_in_blocks_tab_bar.add_tab("Draw Blocks");
+  built_in_blocks_tab_bar.add_tab("Motion");
+  built_in_blocks_tab_bar._select_tab(0);
+  built_in_blocks_tab_bar.recalculate_post_add_tabs();
 
   while (window.isOpen()) {
     bool middle_click = false;
@@ -329,9 +288,7 @@ int main() {
 
       sprite_name.handle_inputs(event);
 
-      BTNControlBlock.handle_inputs(event);
-      BTNDrawBlock.handle_inputs(event);
-      BTNMotionBlock.handle_inputs(event);
+      built_in_blocks_tab_bar.handle_inputs(event);
 
       for (auto &block : blocks) {
         block._process_events(event);
@@ -414,13 +371,13 @@ int main() {
       }
     }
 
-    window.draw(blocks_tab);
-    BTNControlBlock.Render();
-    BTNDrawBlock.Render();
-    BTNMotionBlock.Render();
+    built_in_blocks_tab_bar.Render();
 
     sf::Vector2f block_in_tabs_draw_position =
-        blocks_tab.getPosition() + sf::Vector2f(50, 50 + mouse_offset * 20.0f);
+        built_in_blocks_tab_bar.get_visible_tab_position() +
+        sf::Vector2f(50, 50 + mouse_offset * 20.0f);
+
+    int currently_selected_tab = built_in_blocks_tab_bar.currently_selected_tab;
 
     // These are editor blocks which are for spawning new blocks.
     for (auto &block : editor_blocks) {
@@ -432,7 +389,8 @@ int main() {
       // block._recalculate_rect();
 
       // Scrolling above the tab.
-      if (block_in_tabs_draw_position.y >= blocks_tab.getPosition().y) {
+      if (block_in_tabs_draw_position.y >=
+          built_in_blocks_tab_bar.get_visible_tab_position().y) {
         block.Render();
       }
       // window.draw(block->block_rect);

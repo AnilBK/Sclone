@@ -24,7 +24,12 @@ enum NODE_TYPE {
 enum BLOCK_TYPES { CONTROL, INSTRUCTION };
 
 // Tab where a block belongs to in the editor.
-enum BLOCKS_TAB_NAME { TAB_CONTROL, TAB_MOTION, TAB_DRAW_PRIMITIVES };
+// This should be according to the order the tabs are pushed in the tab bar.
+enum BLOCKS_TAB_NAME {
+  TAB_CONTROL = 0,
+  TAB_DRAW_PRIMITIVES = 1,
+  TAB_MOTION = 2,
+};
 
 extern sf::Vector2i mouse_position;
 

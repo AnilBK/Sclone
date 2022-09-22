@@ -57,6 +57,8 @@
 		<Unit filename="block/LineInput.cpp" />
 		<Unit filename="block/LineInput.hpp" />
 		<Unit filename="block/NODEBaseClass.hpp" />
+		<Unit filename="block/TabBar.cpp" />
+		<Unit filename="block/TabBar.hpp" />
 		<Unit filename="code_gen.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>

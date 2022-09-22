@@ -14,6 +14,7 @@ private:
 
 public:
   bool mouse_over = false;
+  bool clicked = false;
   std::function<void()> clicked_callback;
 
   sf::Color button_fill_color = sf::Color::Green;
