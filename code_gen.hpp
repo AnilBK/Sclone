@@ -1,7 +1,7 @@
 #ifndef CODE_GEN_HPP
 #define CODE_GEN_HPP
 
-#include "Block/Block.hpp"
+#include "block/Block.hpp"
 #include <fstream>
 #include <string>
 

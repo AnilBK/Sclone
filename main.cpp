@@ -262,7 +262,8 @@ int main() {
 
   sf::RectangleShape blocks_tab;
   blocks_tab.setPosition(800, 85);
-  blocks_tab.setSize({width - 800, height - 100});
+  blocks_tab.setSize({static_cast<float>(width - 800.0f),
+                      static_cast<float>(height - 100.0f)});
   blocks_tab.setFillColor(sf::Color(204, 204, 204));
 
   // Buttons can have individual colors.
@@ -355,7 +356,7 @@ int main() {
       Block *parent = nullptr;
 
       for (auto &block : blocks) {
-        if (&block.next_block == nullptr) {
+        if (block.next_block == nullptr) {
           continue;
         }
 

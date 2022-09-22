@@ -2,7 +2,7 @@
 #define NODEBASECLASS_HPP
 
 #include "../Globals.hpp"
-#include "Dropdown.hpp"
+#include "DropDown.hpp"
 #include "LineInput.hpp"
 
 class NODEBaseClass {
