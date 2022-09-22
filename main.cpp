@@ -41,11 +41,9 @@ std::vector<std::pair<std::string, Block_fn>> bound_blocks;
 void BIND_BLOCK(std::string bind_string, Block_fn fn_that_returns_the_block) {
   for (const auto &b_block : bound_blocks) {
     auto b_bind_string = b_block.first;
-    if (b_bind_string == bind_string) {
-      auto already_bound_msg_str = "[Debug] String \"" + bind_string +
-                                   "\" Previously bound to some function.";
-      ERR_FAIL_COND_CRASH(false, already_bound_msg_str);
-    }
+    ERR_FAIL_COND_CRASH(b_bind_string == bind_string,
+                        "[Debug] String \"" + bind_string +
+                            "\" Previously bound to some function.");
   }
 
   bound_blocks.push_back({bind_string, fn_that_returns_the_block});
@@ -76,7 +74,7 @@ std::optional<Block_fn> GET_BOUND_BLOCK_FN(const std::string &query) {
   }
 
   auto unbound_msg_str = "[Debug] Function \"" + query + "\" Possibly Unbound.";
-  ERR_FAIL_COND_CRASH(false, unbound_msg_str);
+  ERR_FAIL_COND_CRASH(true, unbound_msg_str);
 
   return {};
 }
@@ -207,7 +205,7 @@ int main() {
   init_global_font_and_label();
 
   sf::Font alaska;
-  ERR_FAIL_COND_CRASH(alaska.loadFromFile("alaska.ttf"),
+  ERR_FAIL_COND_CRASH(!alaska.loadFromFile("alaska.ttf"),
                       "Error Loading Font \"alaska\".");
 
   height = sf::VideoMode::getDesktopMode().height;

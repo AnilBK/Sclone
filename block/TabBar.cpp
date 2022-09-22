@@ -32,7 +32,7 @@ void TabBar::add_tab(std::string tab_name) {
 }
 
 void TabBar::_select_tab(int idx) {
-  ERR_FAIL_COND_CRASH(!(idx < 0 || idx > tab_bar_buttons.size()),
+  ERR_FAIL_COND_CRASH(idx < 0 || idx > tab_bar_buttons.size(),
                       "Invalid tab selected. Provided index: " +
                           std::to_string(idx));
   // Unselect all.

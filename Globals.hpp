@@ -5,8 +5,9 @@
 #include <functional>
 #include <iostream>
 
+// Crash if the provided condition is true.
 #define ERR_FAIL_COND_CRASH(m_cond, m_fail_message)                            \
-  if (!m_cond) {                                                               \
+  if (m_cond) {                                                                \
     std::cout << "\"" << __FILE__ << "\" :: " << __LINE__ << "\t"              \
               << m_fail_message << "\n";                                       \
     exit(1);                                                                   \
@@ -43,7 +44,7 @@ template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
 }
 
 static void init_global_font_and_label() {
-  ERR_FAIL_COND_CRASH(font.loadFromFile("alaska.ttf"), "Error Loading Font.");
+  ERR_FAIL_COND_CRASH(!font.loadFromFile("alaska.ttf"), "Error Loading Font.");
   draw_text_label.setFont(font);
   draw_text_label.setCharacterSize(32);
   draw_text_label.setPosition(sf::Vector2f(20, 20));

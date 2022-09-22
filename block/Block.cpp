@@ -230,9 +230,7 @@ bool Block::can_mouse_snap_to_bottom() {
 }
 
 void Block::attach_block_next(Block *p_next_block) {
-  if (p_next_block == this) {
-    ERR_FAIL_COND_CRASH(false, "Children is same as parent.");
-  }
+  ERR_FAIL_COND_CRASH(p_next_block == this, "Children is same as parent.");
 
   next_block = p_next_block;
   set_position(position);
@@ -352,7 +350,7 @@ Block::get_bound_value(const std::string &query) const {
   }
 
   auto unbound_msg_str = "[Debug] String \"" + query + "\" Possibly Unbound.";
-  ERR_FAIL_COND_CRASH(false, unbound_msg_str);
+  ERR_FAIL_COND_CRASH(true, unbound_msg_str);
 
   return {};
 }
