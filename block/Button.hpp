@@ -13,7 +13,7 @@ private:
   float padding_h = 15, padding_v = 15;
 
 public:
-  bool mouse_over = true;
+  bool mouse_over = false;
   std::function<void()> clicked_callback;
 
   sf::Color button_fill_color = sf::Color::Green;
