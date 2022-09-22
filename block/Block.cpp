@@ -95,6 +95,14 @@ void Block::_recalculate_rect() {
   merged_rect.height += padding_up + padding_down;
 
   block_rect.setSize({merged_rect.width, merged_rect.height});
+
+  // The next block snap rect is at the bottomm of the block which effectively
+  // gives the height of the current block.
+  auto next_block_snap_rect = _next_block_snap_rect();
+  auto full_size_x = next_block_snap_rect.width;
+  auto full_size_y = next_block_snap_rect.top - block_rect.getPosition().y;
+
+  block_full_size = {full_size_x, full_size_y};
 }
 
 bool Block::is_control_block() { return block_type == BLOCK_TYPES::CONTROL; }
@@ -335,7 +343,8 @@ void Block::Render() {
   RenderComponents();
 }
 
-std::optional<std::string> Block::get_bound_value(const std::string &query) {
+std::optional<std::string>
+Block::get_bound_value(const std::string &query) const {
   for (const auto &child : childrens) {
     if (child->bind_string == query) {
       return child->get_text();

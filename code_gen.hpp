@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-std::string code_sprite_set_position(Block block) {
+std::string code_sprite_set_position(const Block &block) {
   //"x" -> block.childrens.at(2).text
   //"y" -> block.childrens.at(4).text
   auto x_pos = block.get_bound_value("x").value();
@@ -13,14 +13,16 @@ std::string code_sprite_set_position(Block block) {
   return "##SPRITE_NAME##.setPosition(" + x_pos + ", " + y_pos + ");";
 }
 
-std::string code_sprite_forever(Block block) { return ""; } //"for(;;)"; }
+std::string code_sprite_forever(const Block &block) {
+  return "";
+} //"for(;;)"; }
 
-std::string code_sprite_if_else(Block block) {
+std::string code_sprite_if_else(const Block &block) {
   auto condition = block.get_bound_value("condition").value();
   return "if(" + condition + ")";
 }
 
-std::string code_sprite_say(Block block) {
+std::string code_sprite_say(const Block &block) {
   auto message = block.get_bound_value("message").value();
   auto message_visible_length = block.get_bound_value("length").value();
 
@@ -32,17 +34,17 @@ std::string code_sprite_say(Block block) {
          ", \"" + message + "\");";
 }
 
-std::string code_sprite_change_x_by(Block block) {
+std::string code_sprite_change_x_by(const Block &block) {
   auto x_offset = block.get_bound_value("x_offset").value();
   return "##SPRITE_NAME##.move(sf::Vector2f(" + x_offset + ", 0.0f));";
 }
 
-std::string code_sprite_change_y_by(Block block) {
+std::string code_sprite_change_y_by(const Block &block) {
   auto y_offset = block.get_bound_value("y_offset").value();
   return "##SPRITE_NAME##.move(sf::Vector2f(0.0f, " + y_offset + "));";
 }
 
-std::string code_input_key_pressed(Block block) {
+std::string code_input_key_pressed(const Block &block) {
   auto key = block.get_bound_value("selected_key").value();
   return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::" + key + "))";
 }
@@ -50,7 +52,7 @@ std::string code_input_key_pressed(Block block) {
 // In these primitive renderers,
 // We create a scope to avoid multiple definations for same sprite drawn
 // multiple times using the same name.
-std::string code_sprite_draw_line(Block block) {
+std::string code_sprite_draw_line(const Block &block) {
   /*
     //Draw a line.
     sf::Vertex vertices[2] = {
@@ -75,7 +77,7 @@ std::string code_sprite_draw_line(Block block) {
   return code;
 }
 
-std::string code_sprite_draw_circle(Block block) {
+std::string code_sprite_draw_circle(const Block &block) {
   /*
     //Draw a circle.
     sf::CircleShape circle;
@@ -98,7 +100,7 @@ std::string code_sprite_draw_circle(Block block) {
   return code;
 }
 
-std::string code_sprite_draw_rectangle(Block block) {
+std::string code_sprite_draw_rectangle(const Block &block) {
   /*
     //Draw a rectangle.
     sf::RectangleShape rectangle;
@@ -121,7 +123,7 @@ std::string code_sprite_draw_rectangle(Block block) {
   return code;
 }
 
-std::string code_sprite_draw_triangle(Block block) {
+std::string code_sprite_draw_triangle(const Block &block) {
   /*
   //Draw A triangle.
   // https://www.sfml-dev.org/tutorials/2.5/graphics-shape.php
@@ -155,7 +157,7 @@ std::string code_sprite_draw_triangle(Block block) {
   return code;
 }
 
-void generate_code(const std::vector<Block> &blocks,
+void generate_code(std::vector<Block> &blocks,
                    const std::string &default_sprite_name) {
 
   std::string init_code = "";
@@ -163,7 +165,7 @@ void generate_code(const std::vector<Block> &blocks,
   std::string spr_render_code = "window.draw(##SPRITE_NAME##);";
 
   std::cout << "\n\n[Generated Code]\n";
-  for (auto block : blocks) {
+  for (auto &block : blocks) {
     if (!block.is_control_block()) {
       continue;
     }

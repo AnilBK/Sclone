@@ -33,12 +33,12 @@ float get_fps() {
 #endif
 
 // A bounded function returns a 'Block'.
-using Block_fn = std::function<Block()>;
+using Block_fn = std::function<void(Block *)>;
 std::vector<std::pair<std::string, Block_fn>> bound_blocks;
 
 // Bound a function pointer to the given string.
 void BIND_BLOCK(std::string bind_string, Block_fn fn_that_returns_the_block) {
-  for (auto b_block : bound_blocks) {
+  for (const auto &b_block : bound_blocks) {
     auto b_bind_string = b_block.first;
     if (b_bind_string == bind_string) {
       auto already_bound_msg_str = "[Debug] String \"" + bind_string +
@@ -55,8 +55,14 @@ void BIND_BLOCK(std::string bind_string, Block_fn fn_that_returns_the_block) {
 // that block. Bind that return string to the function that generated the block
 // in the first place.
 void BIND_BLOCK(Block_fn fn_that_returns_the_block) {
-  auto bind_string = fn_that_returns_the_block().function_identifier;
+  Block *test_block = new Block();
+  fn_that_returns_the_block(test_block);
+  auto bind_string = test_block->function_identifier;
+  delete test_block;
   BIND_BLOCK(bind_string, fn_that_returns_the_block);
+
+  // auto bind_string = fn_that_returns_the_block().function_identifier;
+  // BIND_BLOCK(bind_string, fn_that_returns_the_block);
 }
 
 // Return the function pointer bound with the given string.
@@ -74,39 +80,37 @@ std::optional<Block_fn> GET_BOUND_BLOCK_FN(const std::string &query) {
   return {};
 }
 
-int main() {
-  init_global_font_and_label();
+void spawn_and_bind_editor_blocks(std::vector<Block> &to) {
 
-  sf::Font alaska;
-  ERR_FAIL_COND_CRASH(alaska.loadFromFile("alaska.ttf"),
-                      "Error Loading Font \"alaska\".");
+#define SPAWN_EDITOR_BLOCK_AND_BIND(fn_ptr)                                    \
+  {                                                                            \
+    std::cout << "Spawn And Bind.\n";                                          \
+    to.emplace_back();                                                         \
+    auto vec_end = &to.back();                                                 \
+    fn_ptr(vec_end);                                                           \
+    BIND_BLOCK(vec_end->function_identifier, fn_ptr);                          \
+  }                                                                            \
+  std::cout << "[Done]Spawn And Bind.\n";
 
-  height = sf::VideoMode::getDesktopMode().height;
-  width = sf::VideoMode::getDesktopMode().width;
+  to.reserve(15);
 
-  window.create(sf::VideoMode(width, height), "SClone V2");
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_say);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_program_started);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_forever);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_if);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_key_pressed);
 
-#ifdef SHOW_FPS
-  sf::Text show_fps_btn;
-  show_fps_btn.setString("FPS:");
-  show_fps_btn.setFont(font);
-  show_fps_btn.setPosition(sf::Vector2f(5, 40));
-  show_fps_btn.setFillColor(sf::Color::Black);
-#endif
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_go_to_xy);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_x_by);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_y_by);
 
-#ifdef SHOW_MOUSE_POS
-  sf::Text show_mouse_pos_text;
-  show_mouse_pos_text.setString("");
-  show_mouse_pos_text.setFont(font);
-  show_mouse_pos_text.setPosition(sf::Vector2f(5, 5));
-  show_mouse_pos_text.setFillColor(sf::Color::Black);
-#endif
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_line);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_circle);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_rectangle);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_triangle);
+}
 
-  LineInput sprite_name;
-  sprite_name.position = {250.0f, 35.0f};
-  sprite_name.input_text = "cat";
-  sprite_name.line_input_active = false;
-
+void bind_block_generators() {
   // All these bindings because a 'Block' has shared_ptr stuffs.
   // Duplicating a block just messes everything.
   // I guess will be fine in the long run.
@@ -142,6 +146,7 @@ int main() {
   // The only disadvantage is it calls the function to get the bind string and
   // binds it.
 
+  std::cout << "Binding Functions:\n";
   BIND_BLOCK(BUILT_IN_BLOCKS::block_say);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_program_started);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_forever);
@@ -156,7 +161,9 @@ int main() {
   BIND_BLOCK(BUILT_IN_BLOCKS::block_draw_circle);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_draw_rectangle);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_draw_triangle);
+}
 
+void add_editor_blocks(std::vector<Block> &to) {
   /*
     // Case 1:
     //  Get the function pointer and call the function which returns the block.
@@ -171,24 +178,85 @@ int main() {
     // Case 1 is definitely suited for run time function quering.
   */
 
-  Block block_say = BUILT_IN_BLOCKS::block_say();
-  Block block_program_started = BUILT_IN_BLOCKS::block_program_started();
-  Block block_forever = BUILT_IN_BLOCKS::block_forever();
-  Block block_if = BUILT_IN_BLOCKS::block_if();
-  Block block_key_pressed = BUILT_IN_BLOCKS::block_key_pressed();
+  std::cout << "Creating Editor Blocks:\n";
+  to.reserve(15);
 
-  Block block_go_to_xy = BUILT_IN_BLOCKS::block_go_to_xy();
-  Block block_change_x_by = BUILT_IN_BLOCKS::block_change_x_by();
-  Block block_change_y_by = BUILT_IN_BLOCKS::block_change_y_by();
+#define SPAWN_BLOCK(name, fn_ptr)                                              \
+  Block name;                                                                  \
+  fn_ptr(&name);                                                               \
+  to.push_back(name);
 
-  Block block_draw_line = BUILT_IN_BLOCKS::block_draw_line();
-  Block block_draw_circle = BUILT_IN_BLOCKS::block_draw_circle();
-  Block block_draw_rectangle = BUILT_IN_BLOCKS::block_draw_rectangle();
-  Block block_draw_triangle = BUILT_IN_BLOCKS::block_draw_triangle();
+  SPAWN_BLOCK(block_say, BUILT_IN_BLOCKS::block_say);
+  SPAWN_BLOCK(block_program_started, BUILT_IN_BLOCKS::block_program_started);
+  SPAWN_BLOCK(block_forever, BUILT_IN_BLOCKS::block_forever);
+  SPAWN_BLOCK(block_if, BUILT_IN_BLOCKS::block_if);
+  SPAWN_BLOCK(block_key_pressed, BUILT_IN_BLOCKS::block_key_pressed);
+
+  SPAWN_BLOCK(block_go_to_xy, BUILT_IN_BLOCKS::block_go_to_xy);
+  SPAWN_BLOCK(block_change_x_by, BUILT_IN_BLOCKS::block_change_x_by);
+  SPAWN_BLOCK(block_change_y_by, BUILT_IN_BLOCKS::block_change_y_by);
+
+  SPAWN_BLOCK(block_draw_line, BUILT_IN_BLOCKS::block_draw_line);
+  SPAWN_BLOCK(block_draw_circle, BUILT_IN_BLOCKS::block_draw_circle);
+  SPAWN_BLOCK(block_draw_rectangle, BUILT_IN_BLOCKS::block_draw_rectangle);
+  SPAWN_BLOCK(block_draw_triangle, BUILT_IN_BLOCKS::block_draw_triangle);
+
+#undef SPAWN_BLOCK
+}
+
+int main() {
+  init_global_font_and_label();
 
   sf::Font alaska;
   ERR_FAIL_COND_CRASH(alaska.loadFromFile("alaska.ttf"),
                       "Error Loading Font \"alaska\".");
+
+  height = sf::VideoMode::getDesktopMode().height;
+  width = sf::VideoMode::getDesktopMode().width;
+
+  window.create(sf::VideoMode(width, height), "SClone V2");
+
+#ifdef SHOW_FPS
+  sf::Text show_fps_btn;
+  show_fps_btn.setString("FPS:");
+  show_fps_btn.setFont(font);
+  show_fps_btn.setPosition(sf::Vector2f(5, 40));
+  show_fps_btn.setFillColor(sf::Color::Black);
+#endif
+
+#ifdef SHOW_MOUSE_POS
+  sf::Text show_mouse_pos_text;
+  show_mouse_pos_text.setString("");
+  show_mouse_pos_text.setFont(font);
+  show_mouse_pos_text.setPosition(sf::Vector2f(5, 5));
+  show_mouse_pos_text.setFillColor(sf::Color::Black);
+#endif
+
+  LineInput sprite_name;
+  sprite_name.position = {250.0f, 35.0f};
+  sprite_name.input_text = "cat";
+  sprite_name.line_input_active = false;
+
+  // bind_block_generators();
+  std::cout << "[Done]Binding Functions:\n\n";
+
+  //'editor blocks' are the blocks found in different tabs,that helps to create
+  // new blocks. That new blocks are then added to 'blocks' vector.
+  std::vector<Block> editor_blocks;
+  // editor_blocks.reserve(bound_blocks.size());
+  spawn_and_bind_editor_blocks(editor_blocks);
+  // add_editor_blocks(editor_blocks);
+  //  This debug is here so that we can see all objects being destroyed after
+  //  the function call.
+  std::cout << "[Done]Creating Editor Blocks:\n\n";
+
+  //'blocks' are user created blocks.
+  std::vector<Block> blocks;
+  std::cout << "Block = " << sizeof(Block) << " bytes.\n";
+  blocks.reserve(16);
+  // blocks.at(3).attach_block_next(&blocks.at(4));
+
+  int mouse_offset = 0;
 
   BLOCKS_TAB_NAME currently_selected_tab = BLOCKS_TAB_NAME::TAB_CONTROL;
 
@@ -241,28 +309,6 @@ int main() {
   // Just to select that block and fill it with color.
   BTNControlBlock.clicked_callback();
 
-  //'editor blocks' are the blocks found in different tabs,that helps to create
-  // new blocks. That new blocks are then added to 'blocks' vector.
-  std::vector<Block> editor_blocks;
-  editor_blocks.push_back(block_program_started);
-  editor_blocks.push_back(block_say);
-  editor_blocks.push_back(block_forever);
-  editor_blocks.push_back(block_if);
-  editor_blocks.push_back(block_key_pressed);
-
-  editor_blocks.push_back(block_go_to_xy);
-  editor_blocks.push_back(block_change_x_by);
-  editor_blocks.push_back(block_change_y_by);
-
-  editor_blocks.push_back(block_draw_line);
-  editor_blocks.push_back(block_draw_circle);
-  editor_blocks.push_back(block_draw_rectangle);
-  editor_blocks.push_back(block_draw_triangle);
-
-  //'blocks' are user created blocks.
-  std::vector<Block> blocks;
-  // blocks.at(3).attach_block_next(&blocks.at(4));
-
   while (window.isOpen()) {
     bool middle_click = false;
 
@@ -278,6 +324,8 @@ int main() {
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
+      } else if (event.type == sf::Event::MouseWheelMoved) {
+        mouse_offset += event.mouseWheel.delta;
       }
 
       sprite_name.handle_inputs(event);
@@ -373,7 +421,7 @@ int main() {
     BTNMotionBlock.Render();
 
     sf::Vector2f block_in_tabs_draw_position =
-        blocks_tab.getPosition() + sf::Vector2f(50, 50);
+        blocks_tab.getPosition() + sf::Vector2f(50, 50 + mouse_offset * 20.0f);
 
     // These are editor blocks which are for spawning new blocks.
     for (auto &block : editor_blocks) {
@@ -383,16 +431,19 @@ int main() {
 
       block.set_position(block_in_tabs_draw_position);
       // block._recalculate_rect();
-      block.Render();
-      // window.draw(block.block_rect);
-      block_in_tabs_draw_position.y += 100;
-      // TODO:maybe use + _next_block_snap_rect() but that iterates all over
-      // it's child use that once its cached.
+
+      // Scrolling above the tab.
+      if (block_in_tabs_draw_position.y >= blocks_tab.getPosition().y) {
+        block.Render();
+      }
+      // window.draw(block->block_rect);
+      float height_of_cur_block = block.block_full_size.y;
+      block_in_tabs_draw_position.y += height_of_cur_block + 20;
     }
 
     if (!is_any_block_being_dragged &&
         sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-      for (auto block : editor_blocks) {
+      for (auto &block : editor_blocks) {
         if (block.TabItBelongsToName != currently_selected_tab) {
           continue;
         }
@@ -400,18 +451,33 @@ int main() {
         // Spawn New Block.
         if (isMouseOverSprite(block.block_rect)) {
           // auto spawned_block = GET_BOUND_BLOCK_FN("block_forever").value()();
-          auto spawned_block =
-              GET_BOUND_BLOCK_FN(block.function_identifier).value()();
-          spawned_block.set_position((sf::Vector2f)mouse_position);
-          spawned_block.dragging = true;
-          blocks.push_back(spawned_block);
+          // auto spawned_block =
+          //     GET_BOUND_BLOCK_FN(block.function_identifier).value()();
+          std::cout << "User Adding a Block.\n";
+          Block_fn fn_ptr =
+              GET_BOUND_BLOCK_FN(block.function_identifier).value();
+          blocks.emplace_back();
+          auto vec_end = &blocks.back();
+          fn_ptr(vec_end);
+          vec_end->set_position((sf::Vector2f)mouse_position);
+          vec_end->dragging = true;
+          std::cout << "[Done]User Adding a Block.\n\n";
+
+          /*
+          shared_ptr approach.
+          auto spawned_block = std::make_shared<Block>();
+          fn_ptr(spawned_block.get());
+          spawned_block->set_position((sf::Vector2f)mouse_position);
+          spawned_block->dragging = true;
+          blocks.emplace_back(spawned_block);
+          */
           break;
         }
       }
     }
 
     // These are user defined blocks.
-    for (auto block : blocks) {
+    for (auto &block : blocks) {
       block.Render();
     }
 
@@ -430,6 +496,8 @@ int main() {
 
     window.display();
   }
+
+  std::cout << "\nProgram Terminated.\n\n";
 
   return 0;
 }

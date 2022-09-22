@@ -54,6 +54,8 @@ public:
 
   sf::RectangleShape block_rect;
 
+  sf::Vector2f block_full_size{0.0f, 0.0f};
+
   // This is the tab name in the editor where this block can be spawned from..
   // std::string TabItBelongsToName = "Control";
   // String would be flexible but use enums for speed now.
@@ -79,7 +81,7 @@ public:
   void process_inside_snap_hints(bool attach_block_requested,
                                  Block *current_dragging_block_ref);
 
-  std::function<std::string(Block b)> output_code_callback;
+  std::function<std::string(const Block &b)> output_code_callback;
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;
 
   void set_position(const sf::Vector2f p_pos);
@@ -102,7 +104,7 @@ public:
     childrens.push_back(std::move(u_block));
   }
 
-  std::optional<std::string> get_bound_value(const std::string &query);
+  std::optional<std::string> get_bound_value(const std::string &query) const;
 
   bool can_mouse_snap_to_top();
   bool can_mouse_snap_to_bottom();
