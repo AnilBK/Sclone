@@ -81,16 +81,14 @@ std::optional<Block_fn> GET_BOUND_BLOCK_FN(const std::string &query) {
 }
 
 void spawn_and_bind_editor_blocks(std::vector<Block> &to) {
-
-#define SPAWN_EDITOR_BLOCK_AND_BIND(fn_ptr)                                    \
-  {                                                                            \
-    std::cout << "Spawn And Bind.\n";                                          \
-    to.emplace_back();                                                         \
-    auto vec_end = &to.back();                                                 \
-    fn_ptr(vec_end);                                                           \
-    BIND_BLOCK(vec_end->function_identifier, fn_ptr);                          \
-  }                                                                            \
-  std::cout << "[Done]Spawn And Bind.\n";
+  auto SPAWN_EDITOR_BLOCK_AND_BIND = [&to](const Block_fn &fn_ptr) {
+    std::cout << "Spawn And Bind.\n";
+    Block block;
+    fn_ptr(&block);
+    to.push_back(block);
+    BIND_BLOCK(block.function_identifier, fn_ptr);
+    std::cout << "[Done]Spawn And Bind.\n";
+  };
 
   to.reserve(15);
 
@@ -457,11 +455,17 @@ int main() {
           std::cout << "User Adding a Block.\n";
           Block_fn fn_ptr =
               GET_BOUND_BLOCK_FN(block.function_identifier).value();
-          blocks.emplace_back();
-          auto vec_end = &blocks.back();
-          fn_ptr(vec_end);
-          vec_end->set_position((sf::Vector2f)mouse_position);
-          vec_end->dragging = true;
+          // blocks.emplace_back();
+          // auto vec_end = &blocks.back();
+          // fn_ptr(vec_end);
+          // vec_end->set_position((sf::Vector2f)mouse_position);
+          // vec_end->dragging = true;
+          Block b;
+          fn_ptr(&b);
+          b.set_position((sf::Vector2f)mouse_position);
+          b.dragging = true;
+          blocks.push_back(b);
+
           std::cout << "[Done]User Adding a Block.\n\n";
 
           /*
