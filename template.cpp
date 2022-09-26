@@ -9,12 +9,85 @@ sf::Font font;
 sf::RenderWindow window;
 
 // BUBBLE-SPEECH_BEGIN
-sf::Text bubble;
+sf::Text bubble_text;
 void init_bubble_label() {
-  bubble.setFont(font);
-  bubble.setCharacterSize(32);
-  bubble.setPosition(sf::Vector2f(20, 20));
-  bubble.setFillColor(sf::Color::White);
+  bubble_text.setFont(font);
+  bubble_text.setCharacterSize(26);
+  bubble_text.setFillColor(sf::Color::Black);
+}
+
+void draw_bubble_message(const std::string &message,
+                         const sf::Vector2f bubble_pos) {
+  // .------------.
+  // .            .
+  // .----- ------.
+  //       v
+  //       ! Bubble Position
+
+  bubble_text.setString(message);
+  bubble_text.setFillColor(sf::Color::Black);
+  const auto bubble_text_size = bubble_text.getGlobalBounds().getSize();
+
+  const sf::Vector2f padding{10.0f, 10.0f};
+
+  //////////////////////////////////////////
+  // The background of the speech bubble.//
+  ////////////////////////////////////////
+  sf::Vector2f bg_box_pos = bubble_pos;
+  // For the callout triangle.
+  bg_box_pos -= sf::Vector2f(0.0f, 10.0f);
+  // To make the text same size left and right of the callout triangle.
+  bg_box_pos -= sf::Vector2f(bubble_text_size.x * 0.5f, bubble_text_size.y);
+  // To reach top left of the rect from the bottom, we pass throught vertical
+  // padding twice and horizontal padding once.
+  bg_box_pos -= sf::Vector2f(padding.x, padding.y * 2.0f);
+
+  sf::Vector2f bg_box_size = bubble_text_size;
+  // Add left/right and top/down padding to the container.
+  bg_box_size += sf::Vector2f(padding.x * 2.0f, padding.y * 2.0f);
+
+  sf::RectangleShape callout_rect;
+  callout_rect.setPosition(bg_box_pos);
+  callout_rect.setSize(bg_box_size);
+  callout_rect.setFillColor(sf::Color::Cyan);
+  window.draw(callout_rect);
+
+  //////////////////////////////////////////
+  //        The Actual Message           //
+  ////////////////////////////////////////
+  // Center the text to the rectangle.
+  bubble_text.setOrigin(bubble_text.getGlobalBounds().getSize() / 2.0f +
+                        bubble_text.getLocalBounds().getPosition());
+  bubble_text.setPosition(callout_rect.getPosition() +
+                          (callout_rect.getSize() / 2.0f));
+  window.draw(bubble_text);
+
+  //////////////////////////////////////////
+  //  Speech Callout Triangle tail.      //
+  ////////////////////////////////////////
+  // The point on the bg rect where the triangle starts.
+
+  // The formation of v of the above figure, which is called callout triangle.
+  // tl......tr
+  //    \   \ 
+  //     \  \
+  //       \\
+  //         . b
+
+  // The top left, bottom and top right points that specify the triangle.
+  const sf::Vector2f tri_start_point = bubble_pos - sf::Vector2f(8.0f, 10.0f);
+  const sf::Vector2f tl = tri_start_point;
+  const sf::Vector2f b = bubble_pos;
+  const sf::Vector2f tr = tri_start_point + sf::Vector2f(10.0f, 0.0f);
+
+  sf::ConvexShape callout_triangle;
+  callout_triangle.setPointCount(3);
+  callout_triangle.setPoint(0, tl);
+  callout_triangle.setPoint(1, b);
+  callout_triangle.setPoint(2, tr);
+  callout_triangle.setFillColor(sf::Color::Cyan);
+
+  window.draw(callout_triangle);
 }
 
 class bubble_message {
@@ -29,7 +102,7 @@ float bubble_message_system_timer = 0.0f;
 std::vector<bubble_message> bubble_messages;
 
 void add_bubble_message(sf::Sprite *target_sprite_ptr, float length,
-                        std::string message) {
+                        const std::string &message) {
   bubble_message new_msg;
   new_msg.target_sprite_ptr = target_sprite_ptr;
   new_msg.length = length;
@@ -59,18 +132,11 @@ void update_bubble_message_system(float delta_time) {
     return;
   }
 
-  bubble.setString(msg);
-  auto buble_rect = bubble.getGlobalBounds();
-  auto bubble_size_x = buble_rect.width;
+  auto sprite_bubble_pos = msg_target_sprite->getGlobalBounds().getPosition();
+  sprite_bubble_pos +=
+      sf::Vector2f(msg_target_sprite->getGlobalBounds().width * 0.5f, -10.0f);
 
-  // Orient the text message so that the centre of the text is vertically above
-  // the sprite's centre.
-  bubble.setPosition(
-      msg_target_sprite->getPosition() +
-      sf::Vector2f((msg_target_sprite->getGlobalBounds().width * 0.5f) -
-                       (bubble_size_x * 0.5f),
-                   -msg_target_sprite->getGlobalBounds().height));
-  window.draw(bubble);
+  draw_bubble_message(msg, sprite_bubble_pos);
 
   bubble_message_system_timer += delta_time;
 
