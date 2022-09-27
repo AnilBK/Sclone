@@ -156,6 +156,14 @@ void update_bubble_message_system(float delta_time) {
 
 // BUBBLE-SPEECH_END
 
+// TODO:Add these Vector2f functions to my custom sfml build.
+float distance_to(sf::Vector2f p1, sf::Vector2f p2) {
+  auto x_dt = (p2.x - p1.x);
+  auto y_dt = (p2.y - p1.y);
+
+  return sqrt((x_dt * x_dt) + (y_dt * y_dt));
+}
+
 sf::Vector2f normalized(sf::Vector2f vec) {
   float l = (vec.x * vec.x) + (vec.y * vec.y);
   if (l != 0.0f) {
