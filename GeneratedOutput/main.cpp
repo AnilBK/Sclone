@@ -166,6 +166,11 @@ sf::Vector2f normalized(sf::Vector2f vec) {
   return vec;
 };
 
+bool is_mouse_over(sf::Sprite *sprite) {
+  sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
+  return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
+}
+
 int main() {
   if (!font.loadFromFile("alaska.ttf")) {
     std::cout << "Error Loading Font. \n";
@@ -210,15 +215,14 @@ int main() {
       if (e.type == sf::Event::Closed) {
         window.close();
       }
+
+      if (e.type == sf::Event::MouseButtonReleased &&
+          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&cat)) {
+        add_bubble_message(&cat, 1.5, "Meow Meow");
+      }
     }
 
     window.clear();
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-      add_bubble_message(&cat, 2, "Hi");
-      add_bubble_message(&cat, 2, "Hello");
-      add_bubble_message(&cat, 1.5, "umm.Hello Again");
-    }
 
     velocity = {0.0f, 0.0f};
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {

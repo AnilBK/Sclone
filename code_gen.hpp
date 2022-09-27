@@ -49,6 +49,12 @@ std::string code_input_key_pressed(const Block &block) {
   return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::" + key + "))";
 }
 
+std::string code_sprite_clicked(const Block &block) {
+  return "if (e.type == sf::Event::MouseButtonReleased &&"
+         "e.mouseButton.button == sf::Mouse::Left && "
+         "is_mouse_over(&##SPRITE_NAME##)){";
+}
+
 // In these primitive renderers,
 // We create a scope to avoid multiple definations for same sprite drawn
 // multiple times using the same name.
@@ -163,6 +169,7 @@ void generate_code(std::vector<Block> &blocks,
   std::string init_code = "";
   std::string main_loop_code = "";
   std::string spr_render_code = "window.draw(##SPRITE_NAME##);";
+  std::string input_code = "";
 
   std::cout << "\n\n[Generated Code]\n";
   for (auto &block : blocks) {
@@ -189,6 +196,12 @@ void generate_code(std::vector<Block> &blocks,
                       return b->get_text() == "Forever";
                     });
 
+    bool is_input_block =
+        std::any_of(block.childrens.begin(), block.childrens.end(),
+                    [](std::shared_ptr<NODEBaseClass> b) {
+                      return b->get_text() == "When It's Clicked";
+                    });
+
     if (is_forever_block) {
       // The generated code should be in the main loop.
       std::cout << "[MainLoopBlock]\n";
@@ -198,6 +211,9 @@ void generate_code(std::vector<Block> &blocks,
       remove_last_occurence(output_code, '}');
 
       main_loop_code += output_code;
+    } else if (is_input_block) {
+      input_code += output_code;
+      input_code += "}\n";
     } else {
       // The generated code should be before the main loop.
       init_code += output_code;
@@ -231,6 +247,7 @@ void generate_code(std::vector<Block> &blocks,
   replaceAll(template_code, "//###INIT_CODES###", spr_init_code);
   replaceAll(template_code, "//###MAINLOOP_CODE###", main_loop_code);
   replaceAll(template_code, "//###RENDER_CODE###", spr_render_code);
+  replaceAll(template_code, "//###INPUT_CODE###", input_code);
   replaceAll(template_code, "##SPRITE_NAME##", default_sprite_name);
 
   std::ofstream generated_file("E:\\Sclone 2.0\\GeneratedOutput\\main.cpp");

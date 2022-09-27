@@ -96,6 +96,7 @@ void spawn_and_bind_editor_blocks(std::vector<Block> &to) {
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_forever);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_if);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_key_pressed);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_sprite_clicked);
 
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_go_to_xy);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_x_by);
@@ -125,6 +126,7 @@ void bind_block_generators() {
     BIND_BLOCK("block_if", BUILT_IN_BLOCKS::block_if);
     BIND_BLOCK("block_key_pressed", BUILT_IN_BLOCKS::block_key_pressed);
     BIND_BLOCK("block_s_pressed", BUILT_IN_BLOCKS::block_s_pressed);
+    BIND_BLOCK("block_sprite_clicked", BUILT_IN_BLOCKS::block_sprite_clicked);
 
     BIND_BLOCK("block_go_to_xy", BUILT_IN_BLOCKS::block_go_to_xy);
     BIND_BLOCK("block_change_x_by", BUILT_IN_BLOCKS::block_change_x_by);
@@ -149,6 +151,7 @@ void bind_block_generators() {
   BIND_BLOCK(BUILT_IN_BLOCKS::block_forever);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_if);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_key_pressed);
+  BIND_BLOCK(BUILT_IN_BLOCKS::block_sprite_clicked);
 
   BIND_BLOCK(BUILT_IN_BLOCKS::block_go_to_xy);
   BIND_BLOCK(BUILT_IN_BLOCKS::block_change_x_by);
@@ -188,6 +191,7 @@ void add_editor_blocks(std::vector<Block> &to) {
   SPAWN_BLOCK(block_forever, BUILT_IN_BLOCKS::block_forever);
   SPAWN_BLOCK(block_if, BUILT_IN_BLOCKS::block_if);
   SPAWN_BLOCK(block_key_pressed, BUILT_IN_BLOCKS::block_key_pressed);
+  SPAWN_BLOCK(block_sprite_clicked, BUILT_IN_BLOCKS::block_sprite_clicked);
 
   SPAWN_BLOCK(block_go_to_xy, BUILT_IN_BLOCKS::block_go_to_xy);
   SPAWN_BLOCK(block_change_x_by, BUILT_IN_BLOCKS::block_change_x_by);

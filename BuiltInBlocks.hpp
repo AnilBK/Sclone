@@ -81,6 +81,18 @@ void block_key_pressed(Block *block_key_pressed) {
   // return std::move(block_key_pressed);
 }
 
+void block_sprite_clicked(Block *block_sprite_clicked) {
+  // Block block_sprite_clicked;
+  block_sprite_clicked->add_node(LabelNode("When It's Clicked"));
+  block_sprite_clicked->set_block_type(BLOCK_TYPES::CONTROL);
+  block_sprite_clicked->function_identifier = "block_sprite_clicked";
+  block_sprite_clicked->output_code_callback = code_sprite_clicked;
+
+  // block_sprite_clicked.set_position({425.0f, 25.0f});
+  block_sprite_clicked->_recalculate_rect();
+  // return std::move(block_sprite_clicked);
+}
+
 // Motion Blocks
 void block_go_to_xy(Block *block_go_to_xy) {
   // Block block_go_to_xy;

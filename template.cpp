@@ -166,6 +166,11 @@ sf::Vector2f normalized(sf::Vector2f vec) {
   return vec;
 };
 
+bool is_mouse_over(sf::Sprite *sprite) {
+  sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
+  return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
+}
+
 int main() {
   if (!font.loadFromFile("alaska.ttf")) {
     std::cout << "Error Loading Font. \n";
@@ -199,6 +204,8 @@ int main() {
       if (e.type == sf::Event::Closed) {
         window.close();
       }
+
+      //###INPUT_CODE###
     }
 
     window.clear();
