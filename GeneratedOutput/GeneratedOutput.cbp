@@ -22,13 +22,13 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-DSFML_STATIC" />
-			<Add directory="C:/SFML-2.5.1/include" />
+			<Add directory="E:/SFML-2.5.1/include" />
 		</Compiler>
 		<Linker>
 			<Add library="sfml-graphics" />
 			<Add library="sfml-window" />
 			<Add library="sfml-system" />
-			<Add directory="C:/SFML-2.5.1/lib" />
+			<Add directory="E:/SFML-2.5.1/Build/lib" />
 		</Linker>
 		<Unit filename="main.cpp" />
 		<Extensions />
