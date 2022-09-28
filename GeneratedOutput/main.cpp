@@ -2,6 +2,7 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 
@@ -69,7 +70,7 @@ void draw_bubble_message(const std::string &message,
 
   // The formation of v of the above figure, which is called callout triangle.
   // tl......tr
-  //    \   \ 
+  //    \   \
   //     \  \
   //       \\
   //         . b
@@ -156,6 +157,14 @@ void update_bubble_message_system(float delta_time) {
 
 // BUBBLE-SPEECH_END
 
+// TODO:Add these Vector2f functions to my custom sfml build.
+float distance_to(sf::Vector2f p1, sf::Vector2f p2) {
+  auto x_dt = (p2.x - p1.x);
+  auto y_dt = (p2.y - p1.y);
+
+  return sqrt((x_dt * x_dt) + (y_dt * y_dt));
+}
+
 sf::Vector2f normalized(sf::Vector2f vec) {
   float l = (vec.x * vec.x) + (vec.y * vec.y);
   if (l != 0.0f) {
@@ -169,6 +178,131 @@ sf::Vector2f normalized(sf::Vector2f vec) {
 bool is_mouse_over(sf::Sprite *sprite) {
   sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
   return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
+}
+
+// For move to Vector2f block.
+// TODO: Generalize to Create AnimationPlayers.
+class move_p2p_data {
+private:
+  sf::Vector2f current;
+  sf::Vector2f target;
+  sf::Vector2f interpolated_pos;
+  sf::Vector2f unit_vec;
+  float length = 0.0f;
+
+  float dt = 1.0f;
+  float time_elapsed = 0.0f;
+
+  sf::Sprite *target_sprite_ptr;
+
+public:
+  bool is_valid() const { return time_elapsed <= length; }
+
+  void update(float delta) {
+    time_elapsed += delta;
+    interpolated_pos += (unit_vec * dt * delta);
+    target_sprite_ptr->setPosition(interpolated_pos);
+  }
+
+  move_p2p_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_current,
+                sf::Vector2f p_target, float p_length) {
+    target_sprite_ptr = p_target_sprite_ptr;
+    current = p_current;
+    target = p_target;
+    interpolated_pos = current;
+    length = p_length;
+    unit_vec = normalized(target - current);
+    dt = distance_to(current, target) / length;
+  }
+};
+
+std::vector<move_p2p_data> move_p2p_datas;
+
+void add_move_p2p_operation(sf::Sprite *p_target_sprite_ptr,
+                            sf::Vector2f p_current, sf::Vector2f p_target,
+                            float p_length) {
+  move_p2p_data mv_data(p_target_sprite_ptr, p_current, p_target, p_length);
+  move_p2p_datas.push_back(mv_data);
+}
+
+void update_move_p2p_system(float delta_time) {
+  if (move_p2p_datas.empty()) {
+    return;
+  }
+
+  for (auto &mv_data : move_p2p_datas) {
+    mv_data.update(delta_time);
+  }
+
+  auto remove_expired = [](const move_p2p_data &mv_data) {
+    return !mv_data.is_valid();
+  };
+
+  move_p2p_datas.erase(std::remove_if(move_p2p_datas.begin(),
+                                      move_p2p_datas.end(), remove_expired),
+                       move_p2p_datas.end());
+}
+
+class move_to_point_data {
+private:
+  sf::Vector2f target;
+  sf::Vector2f interpolated_pos;
+  sf::Vector2f unit_vec;
+  float length = 0.0f;
+
+  float dt = 1.0f;
+  float time_elapsed = 0.0f;
+
+  sf::Sprite *target_sprite_ptr;
+  bool initialized = false;
+
+public:
+  bool is_valid() const { return time_elapsed <= length; }
+
+  void update(float delta) {
+    if (!initialized) {
+      sf::Vector2f current = target_sprite_ptr->getPosition();
+      interpolated_pos = current;
+      unit_vec = normalized(target - current);
+      dt = distance_to(current, target) / length;
+      initialized = true;
+    }
+
+    time_elapsed += delta;
+    interpolated_pos += (unit_vec * dt * delta);
+
+    if (target_sprite_ptr == nullptr) {
+      std::cout << "nullptr\n";
+      return;
+    }
+    target_sprite_ptr->setPosition(interpolated_pos);
+  }
+
+  move_to_point_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_target,
+                     float p_length) {
+    target_sprite_ptr = p_target_sprite_ptr;
+    target = p_target;
+    length = p_length;
+  }
+};
+
+std::vector<move_to_point_data> move_to_point_datas;
+
+void add_move_to_point_operation(sf::Sprite *p_target_sprite_ptr,
+                                 sf::Vector2f p_target, float p_length) {
+  move_to_point_data mv_data(p_target_sprite_ptr, p_target, p_length);
+  move_to_point_datas.push_back(mv_data);
+}
+
+void update_move_to_point_system(float delta_time) {
+  if (move_to_point_datas.empty()) {
+    return;
+  }
+
+  move_to_point_datas.at(0).update(delta_time);
+  if (!move_to_point_datas.at(0).is_valid()) {
+    move_to_point_datas.erase(move_to_point_datas.begin());
+  }
 }
 
 int main() {
@@ -218,11 +352,19 @@ int main() {
 
       if (e.type == sf::Event::MouseButtonReleased &&
           e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&cat)) {
-        add_bubble_message(&cat, 1.5, "Meow Meow");
+        add_bubble_message(&cat, 5, "Meow");
       }
     }
 
     window.clear();
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+      add_move_to_point_operation(&cat, sf::Vector2f(131, 596), 3);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+      add_move_p2p_operation(&cat, sf::Vector2f(0, 0), sf::Vector2f(1200, 700),
+                             3);
+    }
 
     velocity = {0.0f, 0.0f};
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
@@ -254,6 +396,8 @@ int main() {
     window.draw(cat);
 
     update_bubble_message_system(deltaTime.asSeconds());
+    update_move_p2p_system(deltaTime.asSeconds());
+    update_move_to_point_system(deltaTime.asSeconds());
 
     window.display();
   }

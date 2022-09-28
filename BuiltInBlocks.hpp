@@ -111,6 +111,53 @@ void block_go_to_xy(Block *block_go_to_xy) {
   // return std::move(block_go_to_xy);
 }
 
+void block_glide_to_xy(Block *block_glide_to_xy) {
+  // Block block_glide_to_xy;
+  block_glide_to_xy->add_node(LabelNode("Glide to"));
+  block_glide_to_xy->add_node(LabelNode("X"));
+  block_glide_to_xy->add_node(LineInputAttachFieldNode("", "x"));
+  block_glide_to_xy->add_node(LabelNode("Y"));
+  block_glide_to_xy->add_node(LineInputAttachFieldNode("", "y"));
+  block_glide_to_xy->add_node(ButtonNode("Pick^"));
+  block_glide_to_xy->add_node(LabelNode("For"));
+  block_glide_to_xy->add_node(LineInputAttachFieldNode("", "length"));
+  block_glide_to_xy->add_node(LabelNode("seconds"));
+  block_glide_to_xy->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
+  block_glide_to_xy->output_code_callback = code_sprite_glide_to_xy;
+  block_glide_to_xy->function_identifier = "block_glide_to_xy";
+
+  // block_glide_to_xy.set_position({70.0f, 600.0f});
+  block_glide_to_xy->_recalculate_rect();
+  // return std::move(block_glide_to_xy);
+}
+
+void block_glide_point_to_point(Block *block_glide_point_to_point) {
+  // Block block_glide_point_to_point;
+  block_glide_point_to_point->add_node(LabelNode("Glide to"));
+  block_glide_point_to_point->add_node(LabelNode("X"));
+  block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "x"));
+  block_glide_point_to_point->add_node(LabelNode("Y"));
+  block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "y"));
+  block_glide_point_to_point->add_node(ButtonNode("Pick^"));
+  block_glide_point_to_point->add_node(LabelNode("For"));
+  block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "length"));
+  block_glide_point_to_point->add_node(LabelNode("seconds"));
+  block_glide_point_to_point->add_node(LabelNode("To X1"));
+  block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "x1"));
+  block_glide_point_to_point->add_node(LabelNode("Y1"));
+  block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "y1"));
+
+  block_glide_point_to_point->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
+  block_glide_point_to_point->output_code_callback =
+      code_sprite_glide_point_to_point;
+  block_glide_point_to_point->function_identifier =
+      "block_glide_point_to_point";
+
+  // block_glide_point_to_point.set_position({70.0f, 600.0f});
+  block_glide_point_to_point->_recalculate_rect();
+  // return std::move(block_glide_point_to_point);
+}
+
 void block_change_x_by(Block *block_change_x_by) {
   // Block block_change_x_by;
   block_change_x_by->add_node(LabelNode("Change X By"));

@@ -13,6 +13,31 @@ std::string code_sprite_set_position(const Block &block) {
   return "##SPRITE_NAME##.setPosition(" + x_pos + ", " + y_pos + ");";
 }
 
+std::string code_sprite_glide_to_xy(const Block &block) {
+  auto x_pos = block.get_bound_value("x").value();
+  auto y_pos = block.get_bound_value("y").value();
+  auto length = block.get_bound_value("length").value();
+
+  auto target_pos_str = "sf::Vector2f(" + x_pos + ", " + y_pos + ")";
+
+  return "add_move_to_point_operation(&##SPRITE_NAME##," + target_pos_str +
+         "," + length + ");";
+}
+
+std::string code_sprite_glide_point_to_point(const Block &block) {
+  auto x_pos = block.get_bound_value("x").value();
+  auto y_pos = block.get_bound_value("y").value();
+  auto length = block.get_bound_value("length").value();
+  auto x1_pos = block.get_bound_value("x1").value();
+  auto y1_pos = block.get_bound_value("y1").value();
+
+  auto current_pos_str = "sf::Vector2f(" + x_pos + ", " + y_pos + ")";
+  auto target_pos_str = "sf::Vector2f(" + x1_pos + ", " + y1_pos + ")";
+
+  return "add_move_p2p_operation(&##SPRITE_NAME##," + current_pos_str + "," +
+         target_pos_str + "," + length + ");";
+}
+
 std::string code_sprite_forever(const Block &block) {
   return "";
 } //"for(;;)"; }
