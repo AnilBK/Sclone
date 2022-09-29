@@ -10,12 +10,15 @@ class TabBar {
 private:
   sf::RectangleShape tab_bg;
   std::vector<Button> tab_bar_buttons;
+  std::vector<int> tab_bar_scroll_value;
 
   sf::Font _font;
   sf::Vector2f _initial_pos, _initial_size;
 
   const sf::Color btn_selected_fill_color = sf::Color(200, 200, 200);
   const sf::Color btn_default_fill_color = sf::Color::Green;
+
+  void add_scroll_value_to_current_tab(int p_delta);
 
 public:
   int currently_selected_tab = -1;
@@ -29,6 +32,7 @@ public:
   void handle_inputs(sf::Event event);
   void _select_tab(int idx);
   void recalculate_post_add_tabs();
+  int get_scroll_value();
   void Render();
 };
 

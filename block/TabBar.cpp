@@ -29,6 +29,7 @@ void TabBar::add_tab(std::string tab_name) {
   BTN_tab_button.clicked_callback = select_it;
 
   tab_bar_buttons.push_back(BTN_tab_button);
+  tab_bar_scroll_value.push_back(0.0f);
 }
 
 void TabBar::_select_tab(int idx) {
@@ -59,6 +60,10 @@ void TabBar::_select_tab(int idx) {
 }
 
 void TabBar::handle_inputs(sf::Event event) {
+  if (event.type == sf::Event::MouseWheelMoved) {
+    add_scroll_value_to_current_tab(event.mouseWheel.delta);
+  }
+
   for (auto &tab_bar_btn : tab_bar_buttons) {
     tab_bar_btn.handle_inputs(event);
     // Selecting a tab is handled by the button callback, which is assigned at
@@ -81,6 +86,26 @@ void TabBar::recalculate_post_add_tabs() {
 
   tab_bg.setPosition(get_initial_position() + btn_size_delta);
   tab_bg.setSize(_initial_size - btn_size_delta);
+}
+
+int TabBar::get_scroll_value() {
+  if (currently_selected_tab == -1) {
+    return 0;
+  }
+
+  if (currently_selected_tab > tab_bar_scroll_value.size()) {
+    ERR_FAIL_COND_CRASH(true, "Invalid Selected tab index.");
+  }
+
+  return tab_bar_scroll_value.at(currently_selected_tab);
+}
+
+void TabBar::add_scroll_value_to_current_tab(int p_delta) {
+  if (currently_selected_tab == -1) {
+    return;
+  }
+
+  tab_bar_scroll_value.at(currently_selected_tab) += p_delta;
 }
 
 void TabBar::Render() {

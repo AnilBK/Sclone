@@ -259,8 +259,6 @@ int main() {
   blocks.reserve(16);
   // blocks.at(3).attach_block_next(&blocks.at(4));
 
-  int mouse_offset = 0;
-
   auto tab_pos = sf::Vector2f(800, 25);
   auto tab_size = sf::Vector2f(width - tab_pos.x, height - tab_pos.y);
   TabBar built_in_blocks_tab_bar(tab_pos, tab_size);
@@ -286,8 +284,6 @@ int main() {
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
-      } else if (event.type == sf::Event::MouseWheelMoved) {
-        mouse_offset += event.mouseWheel.delta;
       }
 
       sprite_name.handle_inputs(event);
@@ -379,9 +375,13 @@ int main() {
 
     sf::Vector2f block_in_tabs_draw_position =
         built_in_blocks_tab_bar.get_visible_tab_position() +
-        sf::Vector2f(50, 50 + mouse_offset * 20.0f);
+        sf::Vector2f(50,
+                     50 + built_in_blocks_tab_bar.get_scroll_value() * 20.0f);
 
     int currently_selected_tab = built_in_blocks_tab_bar.currently_selected_tab;
+
+    bool can_spawn_editor_block = !is_any_block_being_dragged &&
+                                  sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
     // These are editor blocks which are for spawning new blocks.
     for (auto &block : editor_blocks) {
@@ -396,51 +396,30 @@ int main() {
       if (block_in_tabs_draw_position.y >=
           built_in_blocks_tab_bar.get_visible_tab_position().y) {
         block.Render();
+
+        // Select the blocks only that are visible.
+        if (can_spawn_editor_block) {
+          // Spawn New Block.
+          if (isMouseOverSprite(block.block_rect)) {
+            std::cout << "User Adding a Block.\n";
+            Block_fn fn_ptr =
+                GET_BOUND_BLOCK_FN(block.function_identifier).value();
+
+            Block b;
+            fn_ptr(&b);
+            b.set_position((sf::Vector2f)mouse_position);
+            b.dragging = true;
+            blocks.push_back(b);
+
+            std::cout << "[Done]User Adding a Block.\n\n";
+            can_spawn_editor_block = false;
+          }
+        }
       }
+
       // window.draw(block->block_rect);
       float height_of_cur_block = block.block_full_size.y;
       block_in_tabs_draw_position.y += height_of_cur_block + 20;
-    }
-
-    if (!is_any_block_being_dragged &&
-        sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-      for (auto &block : editor_blocks) {
-        if (block.TabItBelongsToName != currently_selected_tab) {
-          continue;
-        }
-
-        // Spawn New Block.
-        if (isMouseOverSprite(block.block_rect)) {
-          // auto spawned_block = GET_BOUND_BLOCK_FN("block_forever").value()();
-          // auto spawned_block =
-          //     GET_BOUND_BLOCK_FN(block.function_identifier).value()();
-          std::cout << "User Adding a Block.\n";
-          Block_fn fn_ptr =
-              GET_BOUND_BLOCK_FN(block.function_identifier).value();
-          // blocks.emplace_back();
-          // auto vec_end = &blocks.back();
-          // fn_ptr(vec_end);
-          // vec_end->set_position((sf::Vector2f)mouse_position);
-          // vec_end->dragging = true;
-          Block b;
-          fn_ptr(&b);
-          b.set_position((sf::Vector2f)mouse_position);
-          b.dragging = true;
-          blocks.push_back(b);
-
-          std::cout << "[Done]User Adding a Block.\n\n";
-
-          /*
-          shared_ptr approach.
-          auto spawned_block = std::make_shared<Block>();
-          fn_ptr(spawned_block.get());
-          spawned_block->set_position((sf::Vector2f)mouse_position);
-          spawned_block->dragging = true;
-          blocks.emplace_back(spawned_block);
-          */
-          break;
-        }
-      }
     }
 
     // These are user defined blocks.
