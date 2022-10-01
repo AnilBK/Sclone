@@ -189,7 +189,9 @@ std::string code_sprite_draw_triangle(const Block &block) {
 }
 
 void generate_code(std::vector<Block> &blocks,
-                   const std::string &default_sprite_name) {
+                   const std::string &default_sprite_name,
+                   const std::string &sprite_file_name,
+                   const sf::Vector2f sprite_initial_position) {
 
   std::string init_code = "";
   std::string main_loop_code = "";
@@ -253,7 +255,9 @@ void generate_code(std::vector<Block> &blocks,
 
   auto spr_init_code = std::string(
       "sf::Texture ##SPRITE_NAME##_texture;"
-      "if (!##SPRITE_NAME##_texture.loadFromFile(\"cat.png\")) {"
+      "if (!##SPRITE_NAME##_texture.loadFromFile(\"" +
+      sprite_file_name +
+      "\")) {"
       "   std::cerr << \"Error while loading texture\" << std::endl;"
       "   return -1;"
       " }"
@@ -264,8 +268,9 @@ void generate_code(std::vector<Block> &blocks,
       "##SPRITE_NAME##.getGlobalBounds();        "
       "##SPRITE_NAME##.setOrigin(##SPRITE_NAME##Size.width / 2., "
       "##SPRITE_NAME##Size.height / 2.); "
-      "##SPRITE_NAME##.setPosition(window.getSize().x / 2., "
-      "window.getSize().y / 2.);");
+      "##SPRITE_NAME##.setPosition(" +
+      std::to_string((int)sprite_initial_position.x) + "," +
+      std::to_string((int)sprite_initial_position.y) + ");");
 
   spr_init_code += "\n" + init_code;
 

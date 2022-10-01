@@ -1,5 +1,6 @@
 #include "BuiltInBlocks.hpp"
 #include "Globals.hpp"
+#include "TransformGizmo2D.hpp"
 #include "block/Block.hpp"
 #include "block/Button.hpp"
 #include "block/LineInput.hpp"
@@ -235,10 +236,112 @@ int main() {
   show_mouse_pos_text.setFillColor(sf::Color::Black);
 #endif
 
+  std::string editor_sprite_texture_file_name = "cat.png";
+
+  sf::Texture editor_sprite_texture;
+  ERR_FAIL_COND_CRASH(
+      !editor_sprite_texture.loadFromFile(editor_sprite_texture_file_name),
+      "Error while loading texture.");
+  editor_sprite_texture.setSmooth(true);
+
+  auto editorSpriteTextureSize = (sf::Vector2f)editor_sprite_texture.getSize();
+
+  // TODO: Make a container like Block, which handles all the resizing.
+  sf::Sprite sprite_preview;
+  sprite_preview.setTexture(editor_sprite_texture);
+  sprite_preview.setScale(128 / editorSpriteTextureSize.x,
+                          128 / editorSpriteTextureSize.y);
+  sprite_preview.setPosition(250.0f, 10.0f);
+
   LineInput sprite_name;
-  sprite_name.position = {250.0f, 35.0f};
+  sprite_name.position =
+      sprite_preview.getPosition() + sf::Vector2f(128 + 32.0f, 0.0f);
   sprite_name.input_text = "cat";
   sprite_name.line_input_active = false;
+
+  sf::Sprite editor_sprite;
+  editor_sprite.setTexture(editor_sprite_texture);
+  sf::FloatRect catSize = editor_sprite.getGlobalBounds();
+  editor_sprite.setOrigin(catSize.width / 2.0f, catSize.height / 2.0f);
+  editor_sprite.setPosition(window.getSize().x / 2.0f,
+                            window.getSize().y / 2.0f);
+
+  bool sprite_visible = true;
+
+  TransformGizmo2D gizmo_2D;
+  gizmo_2D.setTargetSprite(&editor_sprite);
+
+  // TODO: Should be a checkbox.
+  Button BTN_sprite_visible("Visible", font);
+  BTN_sprite_visible.setPosition(
+      sprite_name.position +
+      sf::Vector2f(sprite_name.rect_size().x + 10, -10.0f));
+  BTN_sprite_visible.button_fill_color = sf::Color::Green;
+  std::function<void()> toggle_visibility = [&BTN_sprite_visible,
+                                             &sprite_visible, &gizmo_2D]() {
+    if (BTN_sprite_visible.get_text() == "Visible") {
+      sprite_visible = false;
+      BTN_sprite_visible.setLabel("Not Visible");
+      BTN_sprite_visible.button_fill_color = sf::Color(153, 153, 102);
+      gizmo_2D._undrag_gizmos();
+    } else {
+      sprite_visible = true;
+      BTN_sprite_visible.setLabel("Visible");
+      BTN_sprite_visible.button_fill_color = sf::Color::Green;
+    }
+  };
+  BTN_sprite_visible.clicked_callback = toggle_visibility;
+
+  sf::Text sprite_pos_text;
+  sprite_pos_text.setFont(font);
+  sprite_pos_text.setPosition(sprite_name.position + sf::Vector2f(0, 50));
+  sprite_pos_text.setFillColor(sf::Color::Black);
+  auto update_sprite_pos_text = [&sprite_pos_text, &editor_sprite]() {
+    sprite_pos_text.setString(
+        "X: " + std::to_string((int)editor_sprite.getPosition().x) +
+        " Y: " + std::to_string((int)editor_sprite.getPosition().y));
+  };
+  update_sprite_pos_text();
+
+  sf::Text sprite_texture_name_label;
+  sprite_texture_name_label.setFont(font);
+  sprite_texture_name_label.setString("Texture:");
+  sprite_texture_name_label.setPosition(sprite_pos_text.getPosition() +
+                                        sf::Vector2f(0, 40));
+  sprite_texture_name_label.setFillColor(sf::Color::Black);
+
+  float texture_label_size_x =
+      sprite_texture_name_label.getGlobalBounds().width;
+
+  LineInput texture_file_name;
+  texture_file_name.position = sprite_texture_name_label.getPosition() +
+                               sf::Vector2f(texture_label_size_x + 10, 0.0f);
+  texture_file_name.input_text = editor_sprite_texture_file_name;
+  texture_file_name.line_input_active = false;
+
+  Button BTN_reload_texture("Reload", font);
+  BTN_reload_texture.setPosition(
+      texture_file_name.position +
+      sf::Vector2f(texture_file_name.rect_size().x + 10, 0.0f));
+  BTN_reload_texture.button_fill_color = sf::Color::Green;
+  std::function<void()> reload_texture = [&editor_sprite_texture,
+                                          &texture_file_name, &sprite_preview,
+                                          &editor_sprite]() {
+    if (!editor_sprite_texture.loadFromFile(texture_file_name.get_text())) {
+      std::cout << "Error while loading texture.";
+      exit(1);
+    }
+    sprite_preview.setTexture(editor_sprite_texture);
+    editor_sprite.setTexture(editor_sprite_texture);
+    // TODO:Check this scaling.
+    // Resize these sprites to match the size of the new texture.
+    auto editorSpriteTextureSize =
+        (sf::Vector2f)editor_sprite_texture.getSize();
+    sprite_preview.setScale(128 / editorSpriteTextureSize.x,
+                            128 / editorSpriteTextureSize.y);
+  };
+
+  BTN_reload_texture.clicked_callback = reload_texture;
 
   // bind_block_generators();
   std::cout << "[Done]Binding Functions:\n\n";
@@ -280,13 +383,18 @@ int main() {
         window.close();
       } else if (event.type == sf::Event::KeyReleased &&
                  event.key.code == sf::Keyboard::LAlt) {
-        generate_code(blocks, sprite_name.get_text());
+        generate_code(blocks, sprite_name.get_text(),
+                      texture_file_name.get_text(),
+                      editor_sprite.getPosition());
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
       }
 
       sprite_name.handle_inputs(event);
+      BTN_sprite_visible.handle_inputs(event);
+      texture_file_name.handle_inputs(event);
+      BTN_reload_texture.handle_inputs(event);
 
       built_in_blocks_tab_bar.handle_inputs(event);
 
@@ -438,7 +546,32 @@ int main() {
     window.draw(show_mouse_pos_text);
 #endif
 
+    // Info about the currently selected sprites stuffs.
     sprite_name.Render();
+    window.draw(sprite_preview);
+    BTN_sprite_visible.Render();
+    window.draw(sprite_pos_text);
+    window.draw(sprite_texture_name_label);
+    texture_file_name.Render();
+    BTN_reload_texture.Render();
+
+    // Update the size,as length of texture file name can change.
+    // Call these when length of string of a button changes.
+    // TODO: Do that using signals/observers.
+    BTN_reload_texture.setPosition(
+        texture_file_name.position +
+        sf::Vector2f(texture_file_name.rect_size().x + 10, -10.0f));
+
+    BTN_sprite_visible.setPosition(
+        sprite_name.position +
+        sf::Vector2f(sprite_name.rect_size().x + 10, -10.0f));
+
+    if (sprite_visible) {
+      window.draw(editor_sprite);
+      // 2D Gizmo Stuffs.
+      gizmo_2D.Render();
+      update_sprite_pos_text();
+    }
 
     window.display();
   }

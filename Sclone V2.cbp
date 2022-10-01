@@ -48,6 +48,8 @@
 		</Linker>
 		<Unit filename="BuiltInBlocks.hpp" />
 		<Unit filename="Globals.hpp" />
+		<Unit filename="TransformGizmo2D.cpp" />
+		<Unit filename="TransformGizmo2D.hpp" />
 		<Unit filename="block/Block.cpp" />
 		<Unit filename="block/Block.hpp" />
 		<Unit filename="block/Button.cpp" />
