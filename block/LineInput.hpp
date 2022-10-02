@@ -6,10 +6,11 @@
 #include <SFML/Graphics.hpp>
 #include <locale>
 
+#include "../Core/Object.hpp"
 #include "../Globals.hpp"
 
 // GUI Class to get a input field.
-class LineInput {
+class LineInput : public Object {
 
 public:
   std::string input_text;

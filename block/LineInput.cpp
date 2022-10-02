@@ -23,19 +23,30 @@ void LineInput::handle_inputs(sf::Event event) {
     return;
   }
 
+  bool resized = false;
+
   if (event.type == sf::Event::TextEntered) {
-    if (std::isprint(event.text.unicode))
+    if (std::isprint(event.text.unicode)) {
       input_text += event.text.unicode;
+      resized = true;
+    }
   } else if (event.type == sf::Event::KeyPressed) {
     if (event.key.code == sf::Keyboard::BackSpace) {
-      if (!input_text.empty())
+      if (!input_text.empty()) {
         input_text.pop_back();
+        resized = true;
+      }
     }
     if (allows_multi_line) {
       if (event.key.code == sf::Keyboard::Return) {
         input_text += '\n';
+        resized = true;
       }
     }
+  }
+
+  if (resized) {
+    emit_signal("resized");
   }
 }
 

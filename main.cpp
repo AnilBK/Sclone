@@ -343,6 +343,23 @@ int main() {
 
   BTN_reload_texture.clicked_callback = reload_texture;
 
+  // Update the size,as length of texture file name changes.
+  auto re_position_BTN_reload_texture = [&BTN_reload_texture,
+                                         &texture_file_name]() {
+    BTN_reload_texture.setPosition(
+        texture_file_name.position +
+        sf::Vector2f(texture_file_name.rect_size().x + 10, -10.0f));
+  };
+
+  auto re_position_BTN_sprite_visible = [&BTN_sprite_visible, &sprite_name]() {
+    BTN_sprite_visible.setPosition(
+        sprite_name.position +
+        sf::Vector2f(sprite_name.rect_size().x + 10, -10.0f));
+  };
+
+  texture_file_name.connect("resized", re_position_BTN_reload_texture);
+  sprite_name.connect("resized", re_position_BTN_sprite_visible);
+
   // bind_block_generators();
   std::cout << "[Done]Binding Functions:\n\n";
 
@@ -554,17 +571,6 @@ int main() {
     window.draw(sprite_texture_name_label);
     texture_file_name.Render();
     BTN_reload_texture.Render();
-
-    // Update the size,as length of texture file name can change.
-    // Call these when length of string of a button changes.
-    // TODO: Do that using signals/observers.
-    BTN_reload_texture.setPosition(
-        texture_file_name.position +
-        sf::Vector2f(texture_file_name.rect_size().x + 10, -10.0f));
-
-    BTN_sprite_visible.setPosition(
-        sprite_name.position +
-        sf::Vector2f(sprite_name.rect_size().x + 10, -10.0f));
 
     if (sprite_visible) {
       window.draw(editor_sprite);
