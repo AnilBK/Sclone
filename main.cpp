@@ -392,6 +392,24 @@ int main() {
   while (window.isOpen()) {
     bool middle_click = false;
 
+    sf::Vector2i editor_scripts_offset{0, 0};
+
+    auto get_block_it_is_attached_to = [&blocks](Block *block_to_test) {
+      Block *parent = nullptr;
+
+      for (auto &block : blocks) {
+        if (block.next_block == nullptr) {
+          continue;
+        }
+
+        if (block.next_block == block_to_test) {
+          parent = &block;
+          break;
+        }
+      }
+      return parent;
+    };
+
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed ||
@@ -406,6 +424,41 @@ int main() {
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
+      } else if (event.type == sf::Event::KeyReleased &&
+                 event.key.code == sf::Keyboard::I) {
+        editor_scripts_offset.y -= 1;
+      } else if (event.type == sf::Event::KeyReleased &&
+                 event.key.code == sf::Keyboard::K) {
+        editor_scripts_offset.y += 1;
+      } else if (event.type == sf::Event::KeyReleased &&
+                 event.key.code == sf::Keyboard::J) {
+        editor_scripts_offset.x -= 1;
+      } else if (event.type == sf::Event::KeyReleased &&
+                 event.key.code == sf::Keyboard::L) {
+        editor_scripts_offset.x += 1;
+      }
+
+      auto block_is_connected =
+          [get_block_it_is_attached_to](Block *block_to_test) {
+            return get_block_it_is_attached_to(block_to_test) != nullptr;
+          };
+
+      // I - Move the scripts Up.
+      // K - Move the scripts Down.
+      // J - Move the scripts Left.
+      // L - Move the scripts Right.
+      if (editor_scripts_offset.x != 0 || editor_scripts_offset.y != 0) {
+        for (auto &block : blocks) {
+          if (block_is_connected(&block)) {
+            continue;
+            // It's parent will handle it's position.
+          }
+          // TODO: Some bugs with this.
+          // Especially with the forever block.
+          block.set_position(block.block_rect.getPosition() +
+                             (sf::Vector2f)editor_scripts_offset * 200.0f);
+          block._recalculate_rect();
+        }
       }
 
       sprite_name.handle_inputs(event);
@@ -431,22 +484,6 @@ int main() {
         break;
       }
     }
-
-    auto get_block_it_is_attached_to = [&blocks](Block *block_to_test) {
-      Block *parent = nullptr;
-
-      for (auto &block : blocks) {
-        if (block.next_block == nullptr) {
-          continue;
-        }
-
-        if (block.next_block == block_to_test) {
-          parent = &block;
-          break;
-        }
-      }
-      return parent;
-    };
 
     bool is_any_block_being_dragged = current_dragging_block_ref != nullptr;
     if (is_any_block_being_dragged) {
