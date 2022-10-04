@@ -173,7 +173,7 @@ sf::Vector2f normalized(sf::Vector2f vec) {
     vec.y /= mag;
   }
   return vec;
-};
+}
 
 bool is_mouse_over(sf::Sprite *sprite) {
   sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
@@ -205,12 +205,10 @@ public:
   }
 
   move_p2p_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_current,
-                sf::Vector2f p_target, float p_length) {
+                sf::Vector2f p_target, float p_length)
+      : current(p_current), target(p_target), interpolated_pos(current),
+        length(p_length) {
     target_sprite_ptr = p_target_sprite_ptr;
-    current = p_current;
-    target = p_target;
-    interpolated_pos = current;
-    length = p_length;
     unit_vec = normalized(target - current);
     dt = distance_to(current, target) / length;
   }
@@ -279,10 +277,9 @@ public:
   }
 
   move_to_point_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_target,
-                     float p_length) {
+                     float p_length)
+      : target(p_target), length(p_length) {
     target_sprite_ptr = p_target_sprite_ptr;
-    target = p_target;
-    length = p_length;
   }
 };
 

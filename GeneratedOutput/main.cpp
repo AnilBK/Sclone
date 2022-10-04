@@ -70,7 +70,7 @@ void draw_bubble_message(const std::string &message,
 
   // The formation of v of the above figure, which is called callout triangle.
   // tl......tr
-  //    \   \
+  //    \   \ 
   //     \  \
   //       \\
   //         . b
@@ -173,7 +173,7 @@ sf::Vector2f normalized(sf::Vector2f vec) {
     vec.y /= mag;
   }
   return vec;
-};
+}
 
 bool is_mouse_over(sf::Sprite *sprite) {
   sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
@@ -205,12 +205,10 @@ public:
   }
 
   move_p2p_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_current,
-                sf::Vector2f p_target, float p_length) {
+                sf::Vector2f p_target, float p_length)
+      : current(p_current), target(p_target), interpolated_pos(current),
+        length(p_length) {
     target_sprite_ptr = p_target_sprite_ptr;
-    current = p_current;
-    target = p_target;
-    interpolated_pos = current;
-    length = p_length;
     unit_vec = normalized(target - current);
     dt = distance_to(current, target) / length;
   }
@@ -279,10 +277,9 @@ public:
   }
 
   move_to_point_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_target,
-                     float p_length) {
+                     float p_length)
+      : target(p_target), length(p_length) {
     target_sprite_ptr = p_target_sprite_ptr;
-    target = p_target;
-    length = p_length;
   }
 };
 
@@ -323,18 +320,18 @@ int main() {
   player.setPosition(200, 200);
   player.setFillColor(sf::Color::Red);
 
-  sf::Texture cat_texture;
-  if (!cat_texture.loadFromFile("cat.png")) {
+  sf::Texture Cat_texture;
+  if (!Cat_texture.loadFromFile("cat.png")) {
     std::cerr << "Error while loading texture" << std::endl;
     return -1;
   }
-  cat_texture.setSmooth(true);
+  Cat_texture.setSmooth(true);
 
-  sf::Sprite cat;
-  cat.setTexture(cat_texture);
-  sf::FloatRect catSize = cat.getGlobalBounds();
-  cat.setOrigin(catSize.width / 2., catSize.height / 2.);
-  cat.setPosition(window.getSize().x / 2., window.getSize().y / 2.);
+  sf::Sprite Cat;
+  Cat.setTexture(Cat_texture);
+  sf::FloatRect CatSize = Cat.getGlobalBounds();
+  Cat.setOrigin(CatSize.width / 2., CatSize.height / 2.);
+  Cat.setPosition(258, 339);
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -351,20 +348,12 @@ int main() {
       }
 
       if (e.type == sf::Event::MouseButtonReleased &&
-          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&cat)) {
-        add_bubble_message(&cat, 5, "Meow");
+          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&Cat)) {
+        add_bubble_message(&Cat, 2, "Meow Meow");
       }
     }
 
     window.clear();
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-      add_move_to_point_operation(&cat, sf::Vector2f(131, 596), 3);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-      add_move_p2p_operation(&cat, sf::Vector2f(0, 0), sf::Vector2f(1200, 700),
-                             3);
-    }
 
     velocity = {0.0f, 0.0f};
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
@@ -393,7 +382,7 @@ int main() {
 
     window.draw(player);
 
-    window.draw(cat);
+    window.draw(Cat);
 
     update_bubble_message_system(deltaTime.asSeconds());
     update_move_p2p_system(deltaTime.asSeconds());

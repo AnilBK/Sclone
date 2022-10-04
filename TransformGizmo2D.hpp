@@ -8,7 +8,7 @@ enum class GIZMO_SELECT_STATE { X, Y, CENTER, NONE };
 
 class TransformGizmo2D {
 private:
-  sf::Sprite *target_sprite;
+  sf::Sprite *target_sprite = nullptr;
   GIZMO_SELECT_STATE current_gizmo_state = GIZMO_SELECT_STATE::NONE;
 
   bool _is_gizmo_selected();

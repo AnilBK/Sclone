@@ -19,8 +19,8 @@ class Object {
 public:
   std::vector<Subject> signals;
 
-  void connect(std::string message, std::function<void()> fn);
-  void emit_signal(std::string emitted_message);
+  void connect(const std::string &message, std::function<void()> fn);
+  void emit_signal(const std::string &emitted_message);
 };
 
 /*

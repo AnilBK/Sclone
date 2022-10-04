@@ -11,7 +11,7 @@ void Block::_move_attached_blocks(sf::Vector2f p_pos) {
   // Seems like that is the best thing to do.
   std::vector<sf::Vector2f> attached_blocks_positions;
 
-  for (auto &child : childrens) {
+  for (const auto &child : childrens) {
     if (child->type == BLOCK_ATTACH_NODE) {
       attached_blocks_positions.push_back(child->_pos +
                                           sf::Vector2f(15.0f, 0.0f));
@@ -374,7 +374,7 @@ bool Block::_process_left_click_on_children(sf::Event event) {
 }
 
 bool Block::_any_node_already_pressed() {
-  for (auto &child : childrens) {
+  for (const auto &child : childrens) {
     if (child->pressed) {
       return true;
     }

@@ -1,8 +1,7 @@
 #include "TabBar.hpp"
 
-TabBar::TabBar(sf::Vector2f position, sf::Vector2f size) {
-  _initial_pos = position;
-  _initial_size = size;
+TabBar::TabBar(sf::Vector2f position, sf::Vector2f size)
+    : _initial_pos(position), _initial_size(size) {
   tab_bg.setPosition(position);
   tab_bg.setSize(size);
   tab_bg.setFillColor(sf::Color(204, 204, 204));

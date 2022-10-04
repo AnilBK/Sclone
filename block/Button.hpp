@@ -19,7 +19,7 @@ public:
 
   sf::Color button_fill_color = sf::Color::Green;
 
-  Button(std::string btn_text, sf::Font &font) {
+  Button(const std::string &btn_text, sf::Font &font) {
     setLabel(btn_text);
     setFont(font);
     text.setFillColor(sf::Color::Black);
@@ -35,7 +35,9 @@ public:
     return {bounds.width, bounds.height};
   }
 
-  void setLabel(std::string btn_text_new) { text.setString(btn_text_new); }
+  void setLabel(const std::string &btn_text_new) {
+    text.setString(btn_text_new);
+  }
 
   void setFont(sf::Font &font) { text.setFont(font); }
 
