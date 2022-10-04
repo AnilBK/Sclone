@@ -47,9 +47,22 @@
 			<Add directory="C:/SFML-2.5.1/lib" />
 		</Linker>
 		<Unit filename="BuiltInBlocks.hpp" />
+		<Unit filename="Core/Object.cpp" />
+		<Unit filename="Core/Object.hpp" />
 		<Unit filename="Globals.hpp" />
 		<Unit filename="TransformGizmo2D.cpp" />
 		<Unit filename="TransformGizmo2D.hpp" />
+		<Unit filename="UI/Container.cpp" />
+		<Unit filename="UI/Container.hpp" />
+		<Unit filename="UI/Label.cpp" />
+		<Unit filename="UI/Label.hpp" />
+		<Unit filename="UI/UIBaseClass.hpp" />
+		<Unit filename="UI/UIButton.cpp" />
+		<Unit filename="UI/UIButton.hpp" />
+		<Unit filename="UI/UILineInput.cpp" />
+		<Unit filename="UI/UILineInput.hpp" />
+		<Unit filename="UI/UISprite.cpp" />
+		<Unit filename="UI/UISprite.hpp" />
 		<Unit filename="block/Block.cpp" />
 		<Unit filename="block/Block.hpp" />
 		<Unit filename="block/Button.cpp" />
