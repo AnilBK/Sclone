@@ -7,6 +7,8 @@
 
 class UILineInput : public UIBaseClass {
 private:
+  std::string input_text;
+  std::string prefix = "";
   bool clicked = false;
   bool mouse_over = false;
 
@@ -21,8 +23,6 @@ public:
 
   Label text;
 
-  std::string input_text;
-  std::string prefix = "";
   sf::Clock clock;
 
   bool show_cursor = true;
@@ -34,10 +34,16 @@ public:
 
   sf::Vector2f min_size = {75, 40};
 
+  // When button is flat the button renders like a normal text.
+  // It shows the HAND cursor to let know it is clickable.
+  bool is_flat = true;
+
   UILineInput(const std::string &btn_text) {
     text.setText(btn_text);
-    input_text = text.getText();
+    set_text(text.getText());
   }
+
+  void set_text(const std::string &p_input_text);
 
   std::string get_text();
 

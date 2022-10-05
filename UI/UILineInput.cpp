@@ -11,6 +11,11 @@ sf::Vector2f UILineInput::rect_size() {
   return {x, y};
 }
 
+void UILineInput::set_text(const std::string &p_input_text) {
+  input_text = p_input_text;
+  emit_signal("resized");
+}
+
 std::string UILineInput::get_text() { return prefix + input_text; }
 
 void UILineInput::RenderDebug() {
@@ -56,7 +61,11 @@ void UILineInput::Render() {
     show_cursor = false;
   }
 
-  if (line_input_active) {
+  if (is_flat) {
+    if (line_input_active) {
+      _draw_button(getPosition(), rect_size());
+    }
+  } else {
     _draw_button(getPosition(), rect_size());
   }
 
@@ -78,7 +87,11 @@ void UILineInput::handle_inputs(sf::Event event) {
     if (line_input_active) {
       setCursor(sf::Cursor::Text);
     } else {
-      setCursor(sf::Cursor::Hand);
+      if (is_flat) {
+        setCursor(sf::Cursor::Hand);
+      } else {
+        setCursor(sf::Cursor::Text);
+      }
     }
     // std::cout << "Mouse Hovered.\n";
   }
