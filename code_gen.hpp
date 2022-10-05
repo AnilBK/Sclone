@@ -188,10 +188,38 @@ std::string code_sprite_draw_triangle(const Block &block) {
   return code;
 }
 
+std::string init_sprite_code(const std::string &sprite_name,
+                             const std::string &sprite_texture_file_name,
+                             sf::Vector2f sprite_pos) {
+  auto spr_init_code = std::string(
+      "sf::Texture ##SPRITE_NAME##_texture;"
+      "if (!##SPRITE_NAME##_texture.loadFromFile(\"" +
+      sprite_texture_file_name +
+      "\")) {"
+      "   std::cerr << \"Error while loading texture\" << std::endl;"
+      "   return -1;"
+      " }"
+      "##SPRITE_NAME##_texture.setSmooth(true);\n\n"
+      "sf::Sprite ##SPRITE_NAME##;"
+      "##SPRITE_NAME##.setTexture(##SPRITE_NAME##_texture);      "
+      "sf::FloatRect ##SPRITE_NAME##Size = "
+      "##SPRITE_NAME##.getGlobalBounds();        "
+      "##SPRITE_NAME##.setOrigin(##SPRITE_NAME##Size.width / 2.0f, "
+      "##SPRITE_NAME##Size.height / 2.0f); "
+      "##SPRITE_NAME##.setPosition(" +
+      std::to_string((int)sprite_pos.x) + "," +
+      std::to_string((int)sprite_pos.y) + ");");
+
+  replaceAll(spr_init_code, "##SPRITE_NAME##", sprite_name);
+
+  return spr_init_code;
+}
+
 void generate_code(std::vector<Block> &blocks,
                    const std::string &default_sprite_name,
                    const std::string &sprite_file_name,
-                   const sf::Vector2f sprite_initial_position) {
+                   const sf::Vector2f sprite_initial_position,
+                   const std::string &p_init_code) {
 
   std::string init_code = "";
   std::string main_loop_code = "";
@@ -253,25 +281,7 @@ void generate_code(std::vector<Block> &blocks,
   std::string template_code((std::istreambuf_iterator<char>(code_template)),
                             (std::istreambuf_iterator<char>()));
 
-  auto spr_init_code = std::string(
-      "sf::Texture ##SPRITE_NAME##_texture;"
-      "if (!##SPRITE_NAME##_texture.loadFromFile(\"" +
-      sprite_file_name +
-      "\")) {"
-      "   std::cerr << \"Error while loading texture\" << std::endl;"
-      "   return -1;"
-      " }"
-      "##SPRITE_NAME##_texture.setSmooth(true);\n\n"
-      "sf::Sprite ##SPRITE_NAME##;"
-      "##SPRITE_NAME##.setTexture(##SPRITE_NAME##_texture);      "
-      "sf::FloatRect ##SPRITE_NAME##Size = "
-      "##SPRITE_NAME##.getGlobalBounds();        "
-      "##SPRITE_NAME##.setOrigin(##SPRITE_NAME##Size.width / 2., "
-      "##SPRITE_NAME##Size.height / 2.); "
-      "##SPRITE_NAME##.setPosition(" +
-      std::to_string((int)sprite_initial_position.x) + "," +
-      std::to_string((int)sprite_initial_position.y) + ");");
-
+  auto spr_init_code = p_init_code;
   spr_init_code += "\n" + init_code;
 
   replaceAll(template_code, "//###INIT_CODES###", spr_init_code);

@@ -320,18 +320,31 @@ int main() {
   player.setPosition(200, 200);
   player.setFillColor(sf::Color::Red);
 
-  sf::Texture Cat_texture;
-  if (!Cat_texture.loadFromFile("cat.png")) {
+  sf::Texture star_fish_texture;
+  if (!star_fish_texture.loadFromFile("fish.png")) {
     std::cerr << "Error while loading texture" << std::endl;
     return -1;
   }
-  Cat_texture.setSmooth(true);
+  star_fish_texture.setSmooth(true);
 
-  sf::Sprite Cat;
-  Cat.setTexture(Cat_texture);
-  sf::FloatRect CatSize = Cat.getGlobalBounds();
-  Cat.setOrigin(CatSize.width / 2., CatSize.height / 2.);
-  Cat.setPosition(258, 339);
+  sf::Sprite star_fish;
+  star_fish.setTexture(star_fish_texture);
+  sf::FloatRect star_fishSize = star_fish.getGlobalBounds();
+  star_fish.setOrigin(star_fishSize.width / 2.0f, star_fishSize.height / 2.0f);
+  star_fish.setPosition(115, 553);
+
+  sf::Texture pussy_texture;
+  if (!pussy_texture.loadFromFile("cat.png")) {
+    std::cerr << "Error while loading texture" << std::endl;
+    return -1;
+  }
+  pussy_texture.setSmooth(true);
+
+  sf::Sprite pussy;
+  pussy.setTexture(pussy_texture);
+  sf::FloatRect pussySize = pussy.getGlobalBounds();
+  pussy.setOrigin(pussySize.width / 2.0f, pussySize.height / 2.0f);
+  pussy.setPosition(598, 257);
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -345,11 +358,6 @@ int main() {
     while (window.pollEvent(e)) {
       if (e.type == sf::Event::Closed) {
         window.close();
-      }
-
-      if (e.type == sf::Event::MouseButtonReleased &&
-          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&Cat)) {
-        add_bubble_message(&Cat, 2, "Meow Meow");
       }
     }
 
@@ -382,7 +390,7 @@ int main() {
 
     window.draw(player);
 
-    window.draw(Cat);
+    window.draw(pussy);
 
     update_bubble_message_system(deltaTime.asSeconds());
     update_move_p2p_system(deltaTime.asSeconds());

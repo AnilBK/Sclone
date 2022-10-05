@@ -1,11 +1,6 @@
 #include "BuiltInBlocks.hpp"
+#include "Editor/editor.hpp"
 #include "Globals.hpp"
-#include "TransformGizmo2D.hpp"
-#include "UI/Container.hpp"
-#include "UI/Label.hpp"
-#include "UI/UIButton.hpp"
-#include "UI/UILineInput.hpp"
-#include "UI/UISprite.hpp"
 #include "block/Block.hpp"
 #include "block/NODEBaseClass.hpp"
 #include "block/TabBar.hpp"
@@ -239,102 +234,7 @@ int main() {
   show_mouse_pos_text.setFillColor(sf::Color::Black);
 #endif
 
-  std::string editor_sprite_texture_file_name = "cat.png";
-
-  sf::Texture editor_sprite_texture;
-  ERR_FAIL_COND_CRASH(
-      !editor_sprite_texture.loadFromFile(editor_sprite_texture_file_name),
-      "Error while loading texture.");
-  editor_sprite_texture.setSmooth(true);
-
-  sf::Sprite editor_sprite;
-  editor_sprite.setTexture(editor_sprite_texture);
-  sf::FloatRect catSize = editor_sprite.getGlobalBounds();
-  editor_sprite.setOrigin(catSize.width / 2.0f, catSize.height / 2.0f);
-  editor_sprite.setPosition(window.getSize().x / 2.0f,
-                            window.getSize().y / 2.0f);
-
-  bool sprite_visible = true;
-
-  TransformGizmo2D gizmo_2D;
-  gizmo_2D.setTargetSprite(&editor_sprite);
-
-  UISprite sprite_preview("cat.png");
-
-  VBoxContainer sprite_vbox;
-  sprite_vbox.add_child(sprite_preview);
-
-  UILineInput name("Cat");
-
-  UIButton visibility("Visible");
-  std::function<void()> visibility_callback = [&visibility, &sprite_visible,
-                                               &gizmo_2D]() {
-    if (visibility.text.getText() == "Visible") {
-      sprite_visible = false;
-      visibility.text.setText("Not Visible");
-      visibility.button_fill_color = sf::Color(153, 153, 102);
-      gizmo_2D._undrag_gizmos();
-    } else {
-      sprite_visible = true;
-      visibility.text.setText("Visible");
-      visibility.button_fill_color = sf::Color::Green;
-    }
-  };
-  visibility.clicked_callback = visibility_callback;
-
-  HBoxContainer first_line;
-  first_line.add_child(name);
-  first_line.add_child(visibility);
-
-  HBoxContainer third_line;
-  Label texture("Texture:");
-  UILineInput texture_name(editor_sprite_texture_file_name);
-  std::function<void()> reload_texture = [&sprite_preview,
-                                          &editor_sprite_texture, &texture_name,
-                                          &editor_sprite]() {
-    if (!editor_sprite_texture.loadFromFile(texture_name.get_text())) {
-      std::cout << "Error while loading texture.";
-      exit(1);
-    }
-
-    editor_sprite.setTexture(editor_sprite_texture);
-    // TODO: Check this scaling.
-    // Resize these sprites to match the size of the new texture.
-    auto editorSpriteTextureSize =
-        (sf::Vector2f)editor_sprite_texture.getSize();
-
-    auto sprite_bounds =
-        sf::IntRect(0, 0, editorSpriteTextureSize.x, editorSpriteTextureSize.y);
-
-    editor_sprite.setScale(sf::Vector2f(1.0f, 1.0f));
-    editor_sprite.setTextureRect(sprite_bounds);
-
-    sprite_preview.sprite.setTexture(editor_sprite_texture);
-    sprite_preview.sprite.setTextureRect(sprite_bounds);
-  };
-
-  texture_name.enter_pressed_callback = reload_texture;
-  third_line.add_child(texture);
-  third_line.add_child(texture_name);
-
-  Label pos("Position: X: Y:");
-
-  VBoxContainer sprite_info_vbox;
-  sprite_info_vbox.add_child(first_line);
-  sprite_info_vbox.add_child(pos);
-  sprite_info_vbox.add_child(third_line);
-
-  HBoxContainer editor_inspector;
-  editor_inspector.add_child(sprite_vbox);
-  editor_inspector.add_child(sprite_info_vbox);
-  editor_inspector.setPosition({250, 10});
-
-  auto update_sprite_pos_text = [&pos, &editor_sprite]() {
-    auto str = "X: " + std::to_string((int)editor_sprite.getPosition().x) +
-               " Y: " + std::to_string((int)editor_sprite.getPosition().y);
-    pos.setText(str);
-  };
-  update_sprite_pos_text();
+  Editor editor;
 
   // bind_block_generators();
   std::cout << "[Done]Binding Functions:\n\n";
@@ -394,8 +294,25 @@ int main() {
         window.close();
       } else if (event.type == sf::Event::KeyReleased &&
                  event.key.code == sf::Keyboard::LAlt) {
-        generate_code(blocks, name.get_text(), texture_name.get_text(),
-                      editor_sprite.getPosition());
+        std::string init_code = "";
+
+        for (const auto &spr : editor.user_added_sprites) {
+          auto sprite_name = spr.name;
+          auto sprite_pos = spr.position;
+          auto sprite_texture_file = spr.texture;
+          init_code +=
+              init_sprite_code(sprite_name, sprite_texture_file, sprite_pos);
+          init_code += "\n\n";
+        }
+
+        auto spr = editor._currently_selected_sprite_ptr();
+        if (spr != nullptr) {
+          generate_code(blocks, spr->name, spr->texture, spr->position,
+                        init_code);
+        }
+
+        // generate_code(blocks, name.get_text(), texture_name.get_text(),
+        // editor_sprite.getPosition());
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
@@ -438,7 +355,7 @@ int main() {
 
       built_in_blocks_tab_bar.handle_inputs(event);
 
-      editor_inspector.handle_inputs(event);
+      editor.handle_inputs(event);
 
       for (auto &block : blocks) {
         block._process_events(event);
@@ -572,15 +489,7 @@ int main() {
     window.draw(show_mouse_pos_text);
 #endif
 
-    // Info about the currently selected sprites stuffs.
-    if (sprite_visible) {
-      window.draw(editor_sprite);
-      // 2D Gizmo Stuffs.
-      gizmo_2D.Render();
-      update_sprite_pos_text();
-    }
-
-    editor_inspector.Render();
+    editor.Render();
 
     window.display();
   }
