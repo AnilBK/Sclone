@@ -26,25 +26,27 @@ void UIButton::RenderDebug() {
 }
 
 void UIButton::Render() {
-  RenderDebug();
+  // RenderDebug();
 
-  sf::RectangleShape r;
-  sf::Vector2f padding{5.0f, 5.0f};
-  r.setPosition(getPosition() - padding);
-  r.setSize(rect_size() + (padding * 2.0f));
-  r.setFillColor(button_fill_color);
-  // A shadow when a button is highlighted.
-  if (mouse_over) {
-    r.setOutlineThickness(2.5);
-    r.setOutlineColor(sf::Color(31, 142, 255, 255));
-    if (!clicked) {
-      r.setFillColor(sf::Color(0, 220, 0));
+  if (!is_flat) {
+    sf::RectangleShape r;
+    sf::Vector2f padding{5.0f, 5.0f};
+    r.setPosition(getPosition() - padding);
+    r.setSize(rect_size() + (padding * 2.0f));
+    r.setFillColor(button_fill_color);
+    // A shadow when a button is highlighted.
+    if (mouse_over) {
+      r.setOutlineThickness(2.5);
+      r.setOutlineColor(sf::Color(31, 142, 255, 255));
+      if (!clicked) {
+        r.setFillColor(sf::Color(0, 220, 0));
+      }
     }
+    // else {
+    // r.setOutlineThickness(0.0);
+    // }
+    window.draw(r);
   }
-  // else {
-  // r.setOutlineThickness(0.0);
-  // }
-  window.draw(r);
 
   text.Render();
 }

@@ -12,6 +12,7 @@ private:
 
 public:
   sf::Color button_fill_color = sf::Color::Green;
+  bool is_flat = false;
   Label text;
   std::function<void()> clicked_callback;
 
