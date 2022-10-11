@@ -20,25 +20,22 @@ void Editor::_create_new_sprite() {
   add_new_sprite(new_sprite_name);
 }
 
-EditorSprite *Editor::_currently_selected_sprite_ptr() {
-  if (currently_selected_sprite_id == -1) {
-    return nullptr;
+void Editor::add_block_to_script(Block b) {
+  if (script_editor.script == nullptr) {
+    return;
   }
 
-  for (auto &sprite : user_added_sprites) {
-    if (sprite.id == currently_selected_sprite_id) {
-      return &sprite;
-    }
-  }
-
-  return nullptr;
+  script_editor.script->blocks.push_back(b);
 }
 
 void Editor::_update_sprite_texure() {
-  auto *selected_sprite = _currently_selected_sprite_ptr();
+  auto *selected_sprite = selected_sprite_ptr();
   if (selected_sprite == nullptr) {
     return;
   }
+
+  RETURN_IF_STRING_HAS_SPACE(sprite_texture_name.get_text(),
+                             "No space allowed for sprite texture.")
 
   selected_sprite->texture = sprite_texture_name.get_text();
   selected_sprite->sprite.setTexture(*load_texture(selected_sprite->texture));
@@ -56,10 +53,13 @@ void Editor::_update_sprite_texure() {
 }
 
 void Editor::_update_sprite_name() {
-  auto *selected_sprite = _currently_selected_sprite_ptr();
+  auto *selected_sprite = selected_sprite_ptr();
   if (selected_sprite == nullptr) {
     return;
   }
+
+  RETURN_IF_STRING_HAS_SPACE(sprite_name.get_text(),
+                             "No space allowed for sprite name.")
 
   selected_sprite->name = sprite_name.get_text();
   if (selected_sprite->ui_btn_ref != nullptr) {
@@ -80,7 +80,13 @@ void Editor::select_sprite_by_id(int id) {
       sprite_pos.setText(_position_to_string(sprite.position));
       sprite_texture_name.set_text(sprite.texture);
       _highlight_selected_btn_in_list(sprite.ui_btn_ref);
-      _refresh_layout();
+      // _refresh_layout();
+
+      // Undrag if any sprite was being dragged.
+      // This is because we use right click to de-drag a block.
+      // TODO??Fix that.
+      script_editor.reset_dragged_block();
+      script_editor.script = selected_script_ptr();
       return;
     }
   }
@@ -98,6 +104,8 @@ void Editor::_highlight_selected_btn_in_list(const UIButton *btn_to_highlight) {
 }
 
 void Editor::add_new_sprite(const std::string &p_name) {
+  RETURN_IF_STRING_HAS_SPACE(p_name, "No space allowed for sprite name.")
+
   for (const auto &sprite : user_added_sprites) {
     if (sprite.name == p_name) {
       std::cout << "[Error] Sprite with given name Already Exits.\n";
@@ -138,6 +146,10 @@ void Editor::add_new_sprite(const std::string &p_name) {
 
   user_added_sprites.push_back(e_spr);
 
+  std::shared_ptr<Script> script(new Script());
+  script.get()->attached_to_sprite_id = new_working_id;
+  scripts.push_back(script);
+
   _total_sprites_added++;
 }
 
@@ -150,9 +162,45 @@ void Editor::_refresh_layout() {
   editor_inspector.reposition_children();
 }
 
+Script *Editor::selected_script_ptr() {
+  for (auto &script : scripts) {
+    if (script.get()->attached_to_sprite_id == currently_selected_sprite_id) {
+      return script.get();
+    }
+  }
+
+  return nullptr;
+}
+
+EditorSprite *Editor::selected_sprite_ptr() {
+  if (currently_selected_sprite_id == -1) {
+    return nullptr;
+  }
+
+  for (auto &sprite : user_added_sprites) {
+    if (sprite.id == currently_selected_sprite_id) {
+      return &sprite;
+    }
+  }
+
+  return nullptr;
+}
+
+Script *Editor::get_script_attached_to_editor_sprite(EditorSprite *sprite) {
+  int sprite_id = sprite->id;
+  for (auto &script : scripts) {
+    if (script.get()->attached_to_sprite_id == sprite_id) {
+      return script.get();
+    }
+  }
+
+  return nullptr;
+}
+
 void Editor::handle_inputs(sf::Event event) {
   user_added_sprites_list.handle_inputs(event);
   editor_inspector.handle_inputs(event);
+  script_editor.handle_inputs(event);
 }
 
 void Editor::_render_ui() {
@@ -169,7 +217,7 @@ void Editor::_render_sprites() {
 }
 
 void Editor::_process_2D_gizmo() {
-  auto *target_object = _currently_selected_sprite_ptr();
+  auto *target_object = selected_sprite_ptr();
   if (target_object == nullptr) {
     return;
   }
@@ -198,4 +246,5 @@ void Editor::Render() {
   _render_ui();
   _render_sprites();
   _process_2D_gizmo();
+  script_editor.Render();
 }

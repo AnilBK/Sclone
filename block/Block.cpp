@@ -283,6 +283,15 @@ std::string Block::get_code() {
     code += next_block->get_code();
   }
 
+  // EDITOR SHORCUT MACROS:
+  //  Shortcut in the editor to get position of the current sprite.
+  //  This applies to code everywhere, so we perform the replace operation here.
+  replaceAll(code, "#POS#", "##SPRITE_NAME##.getPosition()");
+  replaceAll(code, "#WIN_W#", "width");
+  replaceAll(code, "#WIN_H#", "height");
+  replaceAll(code, "#M_X#", "sf::Mouse::getPosition(window).x");
+  replaceAll(code, "#M_Y#", "sf::Mouse::getPosition(window).y");
+
   return code;
 }
 

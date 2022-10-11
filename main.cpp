@@ -1,6 +1,7 @@
 #include "BuiltInBlocks.hpp"
 #include "Editor/editor.hpp"
 #include "Globals.hpp"
+#include "Script.hpp"
 #include "block/Block.hpp"
 #include "block/NODEBaseClass.hpp"
 #include "block/TabBar.hpp"
@@ -249,12 +250,6 @@ int main() {
   //  the function call.
   std::cout << "[Done]Creating Editor Blocks:\n\n";
 
-  //'blocks' are user created blocks.
-  std::vector<Block> blocks;
-  std::cout << "Block = " << sizeof(Block) << " bytes.\n";
-  blocks.reserve(16);
-  // blocks.at(3).attach_block_next(&blocks.at(4));
-
   auto tab_pos = sf::Vector2f(800, 25);
   auto tab_size = sf::Vector2f(width - tab_pos.x, height - tab_pos.y);
   TabBar built_in_blocks_tab_bar(tab_pos, tab_size);
@@ -268,24 +263,6 @@ int main() {
   while (window.isOpen()) {
     bool middle_click = false;
 
-    sf::Vector2i editor_scripts_offset{0, 0};
-
-    auto get_block_it_is_attached_to = [&blocks](Block *block_to_test) {
-      Block *parent = nullptr;
-
-      for (auto &block : blocks) {
-        if (block.next_block == nullptr) {
-          continue;
-        }
-
-        if (block.next_block == block_to_test) {
-          parent = &block;
-          break;
-        }
-      }
-      return parent;
-    };
-
     sf::Event event;
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed ||
@@ -294,133 +271,21 @@ int main() {
         window.close();
       } else if (event.type == sf::Event::KeyReleased &&
                  event.key.code == sf::Keyboard::LAlt) {
-        std::string init_code = "";
-
-        for (const auto &spr : editor.user_added_sprites) {
-          auto sprite_name = spr.name;
-          auto sprite_pos = spr.position;
-          auto sprite_texture_file = spr.texture;
-          init_code +=
-              init_sprite_code(sprite_name, sprite_texture_file, sprite_pos);
-          init_code += "\n\n";
-        }
-
-        auto spr = editor._currently_selected_sprite_ptr();
-        if (spr != nullptr) {
-          generate_code(blocks, spr->name, spr->texture, spr->position,
-                        init_code);
-        }
-
-        // generate_code(blocks, name.get_text(), texture_name.get_text(),
-        // editor_sprite.getPosition());
+        std::cout << "Code Generated.\n";
+        generate_code(editor);
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
-      } else if (event.type == sf::Event::KeyReleased &&
-                 event.key.code == sf::Keyboard::I) {
-        editor_scripts_offset.y -= 1;
-      } else if (event.type == sf::Event::KeyReleased &&
-                 event.key.code == sf::Keyboard::K) {
-        editor_scripts_offset.y += 1;
-      } else if (event.type == sf::Event::KeyReleased &&
-                 event.key.code == sf::Keyboard::J) {
-        editor_scripts_offset.x -= 1;
-      } else if (event.type == sf::Event::KeyReleased &&
-                 event.key.code == sf::Keyboard::L) {
-        editor_scripts_offset.x += 1;
-      }
-
-      auto block_is_connected =
-          [get_block_it_is_attached_to](Block *block_to_test) {
-            return get_block_it_is_attached_to(block_to_test) != nullptr;
-          };
-
-      // I - Move the scripts Up.
-      // K - Move the scripts Down.
-      // J - Move the scripts Left.
-      // L - Move the scripts Right.
-      if (editor_scripts_offset.x != 0 || editor_scripts_offset.y != 0) {
-        for (auto &block : blocks) {
-          if (block_is_connected(&block)) {
-            continue;
-            // It's parent will handle it's position.
-          }
-          // TODO: Some bugs with this.
-          // Especially with the forever block.
-          block.set_position(block.block_rect.getPosition() +
-                             (sf::Vector2f)editor_scripts_offset * 200.0f);
-          block._recalculate_rect();
-        }
       }
 
       built_in_blocks_tab_bar.handle_inputs(event);
 
       editor.handle_inputs(event);
-
-      for (auto &block : blocks) {
-        block._process_events(event);
-      }
     }
 
     mouse_position = sf::Mouse::getPosition(window);
 
     window.clear(sf::Color(0, 255, 204));
-
-    Block *current_dragging_block_ref = nullptr;
-    for (auto &block : blocks) {
-      if (block.dragging) {
-        current_dragging_block_ref = &block;
-        break;
-      }
-    }
-
-    bool is_any_block_being_dragged = current_dragging_block_ref != nullptr;
-    if (is_any_block_being_dragged) {
-      for (auto &block : blocks) {
-        if (current_dragging_block_ref == &block) {
-          continue;
-        }
-
-        // Control Blocks don't attach to anything.
-        if (current_dragging_block_ref->is_control_block()) {
-          continue;
-        }
-
-        bool attach_block_requested = middle_click;
-
-        if (block.can_mouse_snap_to_top()) {
-          if (attach_block_requested) {
-            Block *parent = get_block_it_is_attached_to(&block);
-            if (parent != nullptr) {
-              // It is already attached to some block.
-              // So CurrentlyDraggedBlock will be attached to that parent.
-              parent->attach_block_next(current_dragging_block_ref);
-            }
-            // And that parent's previously attached block('block') will be
-            // attached to currently dragged block. Meaning we insert the
-            // currently dragged block between them two.
-            current_dragging_block_ref->dragging = false;
-            current_dragging_block_ref->attach_block_next(&block);
-            continue;
-          } else {
-            block.show_previous_block_snap_hint();
-          }
-        }
-
-        if (block.can_mouse_snap_to_bottom()) {
-          if (attach_block_requested) {
-            current_dragging_block_ref->dragging = false;
-            block.attach_block_next(current_dragging_block_ref);
-            continue;
-          } else {
-            block.show_next_block_snap_hint();
-          }
-        }
-
-        block.process_inside_snap_hints(attach_block_requested,
-                                        current_dragging_block_ref);
-      }
-    }
 
     built_in_blocks_tab_bar.Render();
 
@@ -431,6 +296,8 @@ int main() {
 
     int currently_selected_tab = built_in_blocks_tab_bar.currently_selected_tab;
 
+    bool is_any_block_being_dragged =
+        editor.script_editor.is_any_block_dragging();
     bool can_spawn_editor_block = !is_any_block_being_dragged &&
                                   sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
@@ -460,7 +327,8 @@ int main() {
             fn_ptr(&b);
             b.set_position((sf::Vector2f)mouse_position);
             b.dragging = true;
-            blocks.push_back(b);
+            // blocks.push_back(b);
+            editor.add_block_to_script(b);
 
             std::cout << "[Done]User Adding a Block.\n\n";
             can_spawn_editor_block = false;
@@ -471,11 +339,6 @@ int main() {
       // window.draw(block->block_rect);
       float height_of_cur_block = block.block_full_size.y;
       block_in_tabs_draw_position.y += height_of_cur_block + 20;
-    }
-
-    // These are user defined blocks.
-    for (auto &block : blocks) {
-      block.Render();
     }
 
 #ifdef SHOW_FPS

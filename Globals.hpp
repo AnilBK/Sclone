@@ -13,6 +13,16 @@
     exit(1);                                                                   \
   }
 
+// Break from a function if the string contains a space.
+#define RETURN_IF_STRING_HAS_SPACE(m_string, m_message)                        \
+  for (const auto &ch : m_string) {                                            \
+    if (ch == ' ') {                                                           \
+      std::cout << "[Error] \"" << __FILE__ << "\" :: " << __LINE__ << " "     \
+                << m_message << "\n";                                          \
+      return;                                                                  \
+    }                                                                          \
+  }
+
 enum NODE_TYPE {
   PLACEHOLDER,
   BLOCK_ATTACH_NODE,

@@ -2,6 +2,7 @@
 #define CODE_GEN_HPP
 
 #include "block/Block.hpp"
+#include "editor/editor.hpp"
 #include <fstream>
 #include <string>
 
@@ -188,13 +189,19 @@ std::string code_sprite_draw_triangle(const Block &block) {
   return code;
 }
 
-std::string init_sprite_code(const std::string &sprite_name,
-                             const std::string &sprite_texture_file_name,
-                             sf::Vector2f sprite_pos) {
-  auto spr_init_code = std::string(
+void substitute_sprite_name(std::string &code, const std::string &sprite_name) {
+  replaceAll(code, "##SPRITE_NAME##", sprite_name);
+}
+
+std::string construct_sprite_code(const EditorSprite &spr) {
+  auto sprite_name = spr.name;
+  auto sprite_pos = spr.position;
+  auto sprite_texture_file = spr.texture;
+
+  auto spr_cons_code = std::string(
       "sf::Texture ##SPRITE_NAME##_texture;"
       "if (!##SPRITE_NAME##_texture.loadFromFile(\"" +
-      sprite_texture_file_name +
+      sprite_texture_file +
       "\")) {"
       "   std::cerr << \"Error while loading texture\" << std::endl;"
       "   return -1;"
@@ -210,11 +217,182 @@ std::string init_sprite_code(const std::string &sprite_name,
       std::to_string((int)sprite_pos.x) + "," +
       std::to_string((int)sprite_pos.y) + ");");
 
-  replaceAll(spr_init_code, "##SPRITE_NAME##", sprite_name);
-
-  return spr_init_code;
+  substitute_sprite_name(spr_cons_code, sprite_name);
+  return spr_cons_code;
 }
 
+std::string render_sprite_code(const std::string &sprite_name) {
+  std::string spr_render_code = "window.draw(##SPRITE_NAME##);";
+  substitute_sprite_name(spr_render_code, sprite_name);
+  return spr_render_code;
+}
+
+std::string _construct_code(const Editor &editor) {
+  std::string cons_code = "";
+  for (const auto &spr : editor.user_added_sprites) {
+    cons_code += construct_sprite_code(spr);
+    cons_code += "\n\n";
+  }
+
+  return cons_code;
+}
+
+std::string _render_all_sprites_code(const Editor &editor) {
+  std::string render_code = "";
+  for (const auto &spr : editor.user_added_sprites) {
+    auto sprite_name = spr.name;
+    render_code += render_sprite_code(sprite_name);
+    render_code += "\n";
+  }
+
+  return render_code;
+}
+
+std::string _main_loop_code(Editor &editor) {
+  std::string main_loop_code = "";
+
+  for (auto &spr : editor.user_added_sprites) {
+    auto script = editor.get_script_attached_to_editor_sprite(&spr);
+    if (script == nullptr) {
+      continue;
+    }
+
+    auto sprite_name = spr.name;
+
+    for (auto &block : script->blocks) {
+      if (!block.is_control_block()) {
+        continue;
+      }
+
+      // The first child of "Forever" Block has text "Forever".
+      bool is_forever_block =
+          std::any_of(block.childrens.begin(), block.childrens.end(),
+                      [](std::shared_ptr<NODEBaseClass> b) {
+                        return b->get_text() == "Forever";
+                      });
+      if (!is_forever_block) {
+        continue;
+      }
+
+      auto output_code = block.get_code();
+
+      // The generated code should be in the main loop.
+      std::cout << "[MainLoopBlock]\n";
+      // Remove the braces from the generated code, to get the actual code
+      // to write.
+      remove_first_occurence(output_code, '{');
+      remove_last_occurence(output_code, '}');
+
+      main_loop_code += output_code;
+
+      substitute_sprite_name(main_loop_code, sprite_name);
+    }
+  }
+
+  return main_loop_code;
+}
+
+std::string _input_code(Editor &editor) {
+  std::string input_code = "";
+
+  for (auto &spr : editor.user_added_sprites) {
+    auto script = editor.get_script_attached_to_editor_sprite(&spr);
+    if (script == nullptr) {
+      continue;
+    }
+
+    auto sprite_name = spr.name;
+
+    for (auto &block : script->blocks) {
+      if (!block.is_control_block()) {
+        continue;
+      }
+
+      bool is_input_block =
+          std::any_of(block.childrens.begin(), block.childrens.end(),
+                      [](std::shared_ptr<NODEBaseClass> b) {
+                        return b->get_text() == "When It's Clicked";
+                      });
+      if (!is_input_block) {
+        continue;
+      }
+
+      auto output_code = block.get_code();
+      input_code += output_code;
+      input_code += "}\n";
+
+      substitute_sprite_name(input_code, sprite_name);
+    }
+  }
+
+  return input_code;
+}
+
+std::string _when_program_starts_code(Editor &editor) {
+  // The generated code should be before the main loop of the generated output
+  // code.
+  std::string init_code = "";
+
+  for (auto &spr : editor.user_added_sprites) {
+    auto script = editor.get_script_attached_to_editor_sprite(&spr);
+    if (script == nullptr) {
+      continue;
+    }
+
+    auto sprite_name = spr.name;
+
+    for (auto &block : script->blocks) {
+      if (!block.is_control_block()) {
+        continue;
+      }
+
+      bool is_program_starts_block =
+          std::any_of(block.childrens.begin(), block.childrens.end(),
+                      [](std::shared_ptr<NODEBaseClass> b) {
+                        return b->get_text() == "When Program Starts";
+                      });
+      if (!is_program_starts_block) {
+        continue;
+      }
+
+      auto output_code = block.get_code();
+      init_code += output_code;
+
+      substitute_sprite_name(init_code, sprite_name);
+    }
+  }
+
+  return init_code;
+}
+
+void generate_code(Editor &editor) {
+  auto init_code = _construct_code(editor) + "\n";
+  init_code += _when_program_starts_code(editor);
+
+  auto main_loop_code = _main_loop_code(editor);
+  auto input_code = _input_code(editor);
+  auto render_code = _render_all_sprites_code(editor);
+
+  // All these above code generations can be done in a single loop.
+  // But this seems more clean.
+  // See 'Single Loop Implementation' below.
+
+  std::ifstream code_template("template.cpp");
+  std::string template_code((std::istreambuf_iterator<char>(code_template)),
+                            (std::istreambuf_iterator<char>()));
+
+  replaceAll(template_code, "//###INIT_CODES###", init_code);
+  replaceAll(template_code, "//###MAINLOOP_CODE###", main_loop_code);
+  replaceAll(template_code, "//###INPUT_CODE###", input_code);
+  replaceAll(template_code, "//###RENDER_CODE###", render_code);
+
+  std::ofstream generated_file("E:\\Sclone 2.0\\GeneratedOutput\\main.cpp");
+  generated_file << template_code;
+  generated_file.close();
+}
+
+/*
+Single Loop Implementation for Code Generation For Future Reference.
 void generate_code(std::vector<Block> &blocks,
                    const std::string &default_sprite_name,
                    const std::string &sprite_file_name,
@@ -294,5 +472,6 @@ void generate_code(std::vector<Block> &blocks,
   generated_file << template_code;
   generated_file.close();
 }
+*/
 
 #endif

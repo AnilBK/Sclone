@@ -49,7 +49,11 @@
 		<Unit filename="BuiltInBlocks.hpp" />
 		<Unit filename="Core/Object.cpp" />
 		<Unit filename="Core/Object.hpp" />
+		<Unit filename="Editor/editor.cpp" />
+		<Unit filename="Editor/editor.hpp" />
 		<Unit filename="Globals.hpp" />
+		<Unit filename="Script.cpp" />
+		<Unit filename="Script.hpp" />
 		<Unit filename="TransformGizmo2D.cpp" />
 		<Unit filename="TransformGizmo2D.hpp" />
 		<Unit filename="UI/Container.cpp" />

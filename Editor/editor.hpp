@@ -2,12 +2,14 @@
 #define EDITOR_HPP
 
 #include "../Globals.hpp"
+#include "../Script.hpp"
 #include "../TransformGizmo2D.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/Label.hpp"
 #include "../UI/UIButton.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../UI/UISprite.hpp"
+#include "../block/Block.hpp"
 #include <memory>
 #include <vector>
 
@@ -51,7 +53,8 @@ private:
 
   std::vector<std::shared_ptr<sf::Texture>> textures;
 
-  // This will act as an unique id provided to the sprites created by the user.
+  // This will act as an unique id provided to the sprites created by the
+  // user.
   int _total_sprites_added = 0;
   int currently_selected_sprite_id = -1;
 
@@ -77,6 +80,9 @@ private:
 
 public:
   std::vector<EditorSprite> user_added_sprites;
+  std::vector<std::shared_ptr<Script>> scripts;
+
+  ScriptEditor script_editor;
 
   Editor() {
     // Stuffs Related To Sprite Inspector.
@@ -107,14 +113,21 @@ public:
     user_added_sprites_list.add_child(new_sprite_hbox);
     user_added_sprites_list.setPosition({15, 110});
 
-    add_new_sprite("First Sprite");
-    add_new_sprite("Second Sprite");
+    add_new_sprite("StarFish");
+    add_new_sprite("Cat");
 
     select_sprite_by_id(0);
     // gizmo_2D.setTargetSprite(&sprites.at(0));
+
+    script_editor.script = selected_script_ptr();
   }
 
-  EditorSprite *_currently_selected_sprite_ptr();
+  void add_block_to_script(Block b);
+
+  Script *selected_script_ptr();
+  EditorSprite *selected_sprite_ptr();
+  Script *get_script_attached_to_editor_sprite(EditorSprite *sprite);
+
   void handle_inputs(sf::Event event);
   void Render();
 };
