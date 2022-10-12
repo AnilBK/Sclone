@@ -2,6 +2,7 @@
 #include "Editor/editor.hpp"
 #include "Globals.hpp"
 #include "Script.hpp"
+#include "UI/UIButton.hpp"
 #include "block/Block.hpp"
 #include "block/NODEBaseClass.hpp"
 #include "block/TabBar.hpp"
@@ -254,6 +255,24 @@ int main() {
   auto tab_size = sf::Vector2f(width - tab_pos.x, height - tab_pos.y);
   TabBar built_in_blocks_tab_bar(tab_pos, tab_size);
 
+  UIButton blocks_tab_bar_collapse_btn("V");
+  blocks_tab_bar_collapse_btn.is_flat = false;
+  blocks_tab_bar_collapse_btn.setPosition(
+      tab_pos -
+      sf::Vector2f(blocks_tab_bar_collapse_btn.rect_size().x + 10, 0));
+  blocks_tab_bar_collapse_btn.clicked_callback = [&blocks_tab_bar_collapse_btn,
+                                                  &built_in_blocks_tab_bar]() {
+    auto &render_status = built_in_blocks_tab_bar.render_status;
+    if (render_status == TabBarStatus::SHOW_ALL) {
+      // Gray color,to indicate the button is disabled.
+      blocks_tab_bar_collapse_btn.button_fill_color = sf::Color(200, 200, 200);
+      render_status = TabBarStatus::SHOW_ONLY_TITLE;
+    } else {
+      blocks_tab_bar_collapse_btn.button_fill_color = sf::Color::Green;
+      render_status = TabBarStatus::SHOW_ALL;
+    }
+  };
+
   built_in_blocks_tab_bar.add_tab("Control Blocks");
   built_in_blocks_tab_bar.add_tab("Draw Blocks");
   built_in_blocks_tab_bar.add_tab("Motion");
@@ -279,7 +298,7 @@ int main() {
       }
 
       built_in_blocks_tab_bar.handle_inputs(event);
-
+      blocks_tab_bar_collapse_btn.handle_inputs(event);
       editor.handle_inputs(event);
     }
 
@@ -301,44 +320,47 @@ int main() {
     bool can_spawn_editor_block = !is_any_block_being_dragged &&
                                   sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
-    // These are editor blocks which are for spawning new blocks.
-    for (auto &block : editor_blocks) {
-      if (block.TabItBelongsToName != currently_selected_tab) {
-        continue;
-      }
+    if (built_in_blocks_tab_bar.render_status !=
+        TabBarStatus::SHOW_ONLY_TITLE) {
+      // These are editor blocks which are for spawning new blocks.
+      for (auto &block : editor_blocks) {
+        if (block.TabItBelongsToName != currently_selected_tab) {
+          continue;
+        }
 
-      block.set_position(block_in_tabs_draw_position);
-      // block._recalculate_rect();
+        block.set_position(block_in_tabs_draw_position);
+        // block._recalculate_rect();
 
-      // Scrolling above the tab.
-      if (block_in_tabs_draw_position.y >=
-          built_in_blocks_tab_bar.get_visible_tab_position().y) {
-        block.Render();
+        // Scrolling above the tab.
+        if (block_in_tabs_draw_position.y >=
+            built_in_blocks_tab_bar.get_visible_tab_position().y) {
+          block.Render();
 
-        // Select the blocks only that are visible.
-        if (can_spawn_editor_block) {
-          // Spawn New Block.
-          if (isMouseOverSprite(block.block_rect)) {
-            std::cout << "User Adding a Block.\n";
-            Block_fn fn_ptr =
-                GET_BOUND_BLOCK_FN(block.function_identifier).value();
+          // Select the blocks only that are visible.
+          if (can_spawn_editor_block) {
+            // Spawn New Block.
+            if (isMouseOverSprite(block.block_rect)) {
+              std::cout << "User Adding a Block.\n";
+              Block_fn fn_ptr =
+                  GET_BOUND_BLOCK_FN(block.function_identifier).value();
 
-            Block b;
-            fn_ptr(&b);
-            b.set_position((sf::Vector2f)mouse_position);
-            b.dragging = true;
-            // blocks.push_back(b);
-            editor.add_block_to_script(b);
+              Block b;
+              fn_ptr(&b);
+              b.set_position((sf::Vector2f)mouse_position);
+              b.dragging = true;
+              // blocks.push_back(b);
+              editor.add_block_to_script(b);
 
-            std::cout << "[Done]User Adding a Block.\n\n";
-            can_spawn_editor_block = false;
+              std::cout << "[Done]User Adding a Block.\n\n";
+              can_spawn_editor_block = false;
+            }
           }
         }
-      }
 
-      // window.draw(block->block_rect);
-      float height_of_cur_block = block.block_full_size.y;
-      block_in_tabs_draw_position.y += height_of_cur_block + 20;
+        // window.draw(block->block_rect);
+        float height_of_cur_block = block.block_full_size.y;
+        block_in_tabs_draw_position.y += height_of_cur_block + 20;
+      }
     }
 
 #ifdef SHOW_FPS
@@ -351,6 +373,8 @@ int main() {
                                   " Y: " + std::to_string(mouse_position.y));
     window.draw(show_mouse_pos_text);
 #endif
+
+    blocks_tab_bar_collapse_btn.Render();
 
     editor.Render();
 
