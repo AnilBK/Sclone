@@ -107,10 +107,29 @@ void TabBar::add_scroll_value_to_current_tab(int p_delta) {
   tab_bar_scroll_value.at(currently_selected_tab) += p_delta;
 }
 
-void TabBar::Render() {
-  window.draw(tab_bg);
-
+void TabBar::_render_title() {
   for (auto &tab_bar_btn : tab_bar_buttons) {
     tab_bar_btn.Render();
+  }
+}
+
+void TabBar::_render_body() { window.draw(tab_bg); }
+
+void TabBar::Render() {
+  switch (render_status) {
+  case TabBarStatus::SHOW_ONLY_TITLE:
+    _render_title();
+    break;
+
+  case TabBarStatus::SHOW_ONLY_BODY:
+    _render_body();
+    break;
+
+  case TabBarStatus::SHOW_ALL:
+    _render_body();
+    _render_title();
+
+  default:
+    break;
   }
 }

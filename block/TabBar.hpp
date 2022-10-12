@@ -5,6 +5,8 @@
 #include "Button.hpp"
 #include <SFML/Graphics.hpp>
 
+enum class TabBarStatus { SHOW_ALL, SHOW_ONLY_TITLE, SHOW_ONLY_BODY };
+
 class TabBar {
 
 private:
@@ -19,8 +21,11 @@ private:
   const sf::Color btn_default_fill_color = sf::Color::Green;
 
   void add_scroll_value_to_current_tab(int p_delta);
+  void _render_title();
+  void _render_body();
 
 public:
+  TabBarStatus render_status = TabBarStatus::SHOW_ALL;
   int currently_selected_tab = -1;
   TabBar(sf::Vector2f position, sf::Vector2f size);
 
