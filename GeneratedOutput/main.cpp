@@ -92,67 +92,81 @@ void draw_bubble_message(const std::string &message,
 }
 
 class bubble_message {
+private:
+  float timer = 0.0f;
+
 public:
   sf::Sprite *target_sprite_ptr;
-  float length; // Show the message for this much seconds.
-  std::string message;
+
+  // A target has 'n' number of messages.
+  // length_msg_pair consists of 'length of the message' and the 'actual
+  // message'.
+  std::vector<std::pair<float, std::string>> length_msg_pair;
+
+  bool can_be_removed() const { return length_msg_pair.empty(); }
+  void Update(float delta_time);
 };
 
-bool bubble_sys_update_required = true;
-float bubble_message_system_timer = 0.0f;
+void bubble_message::Update(float delta_time) {
+  if (target_sprite_ptr == nullptr) {
+    return;
+  }
+
+  auto [msg_length, message] = length_msg_pair.at(0);
+
+  const auto bounds = target_sprite_ptr->getGlobalBounds();
+  auto sprite_bubble_pos = bounds.getPosition();
+  sprite_bubble_pos += sf::Vector2f(bounds.width * 0.5f, -10.0f);
+
+  draw_bubble_message(message, sprite_bubble_pos);
+
+  timer += delta_time;
+  if (timer >= msg_length) {
+    timer = 0.0f;
+    // Remove the first message for a given sprite as it was completed.
+    length_msg_pair.erase(length_msg_pair.begin());
+  }
+}
+
 std::vector<bubble_message> bubble_messages;
 
 void add_bubble_message(sf::Sprite *target_sprite_ptr, float length,
                         const std::string &message) {
+  std::pair<float, std::string> new_msg_pair{length, message};
+
+  // If the 'target sprite' already has a message in the system, then
+  // just append the new message.
+  for (auto &msg : bubble_messages) {
+    if (msg.target_sprite_ptr == target_sprite_ptr) {
+      msg.length_msg_pair.push_back(new_msg_pair);
+      return;
+    }
+  }
+
+  // The 'target sprite' isn't on the system.
+  // So, create an entirely new message.
   bubble_message new_msg;
   new_msg.target_sprite_ptr = target_sprite_ptr;
-  new_msg.length = length;
-  new_msg.message = message;
+  new_msg.length_msg_pair.push_back(new_msg_pair);
   bubble_messages.push_back(new_msg);
-
-  bubble_sys_update_required = true;
 }
 
 void update_bubble_message_system(float delta_time) {
-  // No messages in the queue.
-  // So,no update required.
-  if (!bubble_sys_update_required) {
-    return;
-  }
-
   if (bubble_messages.empty()) {
     return;
   }
 
-  auto bubble_msg = bubble_messages.front();
-  auto msg_target_sprite = bubble_msg.target_sprite_ptr;
-  auto msg_length = bubble_msg.length;
-  auto msg = bubble_msg.message;
-
-  if (msg_target_sprite == nullptr) {
-    return;
+  for (auto &bubble_msg : bubble_messages) {
+    bubble_msg.Update(delta_time);
   }
 
-  auto sprite_bubble_pos = msg_target_sprite->getGlobalBounds().getPosition();
-  sprite_bubble_pos +=
-      sf::Vector2f(msg_target_sprite->getGlobalBounds().width * 0.5f, -10.0f);
-
-  draw_bubble_message(msg, sprite_bubble_pos);
-
-  bubble_message_system_timer += delta_time;
-
-  if (bubble_message_system_timer >= msg_length) {
-    // Reset the timer.
-    bubble_message_system_timer = 0.0f;
-    // Remove that message from the system.
-    bubble_messages.erase(bubble_messages.begin());
-    // If no message remain in the system, reset everything and disable the
-    // system.
-    if (bubble_messages.empty()) {
-      bubble_message_system_timer = 0.0f;
-      bubble_sys_update_required = false;
-    }
-  }
+  // Remove Completed Messages.
+  bubble_messages.erase(std::remove_if(bubble_messages.begin(),
+                                       bubble_messages.end(),
+                                       [](const bubble_message &msg) {
+                                         return msg.can_be_removed();
+                                       }),
+                        bubble_messages.end());
 }
 
 // BUBBLE-SPEECH_END
@@ -320,31 +334,34 @@ int main() {
   player.setPosition(200, 200);
   player.setFillColor(sf::Color::Red);
 
-  sf::Texture star_fish_texture;
-  if (!star_fish_texture.loadFromFile("fish.png")) {
+  sf::Texture StarFish_texture;
+  if (!StarFish_texture.loadFromFile("fish.png")) {
     std::cerr << "Error while loading texture" << std::endl;
     return -1;
   }
-  star_fish_texture.setSmooth(true);
+  StarFish_texture.setSmooth(true);
 
-  sf::Sprite star_fish;
-  star_fish.setTexture(star_fish_texture);
-  sf::FloatRect star_fishSize = star_fish.getGlobalBounds();
-  star_fish.setOrigin(star_fishSize.width / 2.0f, star_fishSize.height / 2.0f);
-  star_fish.setPosition(115, 553);
+  sf::Sprite StarFish;
+  StarFish.setTexture(StarFish_texture);
+  sf::FloatRect StarFishSize = StarFish.getGlobalBounds();
+  StarFish.setOrigin(StarFishSize.width / 2.0f, StarFishSize.height / 2.0f);
+  StarFish.setPosition(190, 382);
 
-  sf::Texture pussy_texture;
-  if (!pussy_texture.loadFromFile("cat.png")) {
+  sf::Texture Cat_texture;
+  if (!Cat_texture.loadFromFile("cat.png")) {
     std::cerr << "Error while loading texture" << std::endl;
     return -1;
   }
-  pussy_texture.setSmooth(true);
+  Cat_texture.setSmooth(true);
 
-  sf::Sprite pussy;
-  pussy.setTexture(pussy_texture);
-  sf::FloatRect pussySize = pussy.getGlobalBounds();
-  pussy.setOrigin(pussySize.width / 2.0f, pussySize.height / 2.0f);
-  pussy.setPosition(598, 257);
+  sf::Sprite Cat;
+  Cat.setTexture(Cat_texture);
+  sf::FloatRect CatSize = Cat.getGlobalBounds();
+  Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
+  Cat.setPosition(665, 389);
+
+  add_bubble_message(&StarFish, 3, "StarFish Says Hi");
+  add_bubble_message(&Cat, 3, "Pussy says hi");
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -358,6 +375,15 @@ int main() {
     while (window.pollEvent(e)) {
       if (e.type == sf::Event::Closed) {
         window.close();
+      }
+
+      if (e.type == sf::Event::MouseButtonReleased &&
+          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&StarFish)) {
+        add_bubble_message(&StarFish, 2, "Fishy Bonk");
+      }
+      if (e.type == sf::Event::MouseButtonReleased &&
+          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&Cat)) {
+        add_bubble_message(&Cat, 2, "Meow Meow");
       }
     }
 
@@ -390,7 +416,8 @@ int main() {
 
     window.draw(player);
 
-    window.draw(pussy);
+    window.draw(StarFish);
+    window.draw(Cat);
 
     update_bubble_message_system(deltaTime.asSeconds());
     update_move_p2p_system(deltaTime.asSeconds());
