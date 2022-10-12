@@ -1,8 +1,8 @@
 #ifndef CODE_GEN_HPP
 #define CODE_GEN_HPP
 
+#include "Editor/editor.hpp"
 #include "block/Block.hpp"
-#include "editor/editor.hpp"
 #include <fstream>
 #include <string>
 
@@ -52,7 +52,7 @@ std::string code_sprite_say(const Block &block) {
   auto message = block.get_bound_value("message").value();
   auto message_visible_length = block.get_bound_value("length").value();
 
-  if (message == "" || message.empty()) {
+  if (message_visible_length.empty()) {
     message_visible_length = "1.0f";
   }
 
@@ -97,7 +97,7 @@ std::string code_sprite_draw_line(const Block &block) {
   auto start_pos = block.get_bound_value("starting_pos").value();
   auto end_pos = block.get_bound_value("ending_pos").value();
 
-  std::string code = "";
+  std::string code;
   code += "{ \n";
   code += "   sf::Vertex vertices[2] = {";
   code += "       sf::Vertex({" + start_pos + "}, sf::Color::Red),";
@@ -121,7 +121,7 @@ std::string code_sprite_draw_circle(const Block &block) {
   auto centre = block.get_bound_value("centre").value();
   auto radius = block.get_bound_value("radius").value();
 
-  std::string code = "";
+  std::string code;
   code += "{ \n";
   code += "   sf::CircleShape circle;\n";
   code += "   circle.setPosition({" + centre + "});\n";
@@ -144,7 +144,7 @@ std::string code_sprite_draw_rectangle(const Block &block) {
   auto top_left = block.get_bound_value("top_left").value();
   auto rect_size = block.get_bound_value("rect_size").value();
 
-  std::string code = "";
+  std::string code;
   code += "{ \n";
   code += "   sf::RectangleShape rectangle;\n";
   code += "   rectangle.setPosition({" + top_left + "});\n";
@@ -175,7 +175,7 @@ std::string code_sprite_draw_triangle(const Block &block) {
   auto second_point = block.get_bound_value("second_point").value();
   auto third_point = block.get_bound_value("third_point").value();
 
-  std::string code = "";
+  std::string code;
   code += "{ \n";
   code += "   sf::ConvexShape triangle;\n";
   code += "   triangle.setPointCount(3);\n";
@@ -198,7 +198,7 @@ std::string construct_sprite_code(const EditorSprite &spr) {
   auto sprite_pos = spr.position;
   auto sprite_texture_file = spr.texture;
 
-  auto spr_cons_code = std::string(
+  std::string spr_cons_code =
       "sf::Texture ##SPRITE_NAME##_texture;"
       "if (!##SPRITE_NAME##_texture.loadFromFile(\"" +
       sprite_texture_file +
@@ -214,8 +214,8 @@ std::string construct_sprite_code(const EditorSprite &spr) {
       "##SPRITE_NAME##.setOrigin(##SPRITE_NAME##Size.width / 2.0f, "
       "##SPRITE_NAME##Size.height / 2.0f); "
       "##SPRITE_NAME##.setPosition(" +
-      std::to_string((int)sprite_pos.x) + "," +
-      std::to_string((int)sprite_pos.y) + ");");
+      std::to_string(static_cast<int>(sprite_pos.x)) + "," +
+      std::to_string(static_cast<int>(sprite_pos.y)) + ");";
 
   substitute_sprite_name(spr_cons_code, sprite_name);
   return spr_cons_code;
@@ -228,7 +228,7 @@ std::string render_sprite_code(const std::string &sprite_name) {
 }
 
 std::string _construct_code(const Editor &editor) {
-  std::string cons_code = "";
+  std::string cons_code;
   for (const auto &spr : editor.user_added_sprites) {
     cons_code += construct_sprite_code(spr);
     cons_code += "\n\n";
@@ -238,7 +238,7 @@ std::string _construct_code(const Editor &editor) {
 }
 
 std::string _render_all_sprites_code(const Editor &editor) {
-  std::string render_code = "";
+  std::string render_code;
   for (const auto &spr : editor.user_added_sprites) {
     auto sprite_name = spr.name;
     render_code += render_sprite_code(sprite_name);
@@ -249,10 +249,10 @@ std::string _render_all_sprites_code(const Editor &editor) {
 }
 
 std::string _main_loop_code(Editor &editor) {
-  std::string main_loop_code = "";
+  std::string main_loop_code;
 
   for (auto &spr : editor.user_added_sprites) {
-    auto script = editor.get_script_attached_to_editor_sprite(&spr);
+    auto *script = editor.get_script_attached_to_editor_sprite(&spr);
     if (script == nullptr) {
       continue;
     }
@@ -267,8 +267,8 @@ std::string _main_loop_code(Editor &editor) {
       // The first child of "Forever" Block has text "Forever".
       bool is_forever_block =
           std::any_of(block.childrens.begin(), block.childrens.end(),
-                      [](std::shared_ptr<NODEBaseClass> b) {
-                        return b->get_text() == "Forever";
+                      [](std::shared_ptr<NODEBaseClass> p_block) {
+                        return p_block->get_text() == "Forever";
                       });
       if (!is_forever_block) {
         continue;
@@ -293,10 +293,10 @@ std::string _main_loop_code(Editor &editor) {
 }
 
 std::string _input_code(Editor &editor) {
-  std::string input_code = "";
+  std::string input_code;
 
   for (auto &spr : editor.user_added_sprites) {
-    auto script = editor.get_script_attached_to_editor_sprite(&spr);
+    auto *script = editor.get_script_attached_to_editor_sprite(&spr);
     if (script == nullptr) {
       continue;
     }
@@ -310,8 +310,8 @@ std::string _input_code(Editor &editor) {
 
       bool is_input_block =
           std::any_of(block.childrens.begin(), block.childrens.end(),
-                      [](std::shared_ptr<NODEBaseClass> b) {
-                        return b->get_text() == "When It's Clicked";
+                      [](std::shared_ptr<NODEBaseClass> p_block) {
+                        return p_block->get_text() == "When It's Clicked";
                       });
       if (!is_input_block) {
         continue;
@@ -331,10 +331,10 @@ std::string _input_code(Editor &editor) {
 std::string _when_program_starts_code(Editor &editor) {
   // The generated code should be before the main loop of the generated output
   // code.
-  std::string init_code = "";
+  std::string init_code;
 
   for (auto &spr : editor.user_added_sprites) {
-    auto script = editor.get_script_attached_to_editor_sprite(&spr);
+    auto *script = editor.get_script_attached_to_editor_sprite(&spr);
     if (script == nullptr) {
       continue;
     }
@@ -348,8 +348,8 @@ std::string _when_program_starts_code(Editor &editor) {
 
       bool is_program_starts_block =
           std::any_of(block.childrens.begin(), block.childrens.end(),
-                      [](std::shared_ptr<NODEBaseClass> b) {
-                        return b->get_text() == "When Program Starts";
+                      [](std::shared_ptr<NODEBaseClass> p_block) {
+                        return p_block->get_text() == "When Program Starts";
                       });
       if (!is_program_starts_block) {
         continue;
