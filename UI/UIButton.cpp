@@ -7,10 +7,11 @@ sf::Vector2f UIButton::getPosition() {
 
 void UIButton::setPosition(sf::Vector2f pos) { text.setPosition(pos); }
 
+sf::Vector2f UIButton::text_size() { return text.rect_size(); }
+
 sf::Vector2f UIButton::rect_size() {
-  return text.rect_size();
-  //   auto bounds = text.getGlobalBounds();
-  //   return {bounds.width, bounds.height};
+  sf::Vector2f padding{5.0f, 5.0f};
+  return text_size() + (padding * 2.0f);
 }
 
 void UIButton::RenderDebug() {
@@ -32,7 +33,7 @@ void UIButton::Render() {
     sf::RectangleShape r;
     sf::Vector2f padding{5.0f, 5.0f};
     r.setPosition(getPosition() - padding);
-    r.setSize(rect_size() + (padding * 2.0f));
+    r.setSize(rect_size());
     r.setFillColor(button_fill_color);
     // A shadow when a button is highlighted.
     if (mouse_over) {

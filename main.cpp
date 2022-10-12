@@ -258,8 +258,7 @@ int main() {
   UIButton blocks_tab_bar_collapse_btn("V");
   blocks_tab_bar_collapse_btn.is_flat = false;
   blocks_tab_bar_collapse_btn.setPosition(
-      tab_pos -
-      sf::Vector2f(blocks_tab_bar_collapse_btn.rect_size().x + 10, 0));
+      tab_pos - sf::Vector2f(blocks_tab_bar_collapse_btn.rect_size().x, 0));
   blocks_tab_bar_collapse_btn.clicked_callback = [&blocks_tab_bar_collapse_btn,
                                                   &built_in_blocks_tab_bar]() {
     auto &render_status = built_in_blocks_tab_bar.render_status;
