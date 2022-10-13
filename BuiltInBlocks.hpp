@@ -7,33 +7,14 @@
 namespace BUILT_IN_BLOCKS {
 
 // Control Blocks
-void block_say(Block *block_say) {
-  //   Label("Say")
-  //     LineInputAttachField(message)
-  // The user input is bound to ^^^^^
-  // Block block_say;
-  block_say->add_node(LabelNode("Say"));
-  block_say->add_node(LineInputAttachFieldNode("", "message"));
-  block_say->add_node(LabelNode("For"));
-  block_say->add_node(LineInputAttachFieldNode("", "length"));
-  block_say->add_node(LabelNode("Seconds"));
-
-  block_say->output_code_callback = code_sprite_say;
-  block_say->function_identifier = "block_say";
-
-  // Editor blocks position is set by the tab view anyway.
-  // Newly spawned blocks spawn at mouse position.
-  //  block_say.set_position({70.0f, 250.0f});
-  block_say->_recalculate_rect();
-  // return std::move(block_say);
-}
-
 void block_program_started(Block *block_program_started) {
   // Block block_program_started;
   block_program_started->add_node(LabelNode("When Program Starts"));
   block_program_started->set_block_type(BLOCK_TYPES::CONTROL);
   block_program_started->function_identifier = "block_program_started";
 
+  // Editor blocks position is set by the tab view anyway.
+  // Newly spawned blocks spawn at mouse position.
   // block_program_started.set_position({425.0f, 25.0f});
   block_program_started->_recalculate_rect();
   // return std::move(block_program_started);
@@ -185,6 +166,26 @@ void block_change_y_by(Block *block_change_y_by) {
 }
 
 // Draw Primitive Blocks.
+void block_say(Block *block_say) {
+  //   Label("Say")
+  //     LineInputAttachField(message)
+  // The user input is bound to ^^^^^
+  // Block block_say;
+  block_say->add_node(LabelNode("Say"));
+  block_say->add_node(LineInputAttachFieldNode("", "message"));
+  block_say->add_node(LabelNode("For"));
+  block_say->add_node(LineInputAttachFieldNode("", "length"));
+  block_say->add_node(LabelNode("Seconds"));
+
+  block_say->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES;
+  block_say->output_code_callback = code_sprite_say;
+  block_say->function_identifier = "block_say";
+
+  //  block_say.set_position({70.0f, 250.0f});
+  block_say->_recalculate_rect();
+  // return std::move(block_say);
+}
+
 void block_draw_line(Block *block_draw_line) {
   // Block block_draw_line;
   block_draw_line->add_node(LabelNode("Draw Line"));

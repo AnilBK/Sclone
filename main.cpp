@@ -92,12 +92,11 @@ void spawn_and_bind_editor_blocks(std::vector<Block> &to) {
 
   to.reserve(20);
 
-  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_say);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_program_started);
-  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_forever);
-  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_if);
-  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_key_pressed);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_sprite_clicked);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_forever);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_key_pressed);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_if);
 
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_go_to_xy);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_x_by);
@@ -105,6 +104,7 @@ void spawn_and_bind_editor_blocks(std::vector<Block> &to) {
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_glide_to_xy);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_glide_point_to_point);
 
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_say);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_line);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_circle);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_rectangle);
@@ -191,10 +191,10 @@ void add_editor_blocks(std::vector<Block> &to) {
 
   SPAWN_BLOCK(block_say, BUILT_IN_BLOCKS::block_say);
   SPAWN_BLOCK(block_program_started, BUILT_IN_BLOCKS::block_program_started);
-  SPAWN_BLOCK(block_forever, BUILT_IN_BLOCKS::block_forever);
-  SPAWN_BLOCK(block_if, BUILT_IN_BLOCKS::block_if);
-  SPAWN_BLOCK(block_key_pressed, BUILT_IN_BLOCKS::block_key_pressed);
   SPAWN_BLOCK(block_sprite_clicked, BUILT_IN_BLOCKS::block_sprite_clicked);
+  SPAWN_BLOCK(block_forever, BUILT_IN_BLOCKS::block_forever);
+  SPAWN_BLOCK(block_key_pressed, BUILT_IN_BLOCKS::block_key_pressed);
+  SPAWN_BLOCK(block_if, BUILT_IN_BLOCKS::block_if);
 
   SPAWN_BLOCK(block_go_to_xy, BUILT_IN_BLOCKS::block_go_to_xy);
   SPAWN_BLOCK(block_change_x_by, BUILT_IN_BLOCKS::block_change_x_by);
