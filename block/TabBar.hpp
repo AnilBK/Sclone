@@ -20,6 +20,8 @@ private:
   const sf::Color btn_selected_fill_color = sf::Color(200, 200, 200);
   const sf::Color btn_default_fill_color = sf::Color::Green;
 
+  float btn_spacing = 30.0f;
+
   void add_scroll_value_to_current_tab(int p_delta);
   void _render_title();
   void _render_body();
@@ -38,6 +40,7 @@ public:
   void _select_tab(int idx);
   void recalculate_post_add_tabs();
   int get_scroll_value();
+  void set_spacing_between_tab_btns(float spacing);
   void Render();
 };
 

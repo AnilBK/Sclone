@@ -257,6 +257,7 @@ int main() {
   auto tab_pos = sf::Vector2f(800, 25);
   auto tab_size = sf::Vector2f(width - tab_pos.x, height - tab_pos.y);
   TabBar built_in_blocks_tab_bar(tab_pos, tab_size);
+  built_in_blocks_tab_bar.set_spacing_between_tab_btns(5.0f);
 
   UIButton blocks_tab_bar_collapse_btn("V");
   blocks_tab_bar_collapse_btn.is_flat = false;

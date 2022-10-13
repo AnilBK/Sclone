@@ -46,6 +46,8 @@ public:
     text.setPosition(pos + sf::Vector2f{padding_h, padding_v});
   }
 
+  sf::Vector2f getPosition() { return position; }
+
   sf::Vector2f rect_size() {
     sf::Vector2f text_box_size =
         get_text_size() + sf::Vector2f{padding_h * 2, padding_v * 2};

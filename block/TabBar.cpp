@@ -8,8 +8,6 @@ TabBar::TabBar(sf::Vector2f position, sf::Vector2f size)
 }
 
 void TabBar::add_tab(std::string tab_name) {
-  const float btn_spacing = 30.0f;
-
   // To Draw a block next to previous blocks.
   sf::Vector2f offset{0.0f, 0.0f};
   for (auto &tab_bar_btn : tab_bar_buttons) {
@@ -105,6 +103,22 @@ void TabBar::add_scroll_value_to_current_tab(int p_delta) {
   }
 
   tab_bar_scroll_value.at(currently_selected_tab) += p_delta;
+}
+
+void TabBar::set_spacing_between_tab_btns(float spacing) {
+  btn_spacing = spacing;
+
+  if (tab_bar_buttons.empty()) {
+    return;
+  }
+
+  // Just-ReOrient the Added buttons.
+  sf::Vector2f offset{0.0f, 0.0f};
+  for (auto &tab_bar_btn : tab_bar_buttons) {
+    tab_bar_btn.setPosition({offset.x, tab_bar_btn.getPosition().y});
+    offset.x += tab_bar_btn.rect_size().x;
+    offset.x += btn_spacing;
+  }
 }
 
 void TabBar::_render_title() {
