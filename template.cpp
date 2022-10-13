@@ -194,6 +194,13 @@ bool is_mouse_over(sf::Sprite *sprite) {
   return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
 }
 
+bool are_sprites_colliding(const sf::Sprite &a, const sf::Sprite &b) {
+  auto a_bounds = a.getGlobalBounds();
+  auto b_bounds = b.getGlobalBounds();
+
+  return a_bounds.intersects(b_bounds);
+}
+
 // For move to Vector2f block.
 // TODO: Generalize to Create AnimationPlayers.
 class move_p2p_data {

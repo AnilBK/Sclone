@@ -62,6 +62,20 @@ void block_key_pressed(Block *block_key_pressed) {
   // return std::move(block_key_pressed);
 }
 
+void block_sprite_touching(Block *block_sprite_touching) {
+  // Block block_sprite_touching;
+  block_sprite_touching->add_node(LabelNode("If touching"));
+  block_sprite_touching->add_node(
+      LineInputAttachFieldNode("", "target_sprite"));
+  block_sprite_touching->add_node(BlockAttachNode(""));
+  block_sprite_touching->output_code_callback = code_sprite_touching;
+  block_sprite_touching->function_identifier = "block_sprite_touching";
+
+  // block_sprite_touching.set_position({640.0f, 560.0f});
+  block_sprite_touching->_recalculate_rect();
+  // return std::move(block_sprite_touching);
+}
+
 void block_sprite_clicked(Block *block_sprite_clicked) {
   // Block block_sprite_clicked;
   block_sprite_clicked->add_node(LabelNode("When It's Clicked"));

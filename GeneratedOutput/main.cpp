@@ -194,6 +194,13 @@ bool is_mouse_over(sf::Sprite *sprite) {
   return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
 }
 
+bool are_sprites_colliding(const sf::Sprite &a, const sf::Sprite &b) {
+  auto a_bounds = a.getGlobalBounds();
+  auto b_bounds = b.getGlobalBounds();
+
+  return a_bounds.intersects(b_bounds);
+}
+
 // For move to Vector2f block.
 // TODO: Generalize to Create AnimationPlayers.
 class move_p2p_data {
@@ -324,8 +331,8 @@ int main() {
 
   init_bubble_label();
 
-  int height = sf::VideoMode::getDesktopMode().height;
-  int width = sf::VideoMode::getDesktopMode().width;
+  unsigned int height = sf::VideoMode::getDesktopMode().height;
+  unsigned int width = sf::VideoMode::getDesktopMode().width;
   window.create(sf::VideoMode(width, height), "SClone Generated Output");
 
   window.setVerticalSyncEnabled(true);
@@ -345,7 +352,7 @@ int main() {
   StarFish.setTexture(StarFish_texture);
   sf::FloatRect StarFishSize = StarFish.getGlobalBounds();
   StarFish.setOrigin(StarFishSize.width / 2.0f, StarFishSize.height / 2.0f);
-  StarFish.setPosition(190, 382);
+  StarFish.setPosition(289, 384);
 
   sf::Texture Cat_texture;
   if (!Cat_texture.loadFromFile("cat.png")) {
@@ -358,10 +365,7 @@ int main() {
   Cat.setTexture(Cat_texture);
   sf::FloatRect CatSize = Cat.getGlobalBounds();
   Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
-  Cat.setPosition(665, 389);
-
-  add_bubble_message(&StarFish, 3, "StarFish Says Hi");
-  add_bubble_message(&Cat, 3, "Pussy says hi");
+  Cat.setPosition(945, 384);
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -376,18 +380,13 @@ int main() {
       if (e.type == sf::Event::Closed) {
         window.close();
       }
-
-      if (e.type == sf::Event::MouseButtonReleased &&
-          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&StarFish)) {
-        add_bubble_message(&StarFish, 2, "Fishy Bonk");
-      }
-      if (e.type == sf::Event::MouseButtonReleased &&
-          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&Cat)) {
-        add_bubble_message(&Cat, 2, "Meow Meow");
-      }
     }
 
     window.clear();
+
+    if (are_sprites_colliding(StarFish, Cat)) {
+      add_bubble_message(&StarFish, 0.0001, "Meow Meow");
+    }
 
     velocity = {0.0f, 0.0f};
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
@@ -412,7 +411,7 @@ int main() {
     velocity.y *= speed;
 
     auto deltaTime = frameClock.restart();
-    player.move(velocity * deltaTime.asSeconds());
+    StarFish.move(velocity * deltaTime.asSeconds());
 
     window.draw(player);
 

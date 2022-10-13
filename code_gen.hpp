@@ -75,6 +75,11 @@ std::string code_input_key_pressed(const Block &block) {
   return "if(sf::Keyboard::isKeyPressed(sf::Keyboard::" + key + "))";
 }
 
+std::string code_sprite_touching(const Block &block) {
+  auto target_sprite = block.get_bound_value("target_sprite").value();
+  return "if (are_sprites_colliding(##SPRITE_NAME##, " + target_sprite + "))";
+}
+
 std::string code_sprite_clicked(const Block &block) {
   return "if (e.type == sf::Event::MouseButtonReleased &&"
          "e.mouseButton.button == sf::Mouse::Left && "
