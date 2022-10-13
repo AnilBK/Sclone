@@ -324,8 +324,8 @@ int main() {
 
   init_bubble_label();
 
-  int height = sf::VideoMode::getDesktopMode().height;
-  int width = sf::VideoMode::getDesktopMode().width;
+  unsigned int height = sf::VideoMode::getDesktopMode().height;
+  unsigned int width = sf::VideoMode::getDesktopMode().width;
   window.create(sf::VideoMode(width, height), "SClone Generated Output");
 
   window.setVerticalSyncEnabled(true);

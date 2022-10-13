@@ -12,8 +12,8 @@
 #define SHOW_FPS
 #define SHOW_MOUSE_POS
 
-int height = 800;
-int width = 800;
+unsigned int height = 800;
+unsigned int width = 800;
 
 sf::Vector2i mouse_position;
 
@@ -236,6 +236,8 @@ int main() {
   show_mouse_pos_text.setFillColor(sf::Color::Black);
 #endif
 
+  const auto window_clear_color = sf::Color(0, 255, 204);
+
   Editor editor;
 
   // bind_block_generators();
@@ -303,7 +305,7 @@ int main() {
 
     mouse_position = sf::Mouse::getPosition(window);
 
-    window.clear(sf::Color(0, 255, 204));
+    window.clear(window_clear_color);
 
     built_in_blocks_tab_bar.Render();
 
@@ -343,12 +345,12 @@ int main() {
               Block_fn fn_ptr =
                   GET_BOUND_BLOCK_FN(block.function_identifier).value();
 
-              Block b;
-              fn_ptr(&b);
-              b.set_position((sf::Vector2f)mouse_position);
-              b.dragging = true;
-              // blocks.push_back(b);
-              editor.add_block_to_script(b);
+              Block new_block;
+              fn_ptr(&new_block);
+              new_block.set_position((sf::Vector2f)mouse_position);
+              new_block.dragging = true;
+              // blocks.push_back(new_block);
+              editor.add_block_to_script(new_block);
 
               std::cout << "[Done]User Adding a Block.\n\n";
               can_spawn_editor_block = false;
@@ -363,7 +365,8 @@ int main() {
     }
 
 #ifdef SHOW_FPS
-    show_fps_btn.setString("FPS: " + std::to_string(int(get_fps())));
+    show_fps_btn.setString("FPS: " +
+                           std::to_string(static_cast<int>(get_fps())));
     window.draw(show_fps_btn);
 #endif
 
