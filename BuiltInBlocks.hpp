@@ -268,6 +268,122 @@ void block_draw_triangle(Block *block_draw_triangle) {
   // return std::move(block_draw_triangle);
 }
 
+// Create Variables Blocks.
+void block_create_int(Block *block_create_int) {
+  block_create_int->add_node(LabelNode("Create int"));
+  block_create_int->add_node(LineInputAttachFieldNode("", "variable_name"));
+  block_create_int->add_node(LabelNode("="));
+  block_create_int->add_node(LineInputAttachFieldNode("", "variable_value"));
+
+  block_create_int->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_create_int->output_code_callback = code_create_int;
+  block_create_int->function_identifier = "block_create_int";
+
+  block_create_int->_recalculate_rect();
+}
+
+void block_set_int(Block *block_set_int) {
+  block_set_int->add_node(LabelNode("Set int"));
+  block_set_int->add_node(LineInputAttachFieldNode("", "variable_name"));
+  block_set_int->add_node(LabelNode("="));
+  block_set_int->add_node(LineInputAttachFieldNode("", "variable_value"));
+
+  block_set_int->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_set_int->output_code_callback = code_set_int;
+  block_set_int->function_identifier = "block_set_int";
+
+  block_set_int->_recalculate_rect();
+}
+
+void block_create_float(Block *block_create_float) {
+  block_create_float->add_node(LabelNode("Create float"));
+  block_create_float->add_node(LineInputAttachFieldNode("", "variable_name"));
+  block_create_float->add_node(LabelNode("="));
+  block_create_float->add_node(LineInputAttachFieldNode("", "variable_value"));
+
+  block_create_float->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_create_float->output_code_callback = code_create_float;
+  block_create_float->function_identifier = "block_create_float";
+
+  block_create_float->_recalculate_rect();
+}
+
+void block_set_float(Block *block_set_float) {
+  block_set_float->add_node(LabelNode("Set float"));
+  block_set_float->add_node(LineInputAttachFieldNode("", "variable_name"));
+  block_set_float->add_node(LabelNode("="));
+  block_set_float->add_node(LineInputAttachFieldNode("", "variable_value"));
+
+  block_set_float->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_set_float->output_code_callback = code_set_float;
+  block_set_float->function_identifier = "block_set_float";
+
+  block_set_float->_recalculate_rect();
+}
+
+void block_create_string(Block *block_create_string) {
+  block_create_string->add_node(LabelNode("Create string"));
+  block_create_string->add_node(LineInputAttachFieldNode("", "variable_name"));
+  block_create_string->add_node(LabelNode("="));
+  block_create_string->add_node(LineInputAttachFieldNode("", "variable_value"));
+
+  block_create_string->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_create_string->output_code_callback = code_create_string;
+  block_create_string->function_identifier = "block_create_string";
+
+  block_create_string->_recalculate_rect();
+}
+
+void block_set_string(Block *block_set_string) {
+  block_set_string->add_node(LabelNode("Set string"));
+  block_set_string->add_node(LineInputAttachFieldNode("", "variable_name"));
+  block_set_string->add_node(LabelNode("="));
+  block_set_string->add_node(LineInputAttachFieldNode("", "variable_value"));
+
+  block_set_string->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_set_string->output_code_callback = code_set_string;
+  block_set_string->function_identifier = "block_set_string";
+
+  block_set_string->_recalculate_rect();
+}
+
+void block_create_vector2f(Block *block_create_vector2f) {
+  block_create_vector2f->add_node(LabelNode("Create Vector2f"));
+  block_create_vector2f->add_node(
+      LineInputAttachFieldNode("", "variable_name"));
+  block_create_vector2f->add_node(LabelNode("="));
+  block_create_vector2f->add_node(LabelNode("x:"));
+  block_create_vector2f->add_node(
+      LineInputAttachFieldNode("", "variable_value_x"));
+  block_create_vector2f->add_node(LabelNode("y:"));
+  block_create_vector2f->add_node(
+      LineInputAttachFieldNode("", "variable_value_y"));
+
+  block_create_vector2f->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_create_vector2f->output_code_callback = code_create_vector2f;
+  block_create_vector2f->function_identifier = "block_create_vector2f";
+
+  block_create_vector2f->_recalculate_rect();
+}
+
+void block_set_vector2f(Block *block_set_vector2f) {
+  block_set_vector2f->add_node(LabelNode("Set Vector2f"));
+  block_set_vector2f->add_node(LineInputAttachFieldNode("", "variable_name"));
+  block_set_vector2f->add_node(LabelNode("="));
+  block_set_vector2f->add_node(LabelNode("x:"));
+  block_set_vector2f->add_node(
+      LineInputAttachFieldNode("", "variable_value_x"));
+  block_set_vector2f->add_node(LabelNode("y:"));
+  block_set_vector2f->add_node(
+      LineInputAttachFieldNode("", "variable_value_y"));
+
+  block_set_vector2f->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_set_vector2f->output_code_callback = code_set_vector2f;
+  block_set_vector2f->function_identifier = "block_set_vector2f";
+
+  block_set_vector2f->_recalculate_rect();
+}
+
 } // namespace BUILT_IN_BLOCKS
 
 #endif

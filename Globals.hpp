@@ -40,6 +40,7 @@ enum BLOCKS_TAB_NAME {
   TAB_CONTROL = 0,
   TAB_DRAW_PRIMITIVES = 1,
   TAB_MOTION = 2,
+  TAB_VARIABLES = 3
 };
 
 extern sf::Vector2i mouse_position;

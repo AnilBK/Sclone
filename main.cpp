@@ -90,7 +90,7 @@ void spawn_and_bind_editor_blocks(std::vector<Block> &to) {
     std::cout << "[Done]Spawn And Bind.\n";
   };
 
-  to.reserve(20);
+  to.reserve(25);
 
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_program_started);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_sprite_clicked);
@@ -110,6 +110,15 @@ void spawn_and_bind_editor_blocks(std::vector<Block> &to) {
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_circle);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_rectangle);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_triangle);
+
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_int);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_int);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_float);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_float);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_string);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_string);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_vector2f);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_vector2f);
 }
 
 void bind_block_generators() {
@@ -279,6 +288,7 @@ int main() {
   built_in_blocks_tab_bar.add_tab("Control Blocks");
   built_in_blocks_tab_bar.add_tab("Draw Blocks");
   built_in_blocks_tab_bar.add_tab("Motion");
+  built_in_blocks_tab_bar.add_tab("Vars..");
   built_in_blocks_tab_bar._select_tab(0);
   built_in_blocks_tab_bar.recalculate_post_add_tabs();
 

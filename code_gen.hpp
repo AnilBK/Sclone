@@ -194,6 +194,104 @@ std::string code_sprite_draw_triangle(const Block &block) {
   return code;
 }
 
+// 'Create' Blocks are to Create Variables.
+// 'Set' Blocks are to Update the already created Variables.
+
+// We use underscores before sprite names, so that the variables don't collide
+// with variables of other sprites. As of now, all the variables are in the same
+// namespace, so.
+
+std::string code_set_int(const Block &block) {
+  auto int_name = block.get_bound_value("variable_name").value();
+  auto int_value = block.get_bound_value("variable_value").value();
+  return "_##SPRITE_NAME##_" + int_name + " = " + int_value + ";";
+}
+
+std::string code_create_int(const Block &block) {
+  return "int " + code_set_int(block);
+  // Same As:
+  //  auto int_name = block.get_bound_value("variable_name").value();
+  //  auto int_value = block.get_bound_value("variable_value").value();
+  //  return "int _##SPRITE_NAME##_" + int_name + " = " + int_value + ";";
+}
+
+std::string code_set_float(const Block &block) {
+  auto float_name = block.get_bound_value("variable_name").value();
+  auto float_value = block.get_bound_value("variable_value").value();
+  return "_##SPRITE_NAME##_" + float_name + " = " + float_value + ";";
+}
+
+std::string code_create_float(const Block &block) {
+  return "float " + code_set_float(block);
+  // Same As:
+  // auto float_name = block.get_bound_value("variable_name").value();
+  // auto float_value = block.get_bound_value("variable_value").value();
+  // return "float _##SPRITE_NAME##_" + float_name + " = " + float_value + ";";
+}
+
+std::string code_set_string(const Block &block) {
+  auto string_name = block.get_bound_value("variable_name").value();
+  auto string_value = block.get_bound_value("variable_value").value();
+  return "_##SPRITE_NAME##_" + string_name + " = {\"" + string_value + "\"};";
+}
+
+std::string code_create_string(const Block &block) {
+  return "std::string " + code_set_string(block);
+  // Same As:
+  // auto string_name = block.get_bound_value("variable_name").value();
+  // auto string_value = block.get_bound_value("variable_value").value();
+  // return "std::string _##SPRITE_NAME##_" + string_name + "{\"" + string_value
+  // +
+  //  "\"};";
+}
+
+std::string code_set_vector2f(const Block &block) {
+  auto vector2f_name = block.get_bound_value("variable_name").value();
+  auto vector2f_value_x = block.get_bound_value("variable_value_x").value();
+  auto vector2f_value_y = block.get_bound_value("variable_value_y").value();
+
+  // If values are left empty, then use the previous values.
+  // TODO? Implement this for other variable types as well ??
+
+  if (vector2f_value_x.empty()) {
+    if (vector2f_value_y.empty()) {
+      std::cout << "[Code Modification] Both \"x\" and \"y\" field of the "
+                   "vector2f was left "
+                   "empty. So stripping away the set code.\n";
+      return "\n";
+    } else {
+      std::cout << "[Code Modification] \"x\" field of the vector2f was left "
+                   "empty. So just setting the \"y\".\n";
+      return "_##SPRITE_NAME##_" + vector2f_name + ".y = " + vector2f_value_y +
+             ";";
+    }
+  }
+
+  if (vector2f_value_y.empty()) {
+    if (!vector2f_value_x.empty()) {
+      std::cout << "[Code Modification] \"y\" field of the vector2f was left "
+                   "empty. So just setting the \"x\".\n";
+      return "_##SPRITE_NAME##_" + vector2f_name + ".x = " + vector2f_value_x +
+             ";";
+    }
+    // Else case of the inner loop is when both the fields are empty and is
+    // handled above already.
+  }
+
+  // Both the values are set.
+  return "_##SPRITE_NAME##_" + vector2f_name + "= {" + vector2f_value_x + "," +
+         vector2f_value_y + "};";
+}
+
+std::string code_create_vector2f(const Block &block) {
+  auto vector2f_name = block.get_bound_value("variable_name").value();
+  auto vector2f_value_x = block.get_bound_value("variable_value_x").value();
+  auto vector2f_value_y = block.get_bound_value("variable_value_y").value();
+  // {} initialization.
+  return "sf::Vector2f _##SPRITE_NAME##_" + vector2f_name + " {" +
+         vector2f_value_x + "," + vector2f_value_y + "};";
+}
+
 void substitute_sprite_name(std::string &code, const std::string &sprite_name) {
   replaceAll(code, "##SPRITE_NAME##", sprite_name);
 }

@@ -352,7 +352,7 @@ int main() {
   StarFish.setTexture(StarFish_texture);
   sf::FloatRect StarFishSize = StarFish.getGlobalBounds();
   StarFish.setOrigin(StarFishSize.width / 2.0f, StarFishSize.height / 2.0f);
-  StarFish.setPosition(289, 384);
+  StarFish.setPosition(200, 384);
 
   sf::Texture Cat_texture;
   if (!Cat_texture.loadFromFile("cat.png")) {
@@ -365,7 +365,12 @@ int main() {
   Cat.setTexture(Cat_texture);
   sf::FloatRect CatSize = Cat.getGlobalBounds();
   Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
-  Cat.setPosition(945, 384);
+  Cat.setPosition(400, 384);
+
+  int _StarFish_lives = 5;
+  float _StarFish_health = 100.0f;
+  std::string _StarFish_name = {"fishy"};
+  sf::Vector2f _StarFish_vel{100, 200};
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -380,13 +385,19 @@ int main() {
       if (e.type == sf::Event::Closed) {
         window.close();
       }
+
+      if (e.type == sf::Event::MouseButtonReleased &&
+          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&StarFish)) {
+        _StarFish_vel = {0, 0};
+        _StarFish_vel.x = 2;
+        _StarFish_vel.y = 2;
+        _StarFish_name = {"pussy"};
+        _StarFish_health = 0.0f;
+        _StarFish_lives = 0;
+      }
     }
 
     window.clear();
-
-    if (are_sprites_colliding(StarFish, Cat)) {
-      add_bubble_message(&StarFish, 0.0001, "Meow Meow");
-    }
 
     velocity = {0.0f, 0.0f};
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
@@ -411,7 +422,7 @@ int main() {
     velocity.y *= speed;
 
     auto deltaTime = frameClock.restart();
-    StarFish.move(velocity * deltaTime.asSeconds());
+    player.move(velocity * deltaTime.asSeconds());
 
     window.draw(player);
 
