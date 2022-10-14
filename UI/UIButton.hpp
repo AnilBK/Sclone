@@ -21,6 +21,8 @@ public:
     text.setText(btn_text);
   }
 
+  bool is_clicked() { return clicked; }
+
   sf::Vector2f text_size();
 
   sf::Vector2f getPosition() override;
