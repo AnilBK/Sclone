@@ -323,6 +323,32 @@ void update_move_to_point_system(float delta_time) {
   }
 }
 
+template <class T>
+void add_character_movement(T &player, sf::Time deltaTime, int speed) {
+  sf::Vector2f velocity{0.0f, 0.0f};
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    velocity.x += 1.0f;
+  }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    velocity.x -= 1.0f;
+  }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    velocity.y += 1.0f;
+  }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    velocity.y -= 1.0f;
+  }
+
+  velocity = normalized(velocity);
+  velocity.x *= speed;
+  velocity.y *= speed;
+
+  player.move(velocity * deltaTime.asSeconds());
+}
+
 int main() {
   if (!font.loadFromFile("alaska.ttf")) {
     std::cout << "Error Loading Font. \n";
@@ -337,16 +363,10 @@ int main() {
 
   window.setVerticalSyncEnabled(true);
 
-  sf::RectangleShape player({50, 50});
-  player.setPosition(200, 200);
-  player.setFillColor(sf::Color::Red);
-
   //###INIT_CODES###
 
   ///////////////////////////////////////
   ///////////////////////////////////////
-
-  sf::Vector2f velocity;
 
   sf::Clock frameClock;
 
@@ -361,35 +381,9 @@ int main() {
     }
 
     window.clear();
+    auto deltaTime = frameClock.restart();
 
     //###MAINLOOP_CODE###
-
-    velocity = {0.0f, 0.0f};
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-      velocity.x += 1.0f;
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-      velocity.x -= 1.0f;
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-      velocity.y += 1.0f;
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-      velocity.y -= 1.0f;
-    }
-
-    int speed = 200;
-    velocity = normalized(velocity);
-    velocity.x *= speed;
-    velocity.y *= speed;
-
-    auto deltaTime = frameClock.restart();
-    player.move(velocity * deltaTime.asSeconds());
-
-    window.draw(player);
 
     //###RENDER_CODE###
 
