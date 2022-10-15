@@ -6,6 +6,16 @@
 #include <fstream>
 #include <string>
 
+std::string code_default_character_controller(const Block &block) {
+  auto speed = block.get_bound_value("speed").value();
+
+  if (speed.empty()) {
+    speed = "200";
+  }
+
+  return "add_character_movement(##SPRITE_NAME##, deltaTime," + speed + ");\n";
+}
+
 std::string code_sprite_set_position(const Block &block) {
   //"x" -> block.childrens.at(2).text
   //"y" -> block.childrens.at(4).text
@@ -330,10 +340,49 @@ std::string render_sprite_code(const std::string &sprite_name) {
   return spr_render_code;
 }
 
+std::string _get_update_player_velocity_code() {
+  std::string code =
+      ""
+      "##SPRITE_NAME##__velocity = {0.0f, 0.0f};"
+      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {"
+      "  ##SPRITE_NAME##__velocity.x += 1.0f;"
+      "}"
+      ""
+      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {"
+      "  ##SPRITE_NAME##__velocity.x -= 1.0f;"
+      "}"
+      ""
+      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {"
+      "  ##SPRITE_NAME##__velocity.y += 1.0f;"
+      "}"
+      ""
+      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {"
+      "  ##SPRITE_NAME##__velocity.y -= 1.0f;"
+      "}\n\n"
+      ""
+      "int ##SPRITE_NAME##__speed = 200;"
+      "##SPRITE_NAME##__velocity = normalized(##SPRITE_NAME##__velocity);"
+      "##SPRITE_NAME##__velocity.x *= ##SPRITE_NAME##__speed;"
+      "##SPRITE_NAME##__velocity.y *= ##SPRITE_NAME##__speed;"
+      "##SPRITE_NAME##.move(##SPRITE_NAME##__velocity * "
+      "deltaTime.asSeconds());\n"
+      "";
+  return code;
+}
+
 std::string _construct_code(const Editor &editor) {
   std::string cons_code;
   for (const auto &spr : editor.user_added_sprites) {
     cons_code += construct_sprite_code(spr);
+
+    // Hacky Functions to add Movement scripts to the sprites.
+    if (spr.add_movement_script) {
+      auto sprite_name = spr.name;
+      // sf::Vector2f velocity;
+      cons_code += "\nsf::Vector2f " + sprite_name + "__velocity;\n";
+    }
+    // Hacky Functions End.
+
     cons_code += "\n\n";
   }
 
@@ -361,6 +410,13 @@ std::string _main_loop_code(Editor &editor) {
     }
 
     auto sprite_name = spr.name;
+
+    // Hacky Functions to add Movement scripts to the sprites.
+    if (spr.add_movement_script) {
+      main_loop_code += "\n" + _get_update_player_velocity_code();
+      substitute_sprite_name(main_loop_code, sprite_name);
+    }
+    // Hacky Functions End.
 
     for (auto &block : script->blocks) {
       if (!block.is_control_block()) {

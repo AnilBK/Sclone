@@ -99,6 +99,14 @@ void spawn_and_bind_editor_blocks(std::vector<Block> &to) {
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_sprite_touching);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_if);
 
+  // There are two ways of adding character controller for a script.
+  // By Using the editor block.
+  // The caveat is that it should be placed in forever block(Recommended).
+  // Another method is by using the editors "Add Controller" button, which
+  // silently writes the controller code during export, but the speed of this
+  // movement isn't configurable and defaults to 200.
+  SPAWN_EDITOR_BLOCK_AND_BIND(
+      BUILT_IN_BLOCKS::block_default_character_controller);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_go_to_xy);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_x_by);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_y_by);

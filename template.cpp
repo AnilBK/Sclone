@@ -326,6 +326,7 @@ void update_move_to_point_system(float delta_time) {
 template <class T>
 void add_character_movement(T &player, sf::Time deltaTime, int speed) {
   sf::Vector2f velocity{0.0f, 0.0f};
+
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
     velocity.x += 1.0f;
   }

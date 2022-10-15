@@ -20,6 +20,7 @@ public:
   std::string name;
   sf::Vector2f position;
   bool visibility;
+  bool add_movement_script = false;
   std::string texture;
   // Points to the button that is related with this sprite.
   UIButton *ui_btn_ref = nullptr;
@@ -39,6 +40,12 @@ private:
   HBoxContainer first_line;
   HBoxContainer third_line;
   VBoxContainer editor_inspector;
+
+  // 'More' button:
+  //    to add more functionalities to a sprite.
+  UIButton show_more_options_btn = UIButton("V");
+  UIButton add_movement_btn = UIButton("Add Movement Script");
+  HBoxContainer show_more_hbox;
 
 private:
   // Add new sprite section.
@@ -78,6 +85,10 @@ private:
   void _render_sprites();
   void _process_2D_gizmo();
 
+  void _show_more_btn__show_childrens();
+  void _show_more_btn__hide_childrens();
+  void _add_movement_script();
+
 public:
   std::vector<EditorSprite> user_added_sprites;
   std::vector<std::shared_ptr<Script>> scripts;
@@ -97,9 +108,29 @@ public:
     third_line.add_child(sprite_texture);
     third_line.add_child(sprite_texture_name);
 
+    show_more_options_btn.is_flat = false;
+    // Disabled at first.
+    show_more_options_btn.button_fill_color = sf::Color(200, 200, 200);
+    show_more_options_btn.clicked_callback = [&]() {
+      if (show_more_options_btn.is_clicked()) {
+        // Green color, to indicate the button is enabled.
+        show_more_options_btn.button_fill_color = sf::Color::Green;
+        _show_more_btn__show_childrens();
+      } else {
+        // Gray color,to indicate the button is disabled.
+        show_more_options_btn.button_fill_color = sf::Color(200, 200, 200);
+        _show_more_btn__hide_childrens();
+      }
+    };
+
+    add_movement_btn.clicked_callback = [&]() { _add_movement_script(); };
+
+    show_more_hbox.add_child(show_more_options_btn);
+
     editor_inspector.add_child(first_line);
     editor_inspector.add_child(sprite_pos);
     editor_inspector.add_child(third_line);
+    editor_inspector.add_child(show_more_hbox);
     editor_inspector.setPosition({250, 10});
 
     // Stuffs Related To Add New Sprite Inspector.

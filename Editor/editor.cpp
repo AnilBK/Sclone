@@ -1,5 +1,47 @@
 #include "editor.hpp"
 
+void Editor::_show_more_btn__show_childrens() {
+  show_more_hbox.add_child(add_movement_btn);
+}
+
+void Editor::_show_more_btn__hide_childrens() {
+  if (show_more_hbox.children.size() < 2) {
+    return;
+  }
+  // We have a single child only, so remove that.
+  show_more_hbox.children.erase(show_more_hbox.children.begin() + 1);
+  // TODO??Disconnect it's signals as well.
+}
+
+void Editor::_add_movement_script() {
+  std::cout << "Adding Movement Script to Player.\n";
+
+  auto *script = selected_script_ptr();
+  if (script == nullptr) {
+    return;
+  }
+
+  // TODO???Use 'namespace BUILT_IN_BLOCKS' functions.
+  // as the blocks will be spawned in the editor.
+  // As of now, we have a bool to indicate if we want to add a movement
+  // script,which will be write movement script when exporting the code. We
+  // have no way to change the params of the movement script in the editor at
+  // the moment with this hacky way.
+
+  auto *sprite = selected_sprite_ptr();
+  if (sprite == nullptr) {
+    return;
+  }
+
+  sprite->add_movement_script = true;
+
+  std::cout << "[Done]Adding Movement Script to Player.\n";
+}
+
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
 sf::Texture *Editor::load_texture(const std::string &texture_file) {
   std::shared_ptr<sf::Texture> texture(new sf::Texture());
   ERR_FAIL_COND_CRASH(!texture.get()->loadFromFile(texture_file),

@@ -323,6 +323,33 @@ void update_move_to_point_system(float delta_time) {
   }
 }
 
+template <class T>
+void add_character_movement(T &player, sf::Time deltaTime, int speed) {
+  sf::Vector2f velocity{0.0f, 0.0f};
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+    velocity.x += 1.0f;
+  }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+    velocity.x -= 1.0f;
+  }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+    velocity.y += 1.0f;
+  }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+    velocity.y -= 1.0f;
+  }
+
+  velocity = normalized(velocity);
+  velocity.x *= speed;
+  velocity.y *= speed;
+
+  player.move(velocity * deltaTime.asSeconds());
+}
+
 int main() {
   if (!font.loadFromFile("alaska.ttf")) {
     std::cout << "Error Loading Font. \n";
@@ -337,10 +364,6 @@ int main() {
 
   window.setVerticalSyncEnabled(true);
 
-  sf::RectangleShape player({50, 50});
-  player.setPosition(200, 200);
-  player.setFillColor(sf::Color::Red);
-
   sf::Texture StarFish_texture;
   if (!StarFish_texture.loadFromFile("fish.png")) {
     std::cerr << "Error while loading texture" << std::endl;
@@ -353,6 +376,7 @@ int main() {
   sf::FloatRect StarFishSize = StarFish.getGlobalBounds();
   StarFish.setOrigin(StarFishSize.width / 2.0f, StarFishSize.height / 2.0f);
   StarFish.setPosition(200, 384);
+  sf::Vector2f StarFish__velocity;
 
   sf::Texture Cat_texture;
   if (!Cat_texture.loadFromFile("cat.png")) {
@@ -367,15 +391,8 @@ int main() {
   Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
   Cat.setPosition(400, 384);
 
-  int _StarFish_lives = 5;
-  float _StarFish_health = 100.0f;
-  std::string _StarFish_name = {"fishy"};
-  sf::Vector2f _StarFish_vel{100, 200};
-
   ///////////////////////////////////////
   ///////////////////////////////////////
-
-  sf::Vector2f velocity;
 
   sf::Clock frameClock;
 
@@ -385,46 +402,32 @@ int main() {
       if (e.type == sf::Event::Closed) {
         window.close();
       }
-
-      if (e.type == sf::Event::MouseButtonReleased &&
-          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&StarFish)) {
-        _StarFish_vel = {0, 0};
-        _StarFish_vel.x = 2;
-        _StarFish_vel.y = 2;
-        _StarFish_name = {"pussy"};
-        _StarFish_health = 0.0f;
-        _StarFish_lives = 0;
-      }
     }
 
     window.clear();
-
-    velocity = {0.0f, 0.0f};
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-      velocity.x += 1.0f;
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-      velocity.x -= 1.0f;
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-      velocity.y += 1.0f;
-    }
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-      velocity.y -= 1.0f;
-    }
-
-    int speed = 200;
-    velocity = normalized(velocity);
-    velocity.x *= speed;
-    velocity.y *= speed;
-
     auto deltaTime = frameClock.restart();
-    player.move(velocity * deltaTime.asSeconds());
 
-    window.draw(player);
+    StarFish__velocity = {0.0f, 0.0f};
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+      StarFish__velocity.x += 1.0f;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+      StarFish__velocity.x -= 1.0f;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+      StarFish__velocity.y += 1.0f;
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+      StarFish__velocity.y -= 1.0f;
+    }
+
+    int StarFish__speed = 200;
+    StarFish__velocity = normalized(StarFish__velocity);
+    StarFish__velocity.x *= StarFish__speed;
+    StarFish__velocity.y *= StarFish__speed;
+    StarFish.move(StarFish__velocity * deltaTime.asSeconds());
+
+    add_character_movement(Cat, deltaTime, 400);
 
     window.draw(StarFish);
     window.draw(Cat);

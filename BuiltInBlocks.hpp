@@ -89,6 +89,17 @@ void block_sprite_clicked(Block *block_sprite_clicked) {
 }
 
 // Motion Blocks
+void block_default_character_controller(Block *block_def_char_con) {
+  block_def_char_con->add_node(LabelNode("Default Character Controller:"));
+  block_def_char_con->add_node(LabelNode("Speed = "));
+  block_def_char_con->add_node(LineInputAttachFieldNode("", "speed"));
+  block_def_char_con->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
+  block_def_char_con->output_code_callback = code_default_character_controller;
+  block_def_char_con->function_identifier =
+      "block_default_character_controller";
+  block_def_char_con->_recalculate_rect();
+}
+
 void block_go_to_xy(Block *block_go_to_xy) {
   // Block block_go_to_xy;
   block_go_to_xy->add_node(LabelNode("Go to"));
