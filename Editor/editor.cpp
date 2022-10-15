@@ -285,8 +285,8 @@ void Editor::Render() {
   // if (sprite_visible) {
   //    ......
   // }
-  _render_ui();
   _render_sprites();
+  _render_ui();
   _process_2D_gizmo();
   script_editor.Render();
 }

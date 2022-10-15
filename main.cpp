@@ -327,6 +327,8 @@ int main() {
 
     window.clear(window_clear_color);
 
+    editor.Render();
+
     built_in_blocks_tab_bar.Render();
 
     sf::Vector2f block_in_tabs_draw_position =
@@ -398,7 +400,7 @@ int main() {
 
     blocks_tab_bar_collapse_btn.Render();
 
-    editor.Render();
+    // editor.Render();
 
     window.display();
   }
