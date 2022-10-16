@@ -2,14 +2,14 @@
 #define EDITOR_HPP
 
 #include "../Globals.hpp"
-#include "../Script.hpp"
-#include "../TransformGizmo2D.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/Label.hpp"
 #include "../UI/UIButton.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../UI/UISprite.hpp"
 #include "../block/Block.hpp"
+#include "ScriptEditor.hpp"
+#include "TransformGizmo2D.hpp"
 #include <memory>
 #include <vector>
 

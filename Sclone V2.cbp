@@ -47,15 +47,17 @@
 			<Add directory="C:/SFML-2.5.1/lib" />
 		</Linker>
 		<Unit filename="BuiltInBlocks.hpp" />
+		<Unit filename="CodeGen/code_gen.hpp" />
 		<Unit filename="Core/Object.cpp" />
 		<Unit filename="Core/Object.hpp" />
-		<Unit filename="Editor/editor.cpp" />
-		<Unit filename="Editor/editor.hpp" />
+		<Unit filename="Editor/Editor.cpp" />
+		<Unit filename="Editor/Editor.hpp" />
+		<Unit filename="Editor/Script.hpp" />
+		<Unit filename="Editor/ScriptEditor.cpp" />
+		<Unit filename="Editor/ScriptEditor.hpp" />
+		<Unit filename="Editor/TransformGizmo2D.cpp" />
+		<Unit filename="Editor/TransformGizmo2D.hpp" />
 		<Unit filename="Globals.hpp" />
-		<Unit filename="Script.cpp" />
-		<Unit filename="Script.hpp" />
-		<Unit filename="TransformGizmo2D.cpp" />
-		<Unit filename="TransformGizmo2D.hpp" />
 		<Unit filename="UI/Container.cpp" />
 		<Unit filename="UI/Container.hpp" />
 		<Unit filename="UI/Label.cpp" />
@@ -69,6 +71,7 @@
 		<Unit filename="UI/UISprite.hpp" />
 		<Unit filename="block/Block.cpp" />
 		<Unit filename="block/Block.hpp" />
+		<Unit filename="block/BuiltInBlocks.hpp" />
 		<Unit filename="block/Button.cpp" />
 		<Unit filename="block/Button.hpp" />
 		<Unit filename="block/DropDown.cpp" />
@@ -78,7 +81,6 @@
 		<Unit filename="block/NODEBaseClass.hpp" />
 		<Unit filename="block/TabBar.cpp" />
 		<Unit filename="block/TabBar.hpp" />
-		<Unit filename="code_gen.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

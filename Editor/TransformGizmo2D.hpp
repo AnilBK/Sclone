@@ -1,7 +1,7 @@
 #ifndef TRANSFORM_GIZMO_2D_HPP
 #define TRANSFORM_GIZMO_2D_HPP
 
-#include "Globals.hpp"
+#include "../Globals.hpp"
 #include <SFML/Graphics.hpp>
 
 enum class GIZMO_SELECT_STATE { X, Y, CENTER, NONE };

@@ -1,9 +1,9 @@
-#include "BuiltInBlocks.hpp"
-#include "Editor/editor.hpp"
+#include "Editor/Editor.hpp"
+#include "Editor/Script.hpp"
 #include "Globals.hpp"
-#include "Script.hpp"
 #include "UI/UIButton.hpp"
 #include "block/Block.hpp"
+#include "block/BuiltInBlocks.hpp"
 #include "block/NODEBaseClass.hpp"
 #include "block/TabBar.hpp"
 #include <SFML/Graphics.hpp>
