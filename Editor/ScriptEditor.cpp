@@ -1,4 +1,4 @@
-#include "Script.hpp"
+#include "ScriptEditor.hpp"
 
 void ScriptEditor::handle_inputs(sf::Event event) {
   if (script == nullptr) {

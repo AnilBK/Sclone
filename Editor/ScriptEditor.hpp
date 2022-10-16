@@ -1,19 +1,10 @@
-#ifndef SCRIPT_HPP
-#define SCRIPT_HPP
+#ifndef SCRIPT_EDITOR
+#define SCRIPT_EDITOR
 
-#include "block/Block.hpp"
-#include <vector>
-
-class Script {
-public:
-  int attached_to_sprite_id = -1;
-  std::vector<Block> blocks;
-
-  Script() { blocks.reserve(16); }
-};
+#include "../block/Block.hpp"
+#include "Script.hpp"
 
 class ScriptEditor {
-
 private:
   bool middle_click = false;
 
@@ -31,4 +22,4 @@ public:
   void Render();
 };
 
-#endif // SCRIPT_HPP
+#endif // SCRIPT_EDITOR

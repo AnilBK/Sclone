@@ -1,8 +1,8 @@
 #ifndef CODE_GEN_HPP
 #define CODE_GEN_HPP
 
-#include "Editor/editor.hpp"
-#include "block/Block.hpp"
+#include "../Editor/Editor.hpp"
+#include "../block/Block.hpp"
 #include <fstream>
 #include <string>
 
@@ -549,8 +549,7 @@ void generate_code(Editor &editor) {
   // All these above code generations can be done in a single loop.
   // But this seems more clean.
   // See 'Single Loop Implementation' below.
-
-  std::ifstream code_template("template.cpp");
+  std::ifstream code_template("CodeGen\\template.cpp");
   std::string template_code((std::istreambuf_iterator<char>(code_template)),
                             (std::istreambuf_iterator<char>()));
 

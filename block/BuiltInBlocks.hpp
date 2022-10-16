@@ -1,8 +1,8 @@
 #ifndef BUILT_IN_BLOCKS_HPP
 #define BUILT_IN_BLOCKS_HPP
 
-#include "Globals.hpp"
-#include "code_gen.hpp"
+#include "../CodeGen/code_gen.hpp"
+#include "../Globals.hpp"
 
 namespace BUILT_IN_BLOCKS {
 
