@@ -17,6 +17,7 @@
 class EditorSprite {
 public:
   int id = -1; //-1 means Invalid.
+  int layer = 0;
   std::string name;
   sf::Vector2f position;
   bool visibility;
@@ -37,8 +38,14 @@ private:
   Label sprite_texture = Label("Texture:");
   UILineInput sprite_texture_name = UILineInput("cat.png");
 
+  Label sprite_layer_label = Label("Layer:");
+  UILineInput sprite_layer_value_input = UILineInput("0");
+  UIButton sprite_move_layer_up = UIButton("+");
+  UIButton sprite_move_layer_down = UIButton("-");
+
   HBoxContainer first_line;
   HBoxContainer third_line;
+  HBoxContainer fourth_line;
   VBoxContainer editor_inspector;
 
   // 'More' button:
@@ -85,6 +92,11 @@ private:
   void _render_sprites();
   void _process_2D_gizmo();
 
+  int _selected_sprite_layer();
+  void _set_sprite_layer(int new_layer);
+  void _increment_sprite_layer();
+  void _decrement_sprite_layer();
+
   void _show_more_btn__show_childrens();
   void _show_more_btn__hide_childrens();
   void _add_movement_script();
@@ -108,6 +120,22 @@ public:
     third_line.add_child(sprite_texture);
     third_line.add_child(sprite_texture_name);
 
+    sprite_move_layer_up.clicked_callback = [&]() {
+      _increment_sprite_layer();
+    };
+    sprite_move_layer_down.clicked_callback = [&]() {
+      _decrement_sprite_layer();
+    };
+    sprite_layer_value_input.enter_pressed_callback = [&]() {
+      _set_sprite_layer(_selected_sprite_layer());
+      sprite_layer_value_input.line_input_active = false;
+    };
+
+    fourth_line.add_child(sprite_layer_label);
+    fourth_line.add_child(sprite_layer_value_input);
+    fourth_line.add_child(sprite_move_layer_down);
+    fourth_line.add_child(sprite_move_layer_up);
+
     show_more_options_btn.is_flat = false;
     // Disabled at first.
     show_more_options_btn.button_fill_color = sf::Color(200, 200, 200);
@@ -130,6 +158,7 @@ public:
     editor_inspector.add_child(first_line);
     editor_inspector.add_child(sprite_pos);
     editor_inspector.add_child(third_line);
+    editor_inspector.add_child(fourth_line);
     editor_inspector.add_child(show_more_hbox);
     editor_inspector.setPosition({250, 10});
 
@@ -158,6 +187,8 @@ public:
   Script *selected_script_ptr();
   EditorSprite *selected_sprite_ptr();
   Script *get_script_attached_to_editor_sprite(EditorSprite *sprite);
+
+  std::vector<const EditorSprite *> get_sprites_sorted_by_layers() const;
 
   void handle_inputs(sf::Event event);
   void Render();

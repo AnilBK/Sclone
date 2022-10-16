@@ -390,9 +390,23 @@ std::string _construct_code(const Editor &editor) {
 }
 
 std::string _render_all_sprites_code(const Editor &editor) {
+  /*
   std::string render_code;
   for (const auto &spr : editor.user_added_sprites) {
     auto sprite_name = spr.name;
+    render_code += render_sprite_code(sprite_name);
+    render_code += "\n";
+  }
+
+  return render_code;
+ */
+
+  // Write Render Code, so that they draw sorted by their layers.
+  auto sorted_sprites = editor.get_sprites_sorted_by_layers();
+
+  std::string render_code;
+  for (const auto &spr : sorted_sprites) {
+    auto sprite_name = spr->name;
     render_code += render_sprite_code(sprite_name);
     render_code += "\n";
   }

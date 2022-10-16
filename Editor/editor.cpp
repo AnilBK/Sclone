@@ -1,5 +1,34 @@
 #include "editor.hpp"
 
+int Editor::_selected_sprite_layer() {
+  int layer_value = std::stoi(sprite_layer_value_input.text.getText());
+  return layer_value;
+}
+
+void Editor::_set_sprite_layer(int new_layer) {
+  std::string new_layer_value = std::to_string(new_layer);
+  sprite_layer_value_input.set_text(new_layer_value);
+
+  auto *selected_sprite = selected_sprite_ptr();
+  if (selected_sprite == nullptr) {
+    return;
+  }
+
+  selected_sprite->layer = new_layer;
+}
+
+void Editor::_increment_sprite_layer() {
+  auto curr_layer = _selected_sprite_layer();
+  curr_layer++;
+  _set_sprite_layer(curr_layer);
+}
+
+void Editor::_decrement_sprite_layer() {
+  auto curr_layer = _selected_sprite_layer();
+  curr_layer--;
+  _set_sprite_layer(curr_layer);
+}
+
 void Editor::_show_more_btn__show_childrens() {
   show_more_hbox.add_child(add_movement_btn);
 }
@@ -121,6 +150,7 @@ void Editor::select_sprite_by_id(int id) {
       sprite_name.set_text(sprite.name);
       sprite_pos.setText(_position_to_string(sprite.position));
       sprite_texture_name.set_text(sprite.texture);
+      sprite_layer_value_input.set_text(std::to_string(sprite.layer));
       _highlight_selected_btn_in_list(sprite.ui_btn_ref);
       // _refresh_layout();
 
@@ -172,6 +202,7 @@ void Editor::add_new_sprite(const std::string &p_name) {
 
   EditorSprite e_spr;
   e_spr.id = new_working_id;
+  e_spr.layer = _selected_sprite_layer() + 1;
   e_spr.name = p_name;
   e_spr.position =
       sf::Vector2f(200.0f + (new_working_id * 200), window.getSize().y / 2.0f);
@@ -252,9 +283,45 @@ void Editor::_render_ui() {
   editor_inspector.Render();
 }
 
+std::vector<const EditorSprite *> Editor::get_sprites_sorted_by_layers() const {
+  std::vector<int> layers;
+  layers.reserve(user_added_sprites.size());
+
+  for (const auto &sprite : user_added_sprites) {
+    layers.push_back(sprite.layer);
+  }
+
+  // Sort Layers.
+  std::sort(layers.begin(), layers.end());
+  // Remove duplicate layers.
+  layers.erase(std::unique(layers.begin(), layers.end()), layers.end());
+
+  std::vector<const EditorSprite *> sorted_sprites;
+  sorted_sprites.reserve(user_added_sprites.size());
+
+  for (auto layer : layers) {
+    // Add all the sprites that are in this layer.
+    for (auto &sprite : user_added_sprites) {
+      if (sprite.layer == layer) {
+        sorted_sprites.push_back(&sprite);
+      }
+    }
+  }
+
+  return sorted_sprites;
+}
+
 void Editor::_render_sprites() {
+  /*
   for (const auto &sprite : user_added_sprites) {
     window.draw(sprite.sprite);
+  }
+  */
+
+  // Drawing Sprites Sorted by their layers.
+  auto sorted_sprites = get_sprites_sorted_by_layers();
+  for (auto &sprite : sorted_sprites) {
+    window.draw(sprite->sprite);
   }
 }
 
