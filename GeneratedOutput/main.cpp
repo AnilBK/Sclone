@@ -375,7 +375,7 @@ int main() {
   StarFish.setTexture(StarFish_texture);
   sf::FloatRect StarFishSize = StarFish.getGlobalBounds();
   StarFish.setOrigin(StarFishSize.width / 2.0f, StarFishSize.height / 2.0f);
-  StarFish.setPosition(147, 650);
+  StarFish.setPosition(200, 384);
 
   sf::Texture Cat_texture;
   if (!Cat_texture.loadFromFile("cat.png")) {
@@ -388,20 +388,7 @@ int main() {
   Cat.setTexture(Cat_texture);
   sf::FloatRect CatSize = Cat.getGlobalBounds();
   Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
-  Cat.setPosition(505, 630);
-
-  sf::Texture bg_texture;
-  if (!bg_texture.loadFromFile("bg.jpg")) {
-    std::cerr << "Error while loading texture" << std::endl;
-    return -1;
-  }
-  bg_texture.setSmooth(true);
-
-  sf::Sprite bg;
-  bg.setTexture(bg_texture);
-  sf::FloatRect bgSize = bg.getGlobalBounds();
-  bg.setOrigin(bgSize.width / 2.0f, bgSize.height / 2.0f);
-  bg.setPosition(683, 382);
+  Cat.setPosition(400, 384);
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -419,9 +406,6 @@ int main() {
     window.clear();
     auto deltaTime = frameClock.restart();
 
-    add_character_movement(Cat, deltaTime, 300);
-
-    window.draw(bg);
     window.draw(StarFish);
     window.draw(Cat);
 
