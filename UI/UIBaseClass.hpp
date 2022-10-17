@@ -15,7 +15,7 @@ public:
   virtual void RenderDebug(){};
   virtual void Render() = 0;
 
-  virtual void handle_inputs(sf::Event event){};
+  virtual void handle_inputs(sf::Event event) = 0;
 
   bool is_mouse_over() {
     sf::Vector2f size = rect_size();

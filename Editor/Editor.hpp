@@ -33,7 +33,7 @@ class Editor {
 private:
   // Inspector.
   UILineInput sprite_name = UILineInput("Cat");
-  UIButton sprite_visibility = UIButton("Visible");
+  // UIButton sprite_visibility = UIButton("Visible"); Not Used At the moment.
   Label sprite_pos = Label("Position: X: Y:");
   Label sprite_texture = Label("Texture:");
   UILineInput sprite_texture_name = UILineInput("cat.png");
@@ -56,7 +56,7 @@ private:
 
 private:
   // Add new sprite section.
-  UILineInput new_sprite_name_input = UILineInput("Sprite n");
+  UILineInput new_sprite_name_input = UILineInput("Sprite");
   UIButton add_new_sprite_btn = UIButton("+");
   HBoxContainer new_sprite_hbox;
 
@@ -115,7 +115,7 @@ public:
     sprite_name.enter_pressed_callback = [&]() { _update_sprite_name(); };
 
     first_line.add_child(sprite_name);
-    first_line.add_child(sprite_visibility);
+    // first_line.add_child(sprite_visibility);
 
     third_line.add_child(sprite_texture);
     third_line.add_child(sprite_texture_name);
@@ -132,8 +132,8 @@ public:
     };
 
     fourth_line.add_child(sprite_layer_label);
-    fourth_line.add_child(sprite_layer_value_input);
     fourth_line.add_child(sprite_move_layer_down);
+    fourth_line.add_child(sprite_layer_value_input);
     fourth_line.add_child(sprite_move_layer_up);
 
     show_more_options_btn.is_flat = false;
@@ -173,7 +173,7 @@ public:
     user_added_sprites_list.add_child(new_sprite_hbox);
     user_added_sprites_list.setPosition({15, 110});
 
-    add_new_sprite("StarFish");
+    // add_new_sprite("StarFish");
     add_new_sprite("Cat");
 
     select_sprite_by_id(0);

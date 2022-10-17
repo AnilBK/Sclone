@@ -206,7 +206,7 @@ void Editor::add_new_sprite(const std::string &p_name) {
   e_spr.name = p_name;
   e_spr.position =
       sf::Vector2f(200.0f + (new_working_id * 200), window.getSize().y / 2.0f);
-  e_spr.texture = _total_sprites_added ? "cat.png" : "fish.png";
+  e_spr.texture = (new_working_id % 2 == 0) ? "cat.png" : "fish.png";
   e_spr.ui_btn_ref = btn.get();
   e_spr.visibility = true;
 
