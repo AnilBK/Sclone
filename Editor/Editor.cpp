@@ -311,6 +311,26 @@ std::vector<const EditorSprite *> Editor::get_sprites_sorted_by_layers() const {
   return sorted_sprites;
 }
 
+void Editor::_render_bounding_box_over_selected_sprite() {
+  // This could be done in _render_sprites() below.
+  auto *target_object = selected_sprite_ptr();
+  if (target_object == nullptr) {
+    return;
+  }
+
+  auto target_sprite = &target_object->sprite;
+
+  sf::RectangleShape box;
+  box.setPosition({target_sprite->getGlobalBounds().left,
+                   target_sprite->getGlobalBounds().top});
+  box.setSize({target_sprite->getGlobalBounds().width,
+               target_sprite->getGlobalBounds().height});
+  box.setFillColor(sf::Color::Transparent);
+  box.setOutlineThickness(2.0f);
+  box.setOutlineColor(sf::Color::Black);
+  window.draw(box);
+}
+
 void Editor::_render_sprites() {
   /*
   for (const auto &sprite : user_added_sprites) {
@@ -352,6 +372,7 @@ void Editor::Render() {
   // if (sprite_visible) {
   //    ......
   // }
+  _render_bounding_box_over_selected_sprite();
   _render_sprites();
   _render_ui();
   _process_2D_gizmo();

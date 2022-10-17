@@ -88,6 +88,7 @@ private:
   void add_new_sprite(const std::string &p_name);
 
   void _refresh_layout();
+  void _render_bounding_box_over_selected_sprite();
   void _render_ui();
   void _render_sprites();
   void _process_2D_gizmo();
