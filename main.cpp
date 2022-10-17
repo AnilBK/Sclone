@@ -280,7 +280,8 @@ int main() {
   blocks_tab_bar_collapse_btn.is_flat = false;
   blocks_tab_bar_collapse_btn.setPosition(
       tab_pos - sf::Vector2f(blocks_tab_bar_collapse_btn.rect_size().x, 0));
-  blocks_tab_bar_collapse_btn.clicked_callback = [&blocks_tab_bar_collapse_btn,
+
+  std::function<void()> toggle_tab_bar_folding = [&blocks_tab_bar_collapse_btn,
                                                   &built_in_blocks_tab_bar]() {
     auto &render_status = built_in_blocks_tab_bar.render_status;
     if (render_status == TabBarStatus::SHOW_ALL) {
@@ -292,6 +293,8 @@ int main() {
       render_status = TabBarStatus::SHOW_ALL;
     }
   };
+
+  blocks_tab_bar_collapse_btn.clicked_callback = toggle_tab_bar_folding;
 
   built_in_blocks_tab_bar.add_tab("Control Blocks");
   built_in_blocks_tab_bar.add_tab("Draw Blocks");
@@ -313,6 +316,9 @@ int main() {
                  event.key.code == sf::Keyboard::LAlt) {
         std::cout << "Code Generated.\n";
         generate_code(editor);
+      } else if (event.type == sf::Event::KeyReleased &&
+                 event.key.code == sf::Keyboard::Slash) {
+        toggle_tab_bar_folding();
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
