@@ -256,10 +256,8 @@ int main() {
 
   const auto window_clear_color = sf::Color(0, 255, 204);
 
-  Editor editor;
-
   // bind_block_generators();
-  std::cout << "[Done]Binding Functions:\n\n";
+  // std::cout << "[Done]Binding Functions:\n\n";
 
   //'editor blocks' are the blocks found in different tabs,that helps to create
   // new blocks. That new blocks are then added to 'blocks' vector.
@@ -270,6 +268,8 @@ int main() {
   //  This debug is here so that we can see all objects being destroyed after
   //  the function call.
   std::cout << "[Done]Creating Editor Blocks:\n\n";
+
+  Editor editor;
 
   auto tab_pos = sf::Vector2f(800, 25);
   auto tab_size = sf::Vector2f(width - tab_pos.x, height - tab_pos.y);
@@ -336,6 +336,7 @@ int main() {
     editor.Render();
 
     built_in_blocks_tab_bar.Render();
+    blocks_tab_bar_collapse_btn.Render();
 
     sf::Vector2f block_in_tabs_draw_position =
         built_in_blocks_tab_bar.get_visible_tab_position() +
@@ -403,8 +404,6 @@ int main() {
                                   " Y: " + std::to_string(mouse_position.y));
     window.draw(show_mouse_pos_text);
 #endif
-
-    blocks_tab_bar_collapse_btn.Render();
 
     // editor.Render();
 
