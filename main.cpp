@@ -312,22 +312,21 @@ int main() {
           (event.type == sf::Event::KeyReleased &&
            event.key.code == sf::Keyboard::Escape)) {
         window.close();
-      } else if (event.type == sf::Event::KeyReleased &&
-                 event.key.code == sf::Keyboard::LAlt) {
-        std::cout << "Code Generated.\n";
-        generate_code(editor);
-      } else if (event.type == sf::Event::KeyReleased &&
-                 event.key.code == sf::Keyboard::Slash) {
-        toggle_tab_bar_folding();
-      } else if (event.type == sf::Event::MouseButtonPressed &&
-                 event.mouseButton.button == sf::Mouse::Middle) {
-        middle_click = true;
-      } else if (event.type == sf::Event::MouseButtonPressed &&
-                 event.mouseButton.button == sf::Mouse::Button::XButton1) {
-        // The bottom button on left side of a gaming mouse.
-        toggle_tab_bar_folding();
+      } else if (event.type == sf::Event::KeyReleased) {
+        if (event.key.code == sf::Keyboard::LAlt) {
+          std::cout << "Code Generated.\n";
+          generate_code(editor);
+        } else if (event.key.code == sf::Keyboard::Slash) {
+          toggle_tab_bar_folding();
+        }
+      } else if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Middle) {
+          middle_click = true;
+        } else if (event.mouseButton.button == sf::Mouse::Button::XButton1) {
+          // The bottom button on left side of a gaming mouse.
+          toggle_tab_bar_folding();
+        }
       }
-
       built_in_blocks_tab_bar.handle_inputs(event);
       blocks_tab_bar_collapse_btn.handle_inputs(event);
       editor.handle_inputs(event);
@@ -385,9 +384,9 @@ int main() {
               // blocks.push_back(new_block);
               editor.add_block_to_script(new_block);
 
-              // Hide the scripts tab, so we make space for new blocks to spawn.
-              // Totally not needed, but as of now, newly spawned blocks render
-              // below the tab bar. So, this is kinda hack.
+              // Hide the scripts tab, so we make space for new blocks to
+              // spawn. Totally not needed, but as of now, newly spawned
+              // blocks render below the tab bar. So, this is kinda hack.
               toggle_tab_bar_folding();
 
               std::cout << "[Done]User Adding a Block.\n\n";
