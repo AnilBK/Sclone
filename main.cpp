@@ -322,6 +322,10 @@ int main() {
       } else if (event.type == sf::Event::MouseButtonPressed &&
                  event.mouseButton.button == sf::Mouse::Middle) {
         middle_click = true;
+      } else if (event.type == sf::Event::MouseButtonPressed &&
+                 event.mouseButton.button == sf::Mouse::Button::XButton1) {
+        // The bottom button on left side of a gaming mouse.
+        toggle_tab_bar_folding();
       }
 
       built_in_blocks_tab_bar.handle_inputs(event);
@@ -380,6 +384,11 @@ int main() {
               new_block.dragging = true;
               // blocks.push_back(new_block);
               editor.add_block_to_script(new_block);
+
+              // Hide the scripts tab, so we make space for new blocks to spawn.
+              // Totally not needed, but as of now, newly spawned blocks render
+              // below the tab bar. So, this is kinda hack.
+              toggle_tab_bar_folding();
 
               std::cout << "[Done]User Adding a Block.\n\n";
               can_spawn_editor_block = false;
