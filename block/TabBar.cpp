@@ -4,7 +4,7 @@ TabBar::TabBar(sf::Vector2f position, sf::Vector2f size)
     : _initial_pos(position), _initial_size(size) {
   tab_bg.setPosition(position);
   tab_bg.setSize(size);
-  tab_bg.setFillColor(sf::Color(204, 204, 204));
+  tab_bg.setFillColor(sf::Color(206, 207, 131));
 }
 
 void TabBar::add_tab(std::string tab_name) {
@@ -81,7 +81,7 @@ void TabBar::recalculate_post_add_tabs() {
     btn_size_delta.y = std::max(btn_size_delta.y, tab_bar_btn.rect_size().y);
   }
 
-  // Fit all the buttons so same height.
+  // Fit all the buttons to same height.
   for (auto &tab_bar_btn : tab_bar_buttons) {
     auto tab_bar_size = tab_bar_btn.rect_size();
     tab_bar_btn.fit_to_size({tab_bar_size.x, btn_size_delta.y});

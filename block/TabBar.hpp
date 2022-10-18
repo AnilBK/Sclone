@@ -17,8 +17,8 @@ private:
   sf::Font _font;
   sf::Vector2f _initial_pos, _initial_size;
 
-  const sf::Color btn_selected_fill_color = sf::Color(200, 200, 200);
-  const sf::Color btn_default_fill_color = sf::Color::Green;
+  const sf::Color btn_selected_fill_color = sf::Color(206, 207, 131);
+  const sf::Color btn_default_fill_color = sf::Color(144, 127, 66);
 
   float btn_spacing = 30.0f;
 

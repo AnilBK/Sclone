@@ -254,7 +254,7 @@ int main() {
   show_mouse_pos_text.setFillColor(sf::Color::Black);
 #endif
 
-  const auto window_clear_color = sf::Color(0, 255, 204);
+  const auto window_clear_color = sf::Color(153, 195, 180);
 
   // bind_block_generators();
   // std::cout << "[Done]Binding Functions:\n\n";
@@ -271,10 +271,10 @@ int main() {
 
   Editor editor;
 
-  auto tab_pos = sf::Vector2f(800, 25);
+  auto tab_pos = sf::Vector2f(800, 0);
   auto tab_size = sf::Vector2f(width - tab_pos.x, height - tab_pos.y);
   TabBar built_in_blocks_tab_bar(tab_pos, tab_size);
-  built_in_blocks_tab_bar.set_spacing_between_tab_btns(5.0f);
+  built_in_blocks_tab_bar.set_spacing_between_tab_btns(0.0f); // 5.0f
 
   UIButton blocks_tab_bar_collapse_btn("V");
   blocks_tab_bar_collapse_btn.is_flat = false;
