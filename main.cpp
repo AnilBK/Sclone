@@ -1,11 +1,11 @@
 #include "Editor/Editor.hpp"
 #include "Editor/Script.hpp"
 #include "Globals.hpp"
+#include "UI/TabBar.hpp"
 #include "UI/UIButton.hpp"
 #include "block/Block.hpp"
 #include "block/BuiltInBlocks.hpp"
 #include "block/NODEBaseClass.hpp"
-#include "block/TabBar.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 

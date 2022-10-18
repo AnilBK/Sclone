@@ -62,6 +62,8 @@
 		<Unit filename="UI/Container.hpp" />
 		<Unit filename="UI/Label.cpp" />
 		<Unit filename="UI/Label.hpp" />
+		<Unit filename="UI/TabBar.cpp" />
+		<Unit filename="UI/TabBar.hpp" />
 		<Unit filename="UI/UIBaseClass.hpp" />
 		<Unit filename="UI/UIButton.cpp" />
 		<Unit filename="UI/UIButton.hpp" />
@@ -79,8 +81,6 @@
 		<Unit filename="block/LineInput.cpp" />
 		<Unit filename="block/LineInput.hpp" />
 		<Unit filename="block/NODEBaseClass.hpp" />
-		<Unit filename="block/TabBar.cpp" />
-		<Unit filename="block/TabBar.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />

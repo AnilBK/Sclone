@@ -2,7 +2,7 @@
 #define TAB_BAR_HPP
 
 #include "../Globals.hpp"
-#include "Button.hpp"
+#include "../block/Button.hpp"
 #include <SFML/Graphics.hpp>
 
 enum class TabBarStatus { SHOW_ALL, SHOW_ONLY_TITLE, SHOW_ONLY_BODY };
