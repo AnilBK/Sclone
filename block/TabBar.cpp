@@ -81,6 +81,12 @@ void TabBar::recalculate_post_add_tabs() {
     btn_size_delta.y = std::max(btn_size_delta.y, tab_bar_btn.rect_size().y);
   }
 
+  // Fit all the buttons so same height.
+  for (auto &tab_bar_btn : tab_bar_buttons) {
+    auto tab_bar_size = tab_bar_btn.rect_size();
+    tab_bar_btn.fit_to_size({tab_bar_size.x, btn_size_delta.y});
+  }
+
   tab_bg.setPosition(get_initial_position() + btn_size_delta);
   tab_bg.setSize(_initial_size - btn_size_delta);
 }

@@ -26,6 +26,13 @@ public:
     text.setCharacterSize(26);
   }
 
+  void fit_to_size(sf::Vector2f new_size) {
+    auto diff = new_size - get_text_size();
+    diff *= 0.5f;
+    padding_h = diff.x;
+    padding_v = diff.y;
+  }
+
   std::string get_text();
 
   sf::Vector2f get_text_size() {
