@@ -95,7 +95,7 @@ std::string code_sprite_touching(const Block &block) {
 std::string code_sprite_clicked(const Block &block) {
   return "if (e.type == sf::Event::MouseButtonReleased &&"
          "e.mouseButton.button == sf::Mouse::Left && "
-         "is_mouse_over(&##SPRITE_NAME##)){";
+         "is_mouse_over(&##SPRITE_NAME##)){\n";
 }
 
 // In these primitive renderers,
@@ -314,23 +314,23 @@ std::string construct_sprite_code(const EditorSprite &spr) {
   auto sprite_texture_file = spr.texture;
 
   std::string spr_cons_code =
-      "sf::Texture ##SPRITE_NAME##_texture;"
+      "sf::Texture ##SPRITE_NAME##_texture;\n"
       "if (!##SPRITE_NAME##_texture.loadFromFile(\"" +
       sprite_texture_file +
-      "\")) {"
-      "   std::cerr << \"Error while loading texture\" << std::endl;"
-      "   return -1;"
-      " }"
+      "\")) {\n"
+      " std::cerr << \"Error while loading texture\" << std::endl;\n"
+      " return -1;\n"
+      "}\n"
       "##SPRITE_NAME##_texture.setSmooth(true);\n\n"
-      "sf::Sprite ##SPRITE_NAME##;"
-      "##SPRITE_NAME##.setTexture(##SPRITE_NAME##_texture);      "
+      "sf::Sprite ##SPRITE_NAME##;\n"
+      "##SPRITE_NAME##.setTexture(##SPRITE_NAME##_texture);\n"
       "sf::FloatRect ##SPRITE_NAME##Size = "
-      "##SPRITE_NAME##.getGlobalBounds();        "
+      "##SPRITE_NAME##.getGlobalBounds();\n"
       "##SPRITE_NAME##.setOrigin(##SPRITE_NAME##Size.width / 2.0f, "
-      "##SPRITE_NAME##Size.height / 2.0f); "
+      "##SPRITE_NAME##Size.height / 2.0f);\n"
       "##SPRITE_NAME##.setPosition(" +
       std::to_string(static_cast<int>(sprite_pos.x)) + "," +
-      std::to_string(static_cast<int>(sprite_pos.y)) + ");";
+      std::to_string(static_cast<int>(sprite_pos.y)) + ");\n";
 
   substitute_sprite_name(spr_cons_code, sprite_name);
   return spr_cons_code;
@@ -345,30 +345,29 @@ std::string render_sprite_code(const std::string &sprite_name) {
 std::string _get_update_player_velocity_code() {
   std::string code =
       ""
-      "##SPRITE_NAME##__velocity = {0.0f, 0.0f};"
-      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {"
-      "  ##SPRITE_NAME##__velocity.x += 1.0f;"
-      "}"
+      "##SPRITE_NAME##__velocity = {0.0f, 0.0f};\n"
+      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {\n"
+      "  ##SPRITE_NAME##__velocity.x += 1.0f;\n"
+      "}\n"
       ""
-      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {"
-      "  ##SPRITE_NAME##__velocity.x -= 1.0f;"
-      "}"
+      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {\n"
+      "  ##SPRITE_NAME##__velocity.x -= 1.0f;\n"
+      "}\n"
       ""
-      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {"
-      "  ##SPRITE_NAME##__velocity.y += 1.0f;"
-      "}"
+      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {\n"
+      "  ##SPRITE_NAME##__velocity.y += 1.0f;\n"
+      "}\n"
       ""
-      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {"
-      "  ##SPRITE_NAME##__velocity.y -= 1.0f;"
+      "if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {\n"
+      "  ##SPRITE_NAME##__velocity.y -= 1.0f;\n"
       "}\n\n"
       ""
-      "int ##SPRITE_NAME##__speed = 200;"
-      "##SPRITE_NAME##__velocity = normalized(##SPRITE_NAME##__velocity);"
-      "##SPRITE_NAME##__velocity.x *= ##SPRITE_NAME##__speed;"
-      "##SPRITE_NAME##__velocity.y *= ##SPRITE_NAME##__speed;"
+      "int ##SPRITE_NAME##__speed = 200;\n"
+      "##SPRITE_NAME##__velocity = normalized(##SPRITE_NAME##__velocity);\n"
+      "##SPRITE_NAME##__velocity.x *= ##SPRITE_NAME##__speed;\n"
+      "##SPRITE_NAME##__velocity.y *= ##SPRITE_NAME##__speed;\n"
       "##SPRITE_NAME##.move(##SPRITE_NAME##__velocity * "
-      "deltaTime.asSeconds());\n"
-      "";
+      "deltaTime.asSeconds());\n\n";
   return code;
 }
 
