@@ -6,10 +6,11 @@
 #include <cmath>
 #include <iostream>
 
-sf::Font font;
 sf::RenderWindow window;
 
-// BUBBLE-SPEECH_BEGIN
+// MODULE : "BUBBLE_TEXT" //
+sf::Font font;
+
 sf::Text bubble_text;
 void init_bubble_label() {
   bubble_text.setFont(font);
@@ -169,7 +170,7 @@ void update_bubble_message_system(float delta_time) {
                         bubble_messages.end());
 }
 
-// BUBBLE-SPEECH_END
+// MODULE_END //
 
 // TODO:Add these Vector2f functions to my custom sfml build.
 float distance_to(sf::Vector2f p1, sf::Vector2f p2) {
@@ -189,18 +190,23 @@ sf::Vector2f normalized(sf::Vector2f vec) {
   return vec;
 }
 
+// MODULE : "IS_MOUSE_OVER" //
 bool is_mouse_over(sf::Sprite *sprite) {
   sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
   return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
 }
+// MODULE_END //
 
+// MODULE : "ARE_SPRITES_COLLIDING" //
 bool are_sprites_colliding(const sf::Sprite &a, const sf::Sprite &b) {
   auto a_bounds = a.getGlobalBounds();
   auto b_bounds = b.getGlobalBounds();
 
   return a_bounds.intersects(b_bounds);
 }
+// MODULE_END //
 
+// MODULE : "MOVE_POINT_TO_POINT" //
 // For move to Vector2f block.
 // TODO: Generalize to Create AnimationPlayers.
 class move_p2p_data {
@@ -261,7 +267,9 @@ void update_move_p2p_system(float delta_time) {
                                       move_p2p_datas.end(), remove_expired),
                        move_p2p_datas.end());
 }
+// MODULE_END //
 
+// MODULE : "MOVE_TO_POINT" //
 class move_to_point_data {
 private:
   sf::Vector2f target;
@@ -322,7 +330,9 @@ void update_move_to_point_system(float delta_time) {
     move_to_point_datas.erase(move_to_point_datas.begin());
   }
 }
+// MODULE_END //
 
+// MODULE : "CHARACTER_MOVEMENT" //
 template <class T>
 void add_character_movement(T &player, sf::Time deltaTime, int speed) {
   sf::Vector2f velocity{0.0f, 0.0f};
@@ -349,15 +359,17 @@ void add_character_movement(T &player, sf::Time deltaTime, int speed) {
 
   player.move(velocity * deltaTime.asSeconds());
 }
+// MODULE_END //
 
 int main() {
+  // MODULE : "BUBBLE_TEXT" //
   if (!font.loadFromFile("alaska.ttf")) {
     std::cout << "Error Loading Font. \n";
     exit(1);
   }
 
   init_bubble_label();
-
+  // MODULE_END //
   unsigned int height = sf::VideoMode::getDesktopMode().height;
   unsigned int width = sf::VideoMode::getDesktopMode().width;
   window.create(sf::VideoMode(width, height), "SClone Generated Output");
@@ -388,9 +400,17 @@ int main() {
 
     //###RENDER_CODE###
 
+    // MODULE : "BUBBLE_TEXT" //
     update_bubble_message_system(deltaTime.asSeconds());
+    // MODULE_END //
+
+    // MODULE : "MOVE_POINT_TO_POINT" //
     update_move_p2p_system(deltaTime.asSeconds());
+    // MODULE_END //
+
+    // MODULE : "MOVE_TO_POINT" //
     update_move_to_point_system(deltaTime.asSeconds());
+    // MODULE_END //
 
     window.display();
   }

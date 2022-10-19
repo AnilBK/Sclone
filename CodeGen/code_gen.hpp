@@ -3,7 +3,9 @@
 
 #include "../Editor/Editor.hpp"
 #include "../block/Block.hpp"
+#include "Preprocessor.hpp"
 #include <fstream>
+#include <set>
 #include <string>
 
 std::string code_default_character_controller(const Block &block) {
@@ -538,6 +540,22 @@ std::string _when_program_starts_code(Editor &editor) {
   return init_code;
 }
 
+std::set<std::string> get_all_modules_required(Editor &editor) {
+  std::set<std::string> all_modules;
+
+  for (auto &spr : editor.user_added_sprites) {
+    auto *script = editor.get_script_attached_to_editor_sprite(&spr);
+    if (script == nullptr) {
+      continue;
+    }
+
+    auto spr_modules = script->get_all_modules_required();
+    all_modules.insert(spr_modules.begin(), spr_modules.end());
+  }
+
+  return all_modules;
+}
+
 void generate_code(Editor &editor) {
   auto init_code = _construct_code(editor) + "\n";
   init_code += _when_program_starts_code(editor);
@@ -546,12 +564,20 @@ void generate_code(Editor &editor) {
   auto input_code = _input_code(editor);
   auto render_code = _render_all_sprites_code(editor);
 
+  auto required_modules = get_all_modules_required(editor);
+  std::cout << "The modules required for the code export are: \n";
+  for (auto &mod : required_modules) {
+    std::cout << mod << "\n";
+  }
+
   // All these above code generations can be done in a single loop.
   // But this seems more clean.
   // See 'Single Loop Implementation' below.
   std::ifstream code_template("CodeGen\\template.cpp");
   std::string template_code((std::istreambuf_iterator<char>(code_template)),
                             (std::istreambuf_iterator<char>()));
+
+  Preprocessor::pre_process(template_code, required_modules);
 
   replaceAll(template_code, "//###INIT_CODES###", init_code);
   replaceAll(template_code, "//###MAINLOOP_CODE###", main_loop_code);

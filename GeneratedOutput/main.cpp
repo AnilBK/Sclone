@@ -6,10 +6,10 @@
 #include <cmath>
 #include <iostream>
 
-sf::Font font;
 sf::RenderWindow window;
 
-// BUBBLE-SPEECH_BEGIN
+sf::Font font;
+
 sf::Text bubble_text;
 void init_bubble_label() {
   bubble_text.setFont(font);
@@ -169,8 +169,6 @@ void update_bubble_message_system(float delta_time) {
                         bubble_messages.end());
 }
 
-// BUBBLE-SPEECH_END
-
 // TODO:Add these Vector2f functions to my custom sfml build.
 float distance_to(sf::Vector2f p1, sf::Vector2f p2) {
   auto x_dt = (p2.x - p1.x);
@@ -189,138 +187,11 @@ sf::Vector2f normalized(sf::Vector2f vec) {
   return vec;
 }
 
-bool is_mouse_over(sf::Sprite *sprite) {
-  sf::Vector2i mouse_position = sf::Mouse::getPosition(window);
-  return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
-}
-
 bool are_sprites_colliding(const sf::Sprite &a, const sf::Sprite &b) {
   auto a_bounds = a.getGlobalBounds();
   auto b_bounds = b.getGlobalBounds();
 
   return a_bounds.intersects(b_bounds);
-}
-
-// For move to Vector2f block.
-// TODO: Generalize to Create AnimationPlayers.
-class move_p2p_data {
-private:
-  sf::Vector2f current;
-  sf::Vector2f target;
-  sf::Vector2f interpolated_pos;
-  sf::Vector2f unit_vec;
-  float length = 0.0f;
-
-  float dt = 1.0f;
-  float time_elapsed = 0.0f;
-
-  sf::Sprite *target_sprite_ptr;
-
-public:
-  bool is_valid() const { return time_elapsed <= length; }
-
-  void update(float delta) {
-    time_elapsed += delta;
-    interpolated_pos += (unit_vec * dt * delta);
-    target_sprite_ptr->setPosition(interpolated_pos);
-  }
-
-  move_p2p_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_current,
-                sf::Vector2f p_target, float p_length)
-      : current(p_current), target(p_target), interpolated_pos(current),
-        length(p_length) {
-    target_sprite_ptr = p_target_sprite_ptr;
-    unit_vec = normalized(target - current);
-    dt = distance_to(current, target) / length;
-  }
-};
-
-std::vector<move_p2p_data> move_p2p_datas;
-
-void add_move_p2p_operation(sf::Sprite *p_target_sprite_ptr,
-                            sf::Vector2f p_current, sf::Vector2f p_target,
-                            float p_length) {
-  move_p2p_data mv_data(p_target_sprite_ptr, p_current, p_target, p_length);
-  move_p2p_datas.push_back(mv_data);
-}
-
-void update_move_p2p_system(float delta_time) {
-  if (move_p2p_datas.empty()) {
-    return;
-  }
-
-  for (auto &mv_data : move_p2p_datas) {
-    mv_data.update(delta_time);
-  }
-
-  auto remove_expired = [](const move_p2p_data &mv_data) {
-    return !mv_data.is_valid();
-  };
-
-  move_p2p_datas.erase(std::remove_if(move_p2p_datas.begin(),
-                                      move_p2p_datas.end(), remove_expired),
-                       move_p2p_datas.end());
-}
-
-class move_to_point_data {
-private:
-  sf::Vector2f target;
-  sf::Vector2f interpolated_pos;
-  sf::Vector2f unit_vec;
-  float length = 0.0f;
-
-  float dt = 1.0f;
-  float time_elapsed = 0.0f;
-
-  sf::Sprite *target_sprite_ptr;
-  bool initialized = false;
-
-public:
-  bool is_valid() const { return time_elapsed <= length; }
-
-  void update(float delta) {
-    if (!initialized) {
-      sf::Vector2f current = target_sprite_ptr->getPosition();
-      interpolated_pos = current;
-      unit_vec = normalized(target - current);
-      dt = distance_to(current, target) / length;
-      initialized = true;
-    }
-
-    time_elapsed += delta;
-    interpolated_pos += (unit_vec * dt * delta);
-
-    if (target_sprite_ptr == nullptr) {
-      std::cout << "nullptr\n";
-      return;
-    }
-    target_sprite_ptr->setPosition(interpolated_pos);
-  }
-
-  move_to_point_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_target,
-                     float p_length)
-      : target(p_target), length(p_length) {
-    target_sprite_ptr = p_target_sprite_ptr;
-  }
-};
-
-std::vector<move_to_point_data> move_to_point_datas;
-
-void add_move_to_point_operation(sf::Sprite *p_target_sprite_ptr,
-                                 sf::Vector2f p_target, float p_length) {
-  move_to_point_data mv_data(p_target_sprite_ptr, p_target, p_length);
-  move_to_point_datas.push_back(mv_data);
-}
-
-void update_move_to_point_system(float delta_time) {
-  if (move_to_point_datas.empty()) {
-    return;
-  }
-
-  move_to_point_datas.at(0).update(delta_time);
-  if (!move_to_point_datas.at(0).is_valid()) {
-    move_to_point_datas.erase(move_to_point_datas.begin());
-  }
 }
 
 template <class T>
@@ -351,6 +222,7 @@ void add_character_movement(T &player, sf::Time deltaTime, int speed) {
 }
 
 int main() {
+
   if (!font.loadFromFile("alaska.ttf")) {
     std::cout << "Error Loading Font. \n";
     exit(1);
@@ -364,19 +236,6 @@ int main() {
 
   window.setVerticalSyncEnabled(true);
 
-  sf::Texture StarFish_texture;
-  if (!StarFish_texture.loadFromFile("fish.png")) {
-    std::cerr << "Error while loading texture" << std::endl;
-    return -1;
-  }
-  StarFish_texture.setSmooth(true);
-
-  sf::Sprite StarFish;
-  StarFish.setTexture(StarFish_texture);
-  sf::FloatRect StarFishSize = StarFish.getGlobalBounds();
-  StarFish.setOrigin(StarFishSize.width / 2.0f, StarFishSize.height / 2.0f);
-  StarFish.setPosition(200, 384);
-
   sf::Texture Cat_texture;
   if (!Cat_texture.loadFromFile("cat.png")) {
     std::cerr << "Error while loading texture" << std::endl;
@@ -388,7 +247,20 @@ int main() {
   Cat.setTexture(Cat_texture);
   sf::FloatRect CatSize = Cat.getGlobalBounds();
   Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
-  Cat.setPosition(400, 384);
+  Cat.setPosition(200, 384);
+
+  sf::Texture fish_texture;
+  if (!fish_texture.loadFromFile("fish.png")) {
+    std::cerr << "Error while loading texture" << std::endl;
+    return -1;
+  }
+  fish_texture.setSmooth(true);
+
+  sf::Sprite fish;
+  fish.setTexture(fish_texture);
+  sf::FloatRect fishSize = fish.getGlobalBounds();
+  fish.setOrigin(fishSize.width / 2.0f, fishSize.height / 2.0f);
+  fish.setPosition(757, 396);
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -406,12 +278,15 @@ int main() {
     window.clear();
     auto deltaTime = frameClock.restart();
 
-    window.draw(StarFish);
+    add_character_movement(Cat, deltaTime, 200);
+    if (are_sprites_colliding(Cat, fish)) {
+      add_bubble_message(&Cat, 0.001, "fishy");
+    }
+
     window.draw(Cat);
+    window.draw(fish);
 
     update_bubble_message_system(deltaTime.asSeconds());
-    update_move_p2p_system(deltaTime.asSeconds());
-    update_move_to_point_system(deltaTime.asSeconds());
 
     window.display();
   }
