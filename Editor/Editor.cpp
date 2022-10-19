@@ -319,12 +319,11 @@ void Editor::_render_bounding_box_over_selected_sprite() {
   }
 
   auto target_sprite = &target_object->sprite;
+  const auto bounds = target_sprite->getGlobalBounds();
 
   sf::RectangleShape box;
-  box.setPosition({target_sprite->getGlobalBounds().left,
-                   target_sprite->getGlobalBounds().top});
-  box.setSize({target_sprite->getGlobalBounds().width,
-               target_sprite->getGlobalBounds().height});
+  box.setPosition({bounds.left, bounds.top});
+  box.setSize({bounds.width, bounds.height});
   box.setFillColor(sf::Color::Transparent);
   box.setOutlineThickness(2.0f);
   box.setOutlineColor(sf::Color::Black);
