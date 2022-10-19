@@ -47,6 +47,7 @@
 			<Add directory="C:/SFML-2.5.1/lib" />
 		</Linker>
 		<Unit filename="BuiltInBlocks.hpp" />
+		<Unit filename="CodeGen/Preprocessor.hpp" />
 		<Unit filename="CodeGen/code_gen.hpp" />
 		<Unit filename="Core/Object.cpp" />
 		<Unit filename="Core/Object.hpp" />
