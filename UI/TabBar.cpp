@@ -57,8 +57,10 @@ void TabBar::_select_tab(int idx) {
 }
 
 void TabBar::handle_inputs(sf::Event event) {
-  if (event.type == sf::Event::MouseWheelMoved) {
-    add_scroll_value_to_current_tab(event.mouseWheel.delta);
+  if (render_status != TabBarStatus::SHOW_ONLY_TITLE) {
+    if (event.type == sf::Event::MouseWheelMoved) {
+      add_scroll_value_to_current_tab(event.mouseWheel.delta);
+    }
   }
 
   for (auto &tab_bar_btn : tab_bar_buttons) {
