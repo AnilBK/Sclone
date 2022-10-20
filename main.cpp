@@ -371,7 +371,7 @@ int main() {
           // Select the blocks only that are visible.
           if (can_spawn_editor_block) {
             // Spawn New Block.
-            if (isMouseOverSprite(block.block_rect)) {
+            if (block.is_mouse_over()) {
               std::cout << "User Adding a Block.\n";
               Block_fn fn_ptr =
                   GET_BOUND_BLOCK_FN(block.function_identifier).value();
@@ -394,7 +394,6 @@ int main() {
           }
         }
 
-        // window.draw(block->block_rect);
         float height_of_cur_block = block.block_full_size.y;
         block_in_tabs_draw_position.y += height_of_cur_block + 20;
       }

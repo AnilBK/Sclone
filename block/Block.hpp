@@ -106,6 +106,8 @@ public:
 
   std::optional<std::string> get_bound_value(const std::string &query) const;
 
+  bool is_mouse_over();
+
   bool can_mouse_snap_to_top();
   bool can_mouse_snap_to_bottom();
 

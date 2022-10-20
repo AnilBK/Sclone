@@ -211,6 +211,8 @@ void Block::process_inside_snap_hints(bool attach_block_requested,
   }
 }
 
+bool Block::is_mouse_over() { return isMouseOverSprite(block_rect); }
+
 bool Block::can_mouse_snap_to_top() {
   // if (previous != nullptr) {
   // return false;
@@ -456,32 +458,10 @@ void Block::_process_events(sf::Event event) {
       }
 
       // No any internal blocks were clicked.
-      if (!dragging && isMouseOverSprite(block_rect)) {
+      if (!dragging && is_mouse_over()) {
         dragging = true;
       }
 
-      /*
-            // Process Node's callbacks, if any;
-            bool callback_called = false;
-            for (auto &child : childrens) {
-              if (child.type == NODE_TYPE::BUTTON && child.text == "Pick^") {
-                if (!child.pressed) {
-                  //  child.pressed = true;
-                  callback_called = true;
-                }
-                //          callback_called = true;
-              }
-              // TODO: Check if mouse is over the sprite.
-              //  if (child.callback) {
-              //   child.callback();
-              //  callback_called = true;
-              //}
-            }
-
-            if (callback_called) {
-              return;
-            }
-      */
     } else if (event.mouseButton.button == sf::Mouse::Right) {
       // TODO: All clicks outside a block should invalidate pressed state of
       // any NODE.
