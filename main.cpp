@@ -304,7 +304,6 @@ int main() {
   built_in_blocks_tab_bar.recalculate_post_add_tabs();
 
   while (window.isOpen()) {
-    bool middle_click = false;
 
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -320,9 +319,7 @@ int main() {
           toggle_tab_bar_folding();
         }
       } else if (event.type == sf::Event::MouseButtonPressed) {
-        if (event.mouseButton.button == sf::Mouse::Middle) {
-          middle_click = true;
-        } else if (event.mouseButton.button == sf::Mouse::Button::XButton1) {
+        if (event.mouseButton.button == sf::Mouse::Button::XButton1) {
           // The bottom button on left side of a gaming mouse.
           toggle_tab_bar_folding();
         }
@@ -336,25 +333,27 @@ int main() {
 
     window.clear(window_clear_color);
 
-    editor.Render();
+    // editor.Render();
 
     built_in_blocks_tab_bar.Render();
     blocks_tab_bar_collapse_btn.Render();
 
-    sf::Vector2f block_in_tabs_draw_position =
-        built_in_blocks_tab_bar.get_visible_tab_position() +
-        sf::Vector2f(50,
-                     50 + built_in_blocks_tab_bar.get_scroll_value() * 20.0f);
-
-    int currently_selected_tab = built_in_blocks_tab_bar.currently_selected_tab;
-
-    bool is_any_block_being_dragged =
-        editor.script_editor.is_any_block_dragging();
-    bool can_spawn_editor_block = !is_any_block_being_dragged &&
-                                  sf::Mouse::isButtonPressed(sf::Mouse::Left);
-
     if (built_in_blocks_tab_bar.render_status !=
         TabBarStatus::SHOW_ONLY_TITLE) {
+
+      sf::Vector2f block_in_tabs_draw_position =
+          built_in_blocks_tab_bar.get_visible_tab_position() +
+          sf::Vector2f(50,
+                       50 + built_in_blocks_tab_bar.get_scroll_value() * 20.0f);
+
+      int currently_selected_tab =
+          built_in_blocks_tab_bar.currently_selected_tab;
+
+      bool is_any_block_being_dragged =
+          editor.script_editor.is_any_block_dragging();
+      bool can_spawn_editor_block = !is_any_block_being_dragged &&
+                                    sf::Mouse::isButtonPressed(sf::Mouse::Left);
+
       // These are editor blocks which are for spawning new blocks.
       for (auto &block : editor_blocks) {
         if (block.TabItBelongsToName != currently_selected_tab) {
@@ -387,7 +386,7 @@ int main() {
               // Hide the scripts tab, so we make space for new blocks to
               // spawn. Totally not needed, but as of now, newly spawned
               // blocks render below the tab bar. So, this is kinda hack.
-              toggle_tab_bar_folding();
+              // toggle_tab_bar_folding();
 
               std::cout << "[Done]User Adding a Block.\n\n";
               can_spawn_editor_block = false;
@@ -413,7 +412,7 @@ int main() {
     window.draw(show_mouse_pos_text);
 #endif
 
-    // editor.Render();
+    editor.Render();
 
     window.display();
   }
