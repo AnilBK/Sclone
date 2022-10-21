@@ -1,3 +1,4 @@
+#include "CodeGen/CodeGenerator.hpp"
 #include "Editor/Editor.hpp"
 #include "Editor/Script.hpp"
 #include "Globals.hpp"
@@ -314,7 +315,8 @@ int main() {
       } else if (event.type == sf::Event::KeyReleased) {
         if (event.key.code == sf::Keyboard::LAlt) {
           std::cout << "Code Generated.\n";
-          generate_code(editor);
+          CodeGenerator CodeGen(editor);
+          CodeGen.generate_code();
         } else if (event.key.code == sf::Keyboard::Slash) {
           toggle_tab_bar_folding();
         }
