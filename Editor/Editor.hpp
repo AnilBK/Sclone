@@ -88,10 +88,6 @@ private:
   void add_new_sprite(const std::string &p_name);
 
   void _refresh_layout();
-  void _render_bounding_box_over_selected_sprite();
-  void _render_ui();
-  void _render_sprites();
-  void _process_2D_gizmo();
 
   int _selected_sprite_layer();
   void _set_sprite_layer(int new_layer);
@@ -192,6 +188,11 @@ public:
   std::vector<const EditorSprite *> get_sprites_sorted_by_layers() const;
 
   void handle_inputs(sf::Event event);
+  void _render_bounding_box_over_selected_sprite();
+  void _render_ui();
+  void _render_sprites();
+  void _process_2D_gizmo();
+
   void Render();
 };
 

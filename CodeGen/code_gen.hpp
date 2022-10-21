@@ -94,7 +94,7 @@ std::string code_sprite_touching(const Block &block) {
 
 std::string code_sprite_clicked(const Block &block) {
   return "if (e.type == sf::Event::MouseButtonReleased &&"
-         "e.mouseButton.button == sf::Mouse::Left && "
+         " e.mouseButton.button == sf::Mouse::Left && "
          "is_mouse_over(&##SPRITE_NAME##)){\n";
 }
 

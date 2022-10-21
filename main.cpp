@@ -334,6 +334,10 @@ int main() {
     window.clear(window_clear_color);
 
     // editor.Render();
+    editor._render_bounding_box_over_selected_sprite();
+    editor._render_sprites();
+    editor._render_ui();
+    editor._process_2D_gizmo();
 
     built_in_blocks_tab_bar.Render();
     blocks_tab_bar_collapse_btn.Render();
@@ -411,7 +415,8 @@ int main() {
     window.draw(show_mouse_pos_text);
 #endif
 
-    editor.Render();
+    //   editor.Render();
+    editor.script_editor.Render();
 
     window.display();
   }
