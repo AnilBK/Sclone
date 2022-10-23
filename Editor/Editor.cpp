@@ -165,13 +165,13 @@ void Editor::select_sprite_by_id(int id) {
 }
 
 void Editor::_highlight_selected_btn_in_list(const UIButton *btn_to_highlight) {
+  // Set 'flat' to everything.
+  // Only selected btn isn't 'flat'.
+
+  // The selected button only looks like button, all other buttons are 'flat',
+  // meaning they just look like a label.
   for (auto &btn : user_added_sprite_ptrs) {
-    // Set flat to everything.
-    btn.get()->is_flat = true;
-    if (btn.get() == btn_to_highlight) {
-      // Toggle back the only selected btn
-      btn.get()->is_flat = false;
-    }
+    btn.get()->is_flat = btn.get() != btn_to_highlight;
   }
 }
 
