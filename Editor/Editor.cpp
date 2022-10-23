@@ -1,4 +1,5 @@
 #include "Editor.hpp"
+#include "../block/BuiltInBlocks.hpp"
 
 int Editor::_selected_sprite_layer() {
   int layer_value = std::stoi(sprite_layer_value_input.text.getText());
@@ -270,10 +271,36 @@ Script *Editor::get_script_attached_to_editor_sprite(EditorSprite *sprite) {
   return nullptr;
 }
 
+void Editor::toggle_tab_bar_folding() {
+  auto &render_status = built_in_blocks_tab_bar.render_status;
+  if (render_status == TabBarStatus::SHOW_ALL) {
+    // Gray color,to indicate the button is disabled.
+    blocks_tab_bar_collapse_btn.button_fill_color = sf::Color(200, 200, 200);
+    render_status = TabBarStatus::SHOW_ONLY_TITLE;
+  } else {
+    blocks_tab_bar_collapse_btn.button_fill_color = sf::Color::Green;
+    render_status = TabBarStatus::SHOW_ALL;
+  }
+}
+
 void Editor::handle_inputs(sf::Event event) {
   user_added_sprites_list.handle_inputs(event);
   editor_inspector.handle_inputs(event);
   script_editor.handle_inputs(event);
+
+  if (event.type == sf::Event::KeyReleased) {
+    if (event.key.code == sf::Keyboard::Slash) {
+      toggle_tab_bar_folding();
+    }
+  } else if (event.type == sf::Event::MouseButtonPressed) {
+    if (event.mouseButton.button == sf::Mouse::Button::XButton1) {
+      // The bottom button on left side of a gaming mouse.
+      toggle_tab_bar_folding();
+    }
+  }
+
+  built_in_blocks_tab_bar.handle_inputs(event);
+  blocks_tab_bar_collapse_btn.handle_inputs(event);
 }
 
 void Editor::_render_ui() {
@@ -375,5 +402,140 @@ void Editor::Render() {
   _render_sprites();
   _render_ui();
   _process_2D_gizmo();
+  _render_tab();
   script_editor.Render();
+}
+
+void Editor::spawn_and_bind_editor_blocks() {
+
+  auto SPAWN_EDITOR_BLOCK_AND_BIND = [&](const block_generator_fn_ptr &fn_ptr) {
+    std::cout << "Spawn And Bind.\n";
+
+    // Create a block with the fn_ptr.
+    // The fn_ptr takes a block, and adds all the required children.
+    Block block;
+    fn_ptr(&block);
+
+    // Add the block to the editor.
+    editor_blocks.push_back(block);
+
+    // Get the string that uniquely identifies the block and bind that string
+    // with the function that generated it in the first place.
+    bound_blocks.bind_function(block.function_identifier, fn_ptr);
+
+    std::cout << "Function Identifier: " << block.function_identifier << "\n";
+    std::cout << "[Done] Spawn And Bind.\n";
+  };
+  // The advantage of this lambda is we don't need to manually register the
+  // functions. In this way, we create a block for the editor and use that
+  // oppurtunity to register it as well.
+
+  editor_blocks.reserve(25);
+
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_program_started);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_sprite_clicked);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_forever);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_key_pressed);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_sprite_touching);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_if);
+
+  // There are two ways of adding character controller for a script.
+  // By Using the editor block.
+  // The caveat is that it should be placed in forever block(Recommended).
+  // Another method is by using the editors "Add Controller" button, which
+  // silently writes the controller code during export, but the speed of this
+  // movement isn't configurable and defaults to 200.
+  SPAWN_EDITOR_BLOCK_AND_BIND(
+      BUILT_IN_BLOCKS::block_default_character_controller);
+
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_go_to_xy);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_x_by);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_y_by);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_glide_to_xy);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_glide_point_to_point);
+
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_say);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_line);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_circle);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_rectangle);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_draw_triangle);
+
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_int);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_int);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_float);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_float);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_string);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_string);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_vector2f);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_vector2f);
+
+  std::cout << "\n[Done]Creating Editor Blocks:\n\n";
+}
+
+void Editor::_spawn_block_at_mouse_pos(const Block &block) {
+  std::cout << "User Adding a Block.\n";
+
+  block_generator_fn_ptr fn_ptr =
+      bound_blocks.get_bound_block_gen_fn(block.function_identifier).value();
+
+  Block new_block;
+  fn_ptr(&new_block);
+  new_block.set_position((sf::Vector2f)mouse_position);
+  new_block.dragging = true;
+  // blocks.push_back(new_block);
+  add_block_to_script(new_block);
+
+  // Hide the scripts tab, so we make space for new blocks to
+  // spawn. Totally not needed, but as of now, newly spawned
+  // blocks render below the tab bar. So, this is kinda hack.
+  // toggle_tab_bar_folding();
+
+  std::cout << "[Done]User Adding a Block.\n\n";
+}
+
+void Editor::_render_tab() {
+  built_in_blocks_tab_bar.Render();
+  blocks_tab_bar_collapse_btn.Render();
+
+  if (built_in_blocks_tab_bar.render_status == TabBarStatus::SHOW_ONLY_TITLE) {
+    return;
+  }
+
+  sf::Vector2f block_in_tabs_draw_position =
+      built_in_blocks_tab_bar.get_visible_tab_position() +
+      sf::Vector2f(50, 50 + built_in_blocks_tab_bar.get_scroll_value() * 20.0f);
+
+  int currently_selected_tab = built_in_blocks_tab_bar.currently_selected_tab;
+
+  bool is_any_block_being_dragged = script_editor.is_any_block_dragging();
+  bool can_spawn_editor_block = !is_any_block_being_dragged &&
+                                sf::Mouse::isButtonPressed(sf::Mouse::Left);
+
+  // These are editor blocks which are for spawning new blocks.
+  for (auto &block : editor_blocks) {
+    if (block.TabItBelongsToName != currently_selected_tab) {
+      continue;
+    }
+
+    block.set_position(block_in_tabs_draw_position);
+    // block._recalculate_rect();
+
+    // Scrolling above the tab.
+    if (block_in_tabs_draw_position.y >=
+        built_in_blocks_tab_bar.get_visible_tab_position().y) {
+      block.Render();
+
+      // Select the blocks only that are visible.
+      if (can_spawn_editor_block) {
+        // Spawn New Block.
+        if (block.is_mouse_over()) {
+          _spawn_block_at_mouse_pos(block);
+          can_spawn_editor_block = false;
+        }
+      }
+    }
+
+    float height_of_cur_block = block.block_full_size.y;
+    block_in_tabs_draw_position.y += height_of_cur_block + 20;
+  }
 }

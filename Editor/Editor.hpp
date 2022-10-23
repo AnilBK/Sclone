@@ -4,10 +4,12 @@
 #include "../Globals.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/Label.hpp"
+#include "../UI/TabBar.hpp"
 #include "../UI/UIButton.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../UI/UISprite.hpp"
 #include "../block/Block.hpp"
+#include "../block/BlockBinder.hpp"
 #include "ScriptEditor.hpp"
 #include "TransformGizmo2D.hpp"
 #include <memory>
@@ -63,6 +65,20 @@ private:
   VBoxContainer user_added_sprites_list;
   TransformGizmo2D gizmo_2D;
 
+  // The editor spawn blocks section.
+  sf::Vector2f tab_pos = sf::Vector2f(800, 0);
+  sf::Vector2f tab_size = sf::Vector2f(400, 700);
+  TabBar built_in_blocks_tab_bar = TabBar(tab_pos, tab_size);
+  UIButton blocks_tab_bar_collapse_btn = UIButton("V");
+
+  /// @brief Contains functions that generates different blocks and the strings
+  /// that identify that block generator function.
+  BlockBinder bound_blocks;
+
+  /// @brief The blocks found in different tabs, that helps to create new blocks
+  /// in the editor.
+  std::vector<Block> editor_blocks;
+
   std::vector<std::shared_ptr<UIButton>> user_added_sprite_ptrs;
 
   std::vector<std::shared_ptr<sf::Texture>> textures;
@@ -98,13 +114,45 @@ private:
   void _show_more_btn__hide_childrens();
   void _add_movement_script();
 
+  void _spawn_block_at_mouse_pos(const Block &block);
+
 public:
   std::vector<EditorSprite> user_added_sprites;
   std::vector<std::shared_ptr<Script>> scripts;
 
   ScriptEditor script_editor;
 
+  void _initialize_built_in_blocks_tab_bar() {
+    spawn_and_bind_editor_blocks();
+
+    auto win_size = (sf::Vector2f)window.getSize();
+    tab_size = win_size - tab_pos;
+
+    built_in_blocks_tab_bar.set_pos(tab_pos);
+    built_in_blocks_tab_bar.set_size(tab_size);
+
+    built_in_blocks_tab_bar.set_spacing_between_tab_btns(0.0f); // 5.0f
+
+    blocks_tab_bar_collapse_btn.is_flat = false;
+    blocks_tab_bar_collapse_btn.setPosition(
+        tab_pos - sf::Vector2f(blocks_tab_bar_collapse_btn.rect_size().x, 0));
+
+    blocks_tab_bar_collapse_btn.clicked_callback = [&]() {
+      toggle_tab_bar_folding();
+    };
+
+    built_in_blocks_tab_bar.add_tab("Control Blocks");
+    built_in_blocks_tab_bar.add_tab("Draw Blocks");
+    built_in_blocks_tab_bar.add_tab("Motion");
+    built_in_blocks_tab_bar.add_tab("Vars..");
+    built_in_blocks_tab_bar._select_tab(0);
+    built_in_blocks_tab_bar.recalculate_post_add_tabs();
+  }
+
   Editor() {
+
+    _initialize_built_in_blocks_tab_bar();
+
     // Stuffs Related To Sprite Inspector.
     sprite_texture_name.enter_pressed_callback = [&]() {
       _update_sprite_texure();
@@ -179,6 +227,8 @@ public:
     script_editor.script = selected_script_ptr();
   }
 
+  void spawn_and_bind_editor_blocks();
+
   void add_block_to_script(Block b);
 
   Script *selected_script_ptr();
@@ -192,6 +242,10 @@ public:
   void _render_ui();
   void _render_sprites();
   void _process_2D_gizmo();
+
+  void toggle_tab_bar_folding();
+
+  void _render_tab();
 
   void Render();
 };

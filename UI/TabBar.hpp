@@ -31,6 +31,16 @@ public:
   int currently_selected_tab = -1;
   TabBar(sf::Vector2f position, sf::Vector2f size);
 
+  void set_pos(sf::Vector2f pos) {
+    _initial_pos = pos;
+    tab_bg.setPosition(pos);
+  }
+
+  void set_size(sf::Vector2f size) {
+    _initial_size = size;
+    tab_bg.setSize(size);
+  }
+
   void set_font(const sf::Font &font) { _font = font; }
   sf::Vector2f get_initial_position() { return _initial_pos; }
   sf::Vector2f get_visible_tab_position() { return tab_bg.getPosition(); }

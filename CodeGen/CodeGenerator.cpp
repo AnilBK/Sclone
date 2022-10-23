@@ -272,6 +272,8 @@ void CodeGenerator::generate_code() {
   std::ofstream generated_file("E:\\Sclone 2.0\\GeneratedOutput\\main.cpp");
   generated_file << template_code;
   generated_file.close();
+
+  std::cout << "Code Generated.\n";
 }
 
 /*
