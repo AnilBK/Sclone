@@ -256,16 +256,6 @@ void Block::_recalculate_rect() {
 }
 
 void Block::RenderRectsBackground() {
-  // Debug Code to toggle rendering of the block background.
-  static bool render_rect = true;
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-    render_rect = !render_rect;
-  }
-
-  if (!render_rect) {
-    return;
-  }
-
   sf::RectangleShape block_bg;
   block_bg.setOutlineThickness(2.0f);
   block_bg.setPosition(position);
