@@ -1,44 +1,24 @@
 #include "Block.hpp"
 
-void Block::_move_attached_blocks(sf::Vector2f p_pos) {
-  if (attached_blocks.size() == 0) {
-    return;
-  }
+bool Block::is_mouse_over() { return isMouseOverSprite(block_rect); }
 
-  // Since positions are already cached.
-  // TODO? Are positions cached always??
-  // TODO: Maybe create a cache of all positions and use that everywhere.
-  // Seems like that is the best thing to do.
-  std::vector<sf::Vector2f> attached_blocks_positions;
+bool Block::is_control_block() { return block_type == BLOCK_TYPES::CONTROL; }
 
-  for (const auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      attached_blocks_positions.push_back(child->_pos +
-                                          sf::Vector2f(15.0f, 0.0f));
-    }
-  }
-
-  for (auto &[index, block_ptr] : attached_blocks) {
-    auto block_pos = attached_blocks_positions.at(index);
-    block_ptr->set_position(block_pos);
+void Block::set_block_type(BLOCK_TYPES p_type) {
+  block_type = p_type;
+  if (is_control_block()) {
+    block_rect.setFillColor(sf::Color::Yellow);
+  } else {
+    block_rect.setFillColor(sf::Color::Green);
   }
 }
 
-void Block::_regenerate_positions() {
-  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+void Block::attach_block_next(Block *p_next_block) {
+  ERR_FAIL_COND_CRASH(p_next_block == this, "Children is same as parent.");
 
-  for (auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      pos.x = position.x; // Reset it's x to create a block on the next line.
-      pos.y += STARTING_BLOCK_SIZE.y;
-      child->_pos = pos;
-      pos.x += 15;
-      pos.y += 90.0f;
-      continue;
-    }
-    child->_pos = pos;
-    pos.x += child->rect_size().x + spacing;
-  }
+  next_block = p_next_block;
+  set_position(position);
+  // Set same position again, so it's child's position can be updated too.
 }
 
 void Block::set_position(const sf::Vector2f p_pos) {
@@ -70,42 +50,12 @@ Block::Block() {
   set_block_type(BLOCK_TYPES::INSTRUCTION);
 }
 
-void Block::_recalculate_rect() {
-  sf::Vector2f pos = position;
-  sf::FloatRect merged_rect(pos, STARTING_BLOCK_SIZE);
-
-  for (const auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      // Reset it's x to create a block on the next line.
-      pos.x = position.x + 15.0f;
-      pos.y += merged_rect.height; // STARTING_BLOCK_SIZE.y;
-      continue;
-    }
-
-    sf::FloatRect current_rect(pos, child->rect_size());
-    merged_rect = merge_rects(merged_rect, current_rect);
-
-    pos.x += child->rect_size().x;
-    pos.x += spacing;
-  }
-
-  // Margins
-  // Account for the block position decreased during padding.
-  merged_rect.width += padding_left + padding_right;
-  merged_rect.height += padding_up + padding_down;
-
-  block_rect.setSize({merged_rect.width, merged_rect.height});
-
-  // The next block snap rect is at the bottomm of the block which effectively
-  // gives the height of the current block.
-  auto next_block_snap_rect = _next_block_snap_rect();
-  auto full_size_x = next_block_snap_rect.width;
-  auto full_size_y = next_block_snap_rect.top - block_rect.getPosition().y;
-
-  block_full_size = {full_size_x, full_size_y};
+Block::~Block() {
+  static int d_count = 0;
+  std::cout << "[" << d_count << "] Destroyed object: " << function_identifier
+            << "\n";
+  d_count++;
 }
-
-bool Block::is_control_block() { return block_type == BLOCK_TYPES::CONTROL; }
 
 sf::FloatRect Block::_previous_block_snap_rect() {
   auto snap_rect_size = sf::Vector2f(block_rect.getSize().x, 10);
@@ -161,6 +111,24 @@ void Block::show_next_block_snap_hint() {
   window.draw(next_block_snap_hint);
 }
 
+bool Block::can_mouse_snap_to_top() {
+  // if (previous != nullptr) {
+  // return false;
+  // }
+  if (is_control_block()) {
+    return false;
+  }
+
+  return _previous_block_snap_rect().contains((sf::Vector2f)mouse_position);
+}
+
+bool Block::can_mouse_snap_to_bottom() {
+  if (next_block != nullptr) {
+    return false;
+  }
+  return _next_block_snap_rect().contains((sf::Vector2f)mouse_position);
+}
+
 void Block::process_inside_snap_hints(bool attach_block_requested,
                                       Block *current_dragging_block_ref) {
   // These two Lambdas functions below were implemented in the
@@ -211,90 +179,80 @@ void Block::process_inside_snap_hints(bool attach_block_requested,
   }
 }
 
-bool Block::is_mouse_over() { return isMouseOverSprite(block_rect); }
-
-bool Block::can_mouse_snap_to_top() {
-  // if (previous != nullptr) {
-  // return false;
-  // }
-  if (is_control_block()) {
-    return false;
+void Block::_move_attached_blocks(sf::Vector2f p_pos) {
+  if (attached_blocks.size() == 0) {
+    return;
   }
 
-  return _previous_block_snap_rect().contains((sf::Vector2f)mouse_position);
-}
+  // Since positions are already cached.
+  // TODO? Are positions cached always??
+  // TODO: Maybe create a cache of all positions and use that everywhere.
+  // Seems like that is the best thing to do.
+  std::vector<sf::Vector2f> attached_blocks_positions;
 
-bool Block::can_mouse_snap_to_bottom() {
-  if (next_block != nullptr) {
-    return false;
-  }
-  return _next_block_snap_rect().contains((sf::Vector2f)mouse_position);
-}
-
-void Block::attach_block_next(Block *p_next_block) {
-  ERR_FAIL_COND_CRASH(p_next_block == this, "Children is same as parent.");
-
-  next_block = p_next_block;
-  set_position(position);
-  // Set same position again, so it's child's position can be updated too.
-}
-
-std::string Block::get_code() {
-
-  std::string code;
-
-  if (output_code_callback) {
-    code += output_code_callback(*this);
-  }
-
-  if (can_block_snap_inside) {
-    code += "{\n";
-  }
-
-  if (attached_blocks.size() > 0) {
-    // We create a string buffer that is the size of all attachable nodes.
-    // since nodes are paired with their respective indices.
-    // we get the blocks code and keep it in the respective index of the codes
-    // vector, so that it will be easy to iterate over.
-    auto n = attached_blocks.size();
-    std::vector<std::string> codes(n, "");
-
-    for (std::pair<int, Block *> &a_b : attached_blocks) {
-      auto index = a_b.first;
-      auto blocks_code = a_b.second->get_code();
-
-      codes.at(index) = blocks_code;
-    }
-
-    // Now we have got the generated code in proper order.
-    int i = 0;
-    for (auto gen_code : codes) {
-      code += gen_code;
-      if (i + 1 < codes.size()) {
-        code += "}else{";
-      }
-      i++;
+  for (const auto &child : childrens) {
+    if (child->type == BLOCK_ATTACH_NODE) {
+      attached_blocks_positions.push_back(child->_pos +
+                                          sf::Vector2f(15.0f, 0.0f));
     }
   }
 
-  if (can_block_snap_inside) {
-    code += "\n}\n";
+  for (auto &[index, block_ptr] : attached_blocks) {
+    auto block_pos = attached_blocks_positions.at(index);
+    block_ptr->set_position(block_pos);
+  }
+}
+
+void Block::_regenerate_positions() {
+  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+
+  for (auto &child : childrens) {
+    if (child->type == BLOCK_ATTACH_NODE) {
+      pos.x = position.x; // Reset it's x to create a block on the next line.
+      pos.y += STARTING_BLOCK_SIZE.y;
+      child->_pos = pos;
+      pos.x += 15;
+      pos.y += 90.0f;
+      continue;
+    }
+    child->_pos = pos;
+    pos.x += child->rect_size().x + spacing;
+  }
+}
+
+void Block::_recalculate_rect() {
+  sf::Vector2f pos = position;
+  sf::FloatRect merged_rect(pos, STARTING_BLOCK_SIZE);
+
+  for (const auto &child : childrens) {
+    if (child->type == BLOCK_ATTACH_NODE) {
+      // Reset it's x to create a block on the next line.
+      pos.x = position.x + 15.0f;
+      pos.y += merged_rect.height; // STARTING_BLOCK_SIZE.y;
+      continue;
+    }
+
+    sf::FloatRect current_rect(pos, child->rect_size());
+    merged_rect = merge_rects(merged_rect, current_rect);
+
+    pos.x += child->rect_size().x;
+    pos.x += spacing;
   }
 
-  if (next_block != nullptr) {
-    code += next_block->get_code();
-  }
+  // Margins
+  // Account for the block position decreased during padding.
+  merged_rect.width += padding_left + padding_right;
+  merged_rect.height += padding_up + padding_down;
 
-  // EDITOR SHORCUT MACROS:
-  //  Shortcut in the editor to get position of the current sprite.
-  //  This applies to code everywhere, so we perform the replace operation here.
-  replaceAll(code, "#POS#", "##SPRITE_NAME##.getPosition()");
-  replaceAll(code, "#WIN_W#", "width");
-  replaceAll(code, "#WIN_H#", "height");
-  replaceAll(code, "#M_X#", "sf::Mouse::getPosition(window).x");
-  replaceAll(code, "#M_Y#", "sf::Mouse::getPosition(window).y");
+  block_rect.setSize({merged_rect.width, merged_rect.height});
 
-  return code;
+  // The next block snap rect is at the bottomm of the block which effectively
+  // gives the height of the current block.
+  auto next_block_snap_rect = _next_block_snap_rect();
+  auto full_size_x = next_block_snap_rect.width;
+  auto full_size_y = next_block_snap_rect.top - block_rect.getPosition().y;
+
+  block_full_size = {full_size_x, full_size_y};
 }
 
 void Block::RenderRectsBackground() {
@@ -350,20 +308,6 @@ void Block::Render() {
   // window.draw(block_rect);
   RenderRectsBackground();
   RenderComponents();
-}
-
-std::optional<std::string>
-Block::get_bound_value(const std::string &query) const {
-  for (const auto &child : childrens) {
-    if (child->bind_string == query) {
-      return child->get_text();
-    }
-  }
-
-  auto unbound_msg_str = "[Debug] String \"" + query + "\" Possibly Unbound.";
-  ERR_FAIL_COND_CRASH(true, unbound_msg_str);
-
-  return {};
 }
 
 bool Block::_process_left_click_on_children(sf::Event event) {
@@ -472,4 +416,72 @@ void Block::_process_events(sf::Event event) {
       }
     }
   }
+}
+
+std::optional<std::string>
+Block::get_bound_value(const std::string &query) const {
+  for (const auto &child : childrens) {
+    if (child->bind_string == query) {
+      return child->get_text();
+    }
+  }
+
+  auto unbound_msg_str = "[Debug] String \"" + query + "\" Possibly Unbound.";
+  ERR_FAIL_COND_CRASH(true, unbound_msg_str);
+
+  return {};
+}
+
+std::string Block::get_code() {
+  std::string code;
+
+  if (output_code_callback) {
+    code += output_code_callback(*this);
+  }
+
+  if (can_block_snap_inside) {
+    code += "{\n";
+  }
+
+  if (attached_blocks.size() > 0) {
+    // We create a string buffer that is the size of all attachable nodes.
+    // since nodes are paired with their respective indices.
+    // we get the blocks code and keep it in the respective index of the codes
+    // vector, so that it will be easy to iterate over.
+    auto n = attached_blocks.size();
+    std::vector<std::string> codes(n, "");
+
+    for (const auto [index, block] : attached_blocks) {
+      codes.at(index) = block->get_code();
+    }
+
+    // Now we have got the generated code in proper order.
+    int i = 0;
+    for (auto gen_code : codes) {
+      code += gen_code;
+      if (i < n - 1) {
+        code += "}else{";
+      }
+      i++;
+    }
+  }
+
+  if (can_block_snap_inside) {
+    code += "\n}\n";
+  }
+
+  if (next_block != nullptr) {
+    code += next_block->get_code();
+  }
+
+  // EDITOR SHORCUT MACROS:
+  //  Shortcut in the editor to get position of the current sprite.
+  //  This applies to code everywhere, so we perform the replace operation here.
+  replaceAll(code, "#POS#", "##SPRITE_NAME##.getPosition()");
+  replaceAll(code, "#WIN_W#", "width");
+  replaceAll(code, "#WIN_H#", "height");
+  replaceAll(code, "#M_X#", "sf::Mouse::getPosition(window).x");
+  replaceAll(code, "#M_Y#", "sf::Mouse::getPosition(window).y");
+
+  return code;
 }

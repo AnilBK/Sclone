@@ -42,24 +42,19 @@ private:
 
 public:
   Block();
-
-  ~Block() {
-    static int d_count = 0;
-    std::cout << "[" << d_count << "] Destroyed object: " << function_identifier
-              << "\n";
-    d_count++;
-  }
+  ~Block();
 
   bool dragging = false;
 
   sf::RectangleShape block_rect;
 
   sf::Vector2f block_full_size{0.0f, 0.0f};
-
   // This is the tab name in the editor where this block can be spawned from..
   // std::string TabItBelongsToName = "Control";
   // String would be flexible but use enums for speed now.
   BLOCKS_TAB_NAME TabItBelongsToName = BLOCKS_TAB_NAME::TAB_CONTROL;
+
+  std::vector<std::shared_ptr<NODEBaseClass>> childrens;
 
   Block *next_block = nullptr;
   // These are the blocks that are attached inside a block.
@@ -76,24 +71,7 @@ public:
 
   // We use this block identifier to spawn new blocks.
   std::string function_identifier = "block_default";
-
-  // Make this vvvv function handle top and bottom snap highlights as well.
-  void process_inside_snap_hints(bool attach_block_requested,
-                                 Block *current_dragging_block_ref);
-
   std::function<std::string(const Block &b)> output_code_callback;
-  std::vector<std::shared_ptr<NODEBaseClass>> childrens;
-
-  void set_position(const sf::Vector2f p_pos);
-
-  void set_block_type(BLOCK_TYPES p_type) {
-    block_type = p_type;
-    if (block_type == BLOCK_TYPES::CONTROL) {
-      block_rect.setFillColor(sf::Color::Yellow);
-    } else {
-      block_rect.setFillColor(sf::Color::Green);
-    }
-  }
 
   template <class T> void add_node(T node_class) {
     if (node_class.type == NODE_TYPE::BLOCK_ATTACH_NODE) {
@@ -104,20 +82,22 @@ public:
     childrens.push_back(std::move(u_block));
   }
 
-  std::optional<std::string> get_bound_value(const std::string &query) const;
-
   bool is_mouse_over();
+  bool is_control_block();
+
+  void set_block_type(BLOCK_TYPES p_type);
+  void attach_block_next(Block *p_next_block);
+
+  void set_position(const sf::Vector2f p_pos);
 
   bool can_mouse_snap_to_top();
   bool can_mouse_snap_to_bottom();
 
-  void attach_block_next(Block *p_next_block);
-
   void show_previous_block_snap_hint();
   void show_next_block_snap_hint();
-
-  std::string get_code();
-  bool is_control_block();
+  // Make this vvvv function handle top and bottom snap highlights as well.
+  void process_inside_snap_hints(bool attach_block_requested,
+                                 Block *current_dragging_block_ref);
 
   // Maybe use some dirty flag ???
   void _recalculate_rect();
@@ -130,6 +110,9 @@ public:
   void Render();
   void RenderRectsBackground();
   void RenderComponents();
+
+  std::string get_code();
+  std::optional<std::string> get_bound_value(const std::string &query) const;
 };
 
 #endif
