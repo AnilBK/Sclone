@@ -42,7 +42,8 @@ void block_if(Block *block_if) {
 
 void block_key_pressed(Block *block_key_pressed) {
   block_key_pressed->add_node(LabelNode("If"));
-  block_key_pressed->add_node(DropDownNode("", "selected_key"));
+  block_key_pressed->add_node(
+      DropDownNode("", "selected_key", {"W", "S", "A", "D"}));
   block_key_pressed->add_node(LabelNode("Pressed"));
   block_key_pressed->add_node(BlockAttachNode(""));
   block_key_pressed->output_code_callback = code_input_key_pressed;

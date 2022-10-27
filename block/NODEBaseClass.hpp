@@ -4,6 +4,7 @@
 #include "../Globals.hpp"
 #include "DropDown.hpp"
 #include "LineInput.hpp"
+#include <initializer_list>
 
 class NODEBaseClass {
 
@@ -142,11 +143,12 @@ private:
 
 public:
   DropDownNode(const std::string &p_text_str,
-               const std::string &p_bind_str = "")
+               const std::string &p_bind_str = "",
+               std::initializer_list<std::string> options = {})
       : NODEBaseClass(p_text_str, p_bind_str) {
     type = NODE_TYPE::DROP_DOWN;
     dropdown.items.clear();
-    dropdown.items = {"W", "S", "A", "D"};
+    dropdown.items = options;
   }
 
   sf::Vector2f rect_size() override { return dropdown.rect_size(); }
