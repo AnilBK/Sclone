@@ -1,5 +1,4 @@
 #include "Editor.hpp"
-#include "../block/BuiltInBlocks.hpp"
 
 int Editor::_selected_sprite_layer() {
   int layer_value = std::stoi(sprite_layer_value_input.text.getText());

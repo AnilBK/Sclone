@@ -10,6 +10,7 @@
 #include "../UI/UISprite.hpp"
 #include "../block/Block.hpp"
 #include "../block/BlockBinder.hpp"
+#include "../block/BuiltInBlocks.hpp"
 #include "ScriptEditor.hpp"
 #include "TransformGizmo2D.hpp"
 #include <memory>
