@@ -65,7 +65,7 @@ static void init_global_font_and_label() {
   draw_text_label.setFillColor(sf::Color::Black);
 }
 
-static sf::Vector2f text_rect_size(const std::string &str) {
+[[nodiscard]] static sf::Vector2f text_rect_size(const std::string &str) {
   draw_text_label.setString(str);
   return {draw_text_label.getGlobalBounds().width,
           draw_text_label.getGlobalBounds().height};
@@ -84,7 +84,8 @@ static void setCursor(sf::Cursor::Type cursor_type) {
   }
 }
 
-static sf::FloatRect merge_rects(sf::FloatRect rect, sf::FloatRect p_rect) {
+[[nodiscard]] static sf::FloatRect merge_rects(sf::FloatRect rect,
+                                               sf::FloatRect p_rect) {
   auto rect_pos = sf::Vector2f(rect.left, rect.top);
   auto rect_size = sf::Vector2f(rect.width, rect.height);
 
