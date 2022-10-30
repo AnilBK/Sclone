@@ -77,6 +77,7 @@
 		<Unit filename="block/Block.hpp" />
 		<Unit filename="block/BlockBinder.cpp" />
 		<Unit filename="block/BlockBinder.hpp" />
+		<Unit filename="block/BuiltInBlocks.cpp" />
 		<Unit filename="block/BuiltInBlocks.hpp" />
 		<Unit filename="block/Button.cpp" />
 		<Unit filename="block/Button.hpp" />

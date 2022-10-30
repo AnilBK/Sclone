@@ -31,7 +31,12 @@ void block_forever(Block *block_forever) {
 void block_if(Block *block_if) {
   block_if->add_node(LabelNode("If Condition"));
   block_if->add_node(LineInputAttachFieldNode("", "condition"));
-  block_if->add_node(BlockAttachNode(""));
+  block_if->add_node(BlockAttachNode("", "", false));
+  // We have an else block below.
+  // The else block draws it's own rectangle.
+  // So we don't need that bottom part in 'BlockAttachNode' above.
+  // Otherwise there will be two rectangles in else part, which doesn't look
+  // nice.
   block_if->add_node(LabelNode("Else "));
   block_if->add_node(BlockAttachNode(""));
   block_if->output_code_callback = code_sprite_if_else;

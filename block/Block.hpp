@@ -37,8 +37,14 @@ private:
 
   sf::FloatRect _previous_block_snap_rect();
   sf::FloatRect _next_block_snap_rect();
-  void _regenerate_positions();
   void _move_attached_blocks(sf::Vector2f p_pos);
+  Block *_attached_block_at_index(const uint8_t index);
+
+  // Recalculates children postions.
+  void update_children_sizes();
+  void resort_children();
+  void render_children();
+  void RenderDebugForAttachedBlocks();
 
 public:
   Block();
@@ -47,6 +53,8 @@ public:
   bool dragging = false;
 
   sf::RectangleShape block_rect;
+
+  sf::FloatRect full_rect();
 
   sf::Vector2f block_full_size{0.0f, 0.0f};
   // This is the tab name in the editor where this block can be spawned from..

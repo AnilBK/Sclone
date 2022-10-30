@@ -25,11 +25,10 @@ void Block::set_position(const sf::Vector2f p_pos) {
   position = p_pos;
   block_rect.setPosition(position);
 
-  // If positions aren't regenrated now, then attached blocks lag by a frame.
+  // If positions aren't regenerated now, then attached blocks lag by a frame.
   // Because _move_attached_blocks() generates positions using old positions.
   // and new position is only used in Render function to update.
-  _regenerate_positions();
-  _move_attached_blocks(p_pos);
+  resort_children();
 
   if (next_block != nullptr) {
     sf::Vector2f next_block_snap_position(_next_block_snap_rect().left,
@@ -70,8 +69,7 @@ sf::FloatRect Block::_next_block_snap_rect() {
   for (const auto &child : childrens) {
     if (child->type == BLOCK_ATTACH_NODE) {
       // Reset it's x to create a block on the next line.
-      pos.y += 90 + 45; // STARTING_BLOCK_SIZE.y;
-      continue;
+      pos.y += child->rect_size().y + 45; // STARTING_BLOCK_SIZE.y;
     }
   }
 
@@ -180,7 +178,7 @@ void Block::process_inside_snap_hints(bool attach_block_requested,
 }
 
 void Block::_move_attached_blocks(sf::Vector2f p_pos) {
-  if (attached_blocks.size() == 0) {
+  if (attached_blocks.empty()) {
     return;
   }
 
@@ -200,23 +198,6 @@ void Block::_move_attached_blocks(sf::Vector2f p_pos) {
   for (auto &[index, block_ptr] : attached_blocks) {
     auto block_pos = attached_blocks_positions.at(index);
     block_ptr->set_position(block_pos);
-  }
-}
-
-void Block::_regenerate_positions() {
-  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
-
-  for (auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      pos.x = position.x; // Reset it's x to create a block on the next line.
-      pos.y += STARTING_BLOCK_SIZE.y;
-      child->_pos = pos;
-      pos.x += 15;
-      pos.y += 90.0f;
-      continue;
-    }
-    child->_pos = pos;
-    pos.x += child->rect_size().x + spacing;
   }
 }
 
@@ -284,13 +265,140 @@ void Block::RenderRectsBackground() {
   window.draw(block_bg);
 }
 
-// Draw text and all other components.
-void Block::RenderComponents() {
-  // New Method-Save positions in 'NodeBaseClass' instead.
-  _regenerate_positions();
+Block *Block::_attached_block_at_index(const uint8_t index) {
+  for (const auto [idx, block] : attached_blocks) {
+    if (index == idx) {
+      return block;
+    }
+  }
+
+  return nullptr;
+}
+
+sf::FloatRect Block::full_rect() {
+  // Top most block's rect.
+  sf::FloatRect rect = block_rect.getGlobalBounds();
+
+  // Attached Block's rect.
+  if (next_block != nullptr) {
+    rect = merge_rects(rect, next_block->full_rect());
+  }
+
+  if (!can_block_snap_inside) {
+    return rect;
+  }
+
+  // These are 'BlockAttachNodes'.
+  // They occupy some space too.
+  uint8_t block_attach_node_index = 0;
+
+  for (auto &child : childrens) {
+    if (child->type != BLOCK_ATTACH_NODE) {
+      continue;
+    }
+
+    auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
+    if (child_casted) {
+      sf::FloatRect l_shape_rect = child_casted->rect_size_with_outlines();
+      //+  sf::Vector2f(0.0f, 45.0f));
+
+      auto attached_block = _attached_block_at_index(block_attach_node_index);
+      if (attached_block != nullptr) {
+        l_shape_rect = merge_rects(l_shape_rect, attached_block->full_rect());
+      }
+
+      rect = merge_rects(rect, l_shape_rect);
+    }
+
+    block_attach_node_index++;
+  }
+
+  return rect;
+}
+
+void Block::update_children_sizes() {
+  uint8_t block_attach_node_index = 0;
+
+  // Block_Attach_Node's require their internal sizes to be updated.
+  for (auto &child : childrens) {
+    if (child->type != BLOCK_ATTACH_NODE) {
+      continue;
+    }
+
+    auto attached_block = _attached_block_at_index(block_attach_node_index);
+    if (attached_block != nullptr) {
+      auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
+
+      if (child_casted) {
+        attached_block->update_children_sizes();
+        auto attached_rect = attached_block->full_rect();
+        sf::Vector2f rec_size{attached_rect.width, attached_rect.height};
+        child_casted->set_enclosed_rect_size(rec_size);
+      }
+    }
+
+    block_attach_node_index++;
+  }
+}
+
+void Block::resort_children() {
+  update_children_sizes();
+
+  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+
+  for (auto &child : childrens) {
+    if (child->type == BLOCK_ATTACH_NODE) {
+      pos.x = position.x;
+      pos.y += STARTING_BLOCK_SIZE.y;
+    }
+
+    child->_pos = pos;
+    pos.x += child->rect_size().x + spacing;
+
+    if (child->type == BLOCK_ATTACH_NODE) {
+      pos.x = position.x;
+      pos.y += child->rect_size().y;
+    }
+  }
+
+  _move_attached_blocks(position);
+}
+
+void Block::RenderDebugForAttachedBlocks() {
+  auto rect = full_rect();
+  sf::Vector2f size = {rect.width, rect.height};
+
+  sf::RectangleShape debug_block_rect_full;
+  debug_block_rect_full.setPosition(position);
+  debug_block_rect_full.setSize(size);
+
+  debug_block_rect_full.setFillColor(sf::Color(255, 0, 0, 200));
+  window.draw(debug_block_rect_full);
+}
+
+void Block::render_children() {
   for (const auto &child : childrens) {
     child->Render(child->_pos);
   }
+
+  constexpr bool draw_visualization = false;
+  if (!draw_visualization) {
+    return;
+  }
+
+  for (auto &[index, child] : attached_blocks) {
+    if (child == nullptr) {
+      continue;
+    }
+
+    child->RenderDebugForAttachedBlocks();
+  }
+}
+
+// Draw text and all other components.
+void Block::RenderComponents() {
+  resort_children();
+  render_children();
 }
 
 void Block::Render() {
