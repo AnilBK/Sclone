@@ -21,25 +21,18 @@ public:
                 const std::string &p_bind_str = "")
       : text(p_text_str), bind_string(p_bind_str){};
 
-  sf::Vector2f min_size() { return {35.0f, 45.0f}; }
+  sf::Vector2f min_size();
 
-  virtual sf::Vector2f rect_size() = 0;
+  bool is_mouse_over(sf::Vector2f this_nodes_pos);
 
-  bool is_mouse_over(sf::Vector2f this_nodes_pos) {
-    sf::Vector2f size = rect_size();
-    return (mouse_position.x >= this_nodes_pos.x &&
-            mouse_position.x <= this_nodes_pos.x + size.x) &&
-           (mouse_position.y >= this_nodes_pos.y &&
-            mouse_position.y <= this_nodes_pos.y + size.y);
-  };
+  virtual std::string get_text();
+  virtual void set_text(const std::string &str);
 
-  virtual std::string get_text() { return text; }
-  virtual void set_text(const std::string &str) { text = str; }
-
-  virtual bool left_click_action() { return false; };
+  virtual bool left_click_action();
 
   virtual void _process_event(sf::Event event){};
 
+  virtual sf::Vector2f rect_size() = 0;
   virtual void Render(sf::Vector2f pos) = 0;
 };
 
@@ -50,11 +43,9 @@ public:
     type = NODE_TYPE::LABEL;
   }
 
-  sf::Vector2f rect_size() override {
-    return {std::max(text_rect_size(text).x, min_size().x) + 15, min_size().y};
-  }
+  sf::Vector2f rect_size() override;
 
-  void Render(sf::Vector2f pos) override { draw_text(text, pos); }
+  void Render(sf::Vector2f pos) override;
 };
 
 class ButtonNode : public NODEBaseClass {
@@ -64,42 +55,14 @@ public:
     type = NODE_TYPE::BUTTON;
   }
 
-  sf::Vector2f rect_size() override {
-    sf::Vector2f text_box_size{text_rect_size(text)};
-    sf::Vector2f btn_size{std::max(text_box_size.x, min_size().x) + 5,
-                          std::max(text_box_size.y, min_size().y)};
-    return btn_size;
-  }
+  sf::Vector2f rect_size() override;
 
-  bool left_click_action() override {
-    pressed = true;
-    return true;
-  }
+  bool left_click_action() override;
 
   void _draw_button(const sf::Vector2f p_position, const sf::Vector2f p_size,
-                    sf::Color color = sf::Color(192, 195, 198, 255)) {
-    sf::RectangleShape r;
-    r.setPosition(p_position);
-    r.setSize(p_size);
-    r.setFillColor(color);
-    window.draw(r);
-  }
+                    sf::Color color = sf::Color(192, 195, 198, 255));
 
-  void Render(sf::Vector2f pos) override {
-    sf::Vector2f btn_size = rect_size();
-
-    _draw_button(pos, btn_size);
-    if (pressed) {
-      sf::Vector2f pressed_highlight_pos =
-          pos + sf::Vector2f{0, (float)(0.85 * btn_size.y)};
-      sf::Vector2f pressed_highlight_size = {btn_size.x,
-                                             (float)(0.15 * btn_size.y)};
-      _draw_button(pressed_highlight_pos, pressed_highlight_size,
-                   {41, 44, 247, 255});
-    }
-
-    draw_text(text, pos);
-  }
+  void Render(sf::Vector2f pos) override;
 };
 
 class LineInputAttachFieldNode : public NODEBaseClass {
@@ -115,25 +78,17 @@ public:
     text_area.line_input_active = false;
   }
 
-  sf::Vector2f rect_size() override { return text_area.rect_size(); }
+  sf::Vector2f rect_size() override;
 
-  std::string get_text() override { return text_area.input_text; }
-  void set_text(const std::string &str) override { text_area.input_text = str; }
+  std::string get_text() override;
 
-  bool left_click_action() override {
-    pressed = true;
-    text_area.line_input_active = true;
-    return true;
-  }
+  void set_text(const std::string &str);
 
-  void _process_event(sf::Event event) override {
-    text_area.handle_inputs(event);
-  }
+  bool left_click_action() override;
 
-  void Render(sf::Vector2f pos) override {
-    text_area.position = pos;
-    text_area.Render();
-  }
+  void _process_event(sf::Event event) override;
+
+  void Render(sf::Vector2f pos) override;
 };
 
 class DropDownNode : public NODEBaseClass {
@@ -151,23 +106,15 @@ public:
     dropdown.items = options;
   }
 
-  sf::Vector2f rect_size() override { return dropdown.rect_size(); }
+  sf::Vector2f rect_size() override;
 
-  std::string get_text() override { return dropdown.get_text(); }
+  std::string get_text() override;
 
-  bool left_click_action() override {
-    // dropdown.dropdown_clicked = true;
-    return true;
-  }
+  bool left_click_action() override;
 
-  void _process_event(sf::Event event) override {
-    dropdown.handle_inputs(event);
-  }
+  void _process_event(sf::Event event) override;
 
-  void Render(sf::Vector2f pos) override {
-    dropdown.position = pos;
-    dropdown.Render();
-  }
+  void Render(sf::Vector2f pos) override;
 };
 
 class BlockAttachNode : public NODEBaseClass {
@@ -185,11 +132,6 @@ public:
   // we don't store the pointer to the block that is attached to it, to reduce
   // dependencies. That is handled by the Block class.
 
-  // It's size changes depends on the blocks attached to it.
-  void set_enclosed_rect_size(sf::Vector2f p_size) {
-    enclosed_rect_size = p_size;
-  }
-
   BlockAttachNode(const std::string &p_text_str,
                   const std::string &p_bind_str = "",
                   bool p_draw_bottom_part = true)
@@ -198,51 +140,15 @@ public:
     type = NODE_TYPE::BLOCK_ATTACH_NODE;
   }
 
-  sf::Vector2f rect_size() override { return enclosed_rect_size; }
+  // It's size changes depends on the blocks attached to it.
+  void set_enclosed_rect_size(sf::Vector2f p_size);
+
+  sf::Vector2f rect_size() override;
 
   // The rect size with the L-shaped outlines.
-  sf::FloatRect rect_size_with_outlines() {
-    auto l_shape_pos = _pos;
-    sf::Vector2f l_shape_size{15, rect_size().y};
-    l_shape_size += sf::Vector2f(0.0f, 45.0f); // Just an extra space.
+  sf::FloatRect rect_size_with_outlines();
 
-    sf::FloatRect l_shape_rect(l_shape_pos, l_shape_size);
-
-    if (draw_bottom_part) {
-      auto l_shape_bottom_pos = _pos + sf::Vector2f(0.0f, l_shape_size.y);
-      auto l_shape_bottom_size = sf::Vector2f(300, 45.0f);
-
-      sf::FloatRect l_shape_bottom_rect(l_shape_bottom_pos,
-                                        l_shape_bottom_size);
-
-      l_shape_rect = merge_rects(l_shape_rect, l_shape_bottom_rect);
-    }
-
-    return l_shape_rect;
-  }
-
-  void Render(sf::Vector2f pos) override {
-
-    // Draw the long vertical line on the left.
-    sf::RectangleShape r;
-    r.setPosition(pos);
-    r.setSize({15, enclosed_rect_size.y}); //{15, 2 * 45.0f};
-    r.setFillColor(sf::Color::Yellow);
-    window.draw(r);
-
-    if (!draw_bottom_part) {
-      return;
-    }
-
-    // The horizontal block on the bottom.
-    // Which marks the end of the block.
-    sf::RectangleShape r2;
-    r2.setPosition(pos + sf::Vector2f(0.0f, r.getSize().y));
-    // A block is 45 units.
-    r2.setSize({300, 45.0f});
-    r2.setFillColor(sf::Color::Yellow);
-    window.draw(r2);
-  }
+  void Render(sf::Vector2f pos) override;
 };
 
 #endif // NODEBASECLASS_HPP

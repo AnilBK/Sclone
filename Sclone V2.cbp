@@ -85,6 +85,7 @@
 		<Unit filename="block/DropDown.hpp" />
 		<Unit filename="block/LineInput.cpp" />
 		<Unit filename="block/LineInput.hpp" />
+		<Unit filename="block/NODEBaseClass.cpp" />
 		<Unit filename="block/NODEBaseClass.hpp" />
 		<Unit filename="main.cpp" />
 		<Extensions>
