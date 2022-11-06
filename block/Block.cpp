@@ -31,8 +31,9 @@ void Block::set_position(const sf::Vector2f p_pos) {
   resort_children();
 
   if (next_block != nullptr) {
-    sf::Vector2f next_block_snap_position(_next_block_snap_rect().left,
-                                          _next_block_snap_rect().top);
+    auto snap_rect = _next_block_snap_rect();
+    sf::Vector2f next_block_snap_position(snap_rect.left, snap_rect.top);
+
     next_block->set_position(next_block_snap_position);
   }
 }
