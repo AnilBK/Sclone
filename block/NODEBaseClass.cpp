@@ -1,4 +1,5 @@
 #include "NODEBaseClass.hpp"
+#include "Block.hpp"
 
 sf::Vector2f NODEBaseClass::min_size() { return {35.0f, 45.0f}; }
 
@@ -123,6 +124,17 @@ void DropDownNode::Render(sf::Vector2f pos) {
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
+void BlockAttachNode::_update_internal_sizes() {
+  // nullptr validity is already checked.
+  // the internal sizes are updated by Block class of those blocks, which aren't
+  // nullptrs.
+  attached_block->update_children_sizes();
+
+  auto attached_rect = attached_block->full_rect();
+  sf::Vector2f rec_size{attached_rect.width, attached_rect.height};
+
+  set_enclosed_rect_size(rec_size);
+}
 
 void BlockAttachNode::set_enclosed_rect_size(sf::Vector2f p_size) {
   enclosed_rect_size = p_size;
@@ -151,6 +163,10 @@ sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
 }
 
 void BlockAttachNode::Render(sf::Vector2f pos) {
+  if (attached_block != nullptr) {
+    attached_block->set_position(_pos + sf::Vector2f(15.0f, 0.0f));
+  }
+
   // Draw the long vertical line on the left.
   sf::RectangleShape r;
   r.setPosition(pos);

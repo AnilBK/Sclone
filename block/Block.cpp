@@ -155,51 +155,63 @@ void Block::process_inside_snap_hints(bool attach_block_requested,
     window.draw(block_snap_hint);
   };
 
-  int i = 0;
   for (auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      auto r = _attachable_block_snap_hint_rect(child->_pos);
-      bool can_attach_inside = r.contains((sf::Vector2f)mouse_position);
+    if (child->type != BLOCK_ATTACH_NODE) {
+      continue;
+    }
 
-      if (can_attach_inside) {
-        _show_snap_for_attachable_block(r);
-        if (attach_block_requested) {
-          // TODO :: Check if the snap place is already occupied.
-          // TODO :: current dragging block ref should be pushed back where the
-          // snap hint is showing.
-          attached_blocks.push_back({i, current_dragging_block_ref});
-          current_dragging_block_ref->dragging = false;
-          set_position(position); // Refresh for the newly added block.
-          return;
-        }
+    auto r = _attachable_block_snap_hint_rect(child->_pos);
+    bool can_attach_inside = r.contains((sf::Vector2f)mouse_position);
+
+    if (!can_attach_inside) {
+      continue;
+    }
+
+    _show_snap_for_attachable_block(r);
+    if (attach_block_requested) {
+      // TODO :: Check if the snap place is already occupied.
+      // TODO :: current dragging block ref should be pushed back where the
+      // snap hint is showing.
+      // attached_blocks.push_back({i, current_dragging_block_ref});
+
+      auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
+      if (child_casted) {
+        child_casted->attached_block = current_dragging_block_ref;
+        child_casted->attached_block->dragging = false;
       }
-      i++;
+
+      // current_dragging_block_ref->dragging = false;
+      set_position(position); // Refresh for the newly added block.
+      return;
     }
   }
 }
 
-void Block::_move_attached_blocks(sf::Vector2f p_pos) {
-  if (attached_blocks.empty()) {
-    return;
-  }
+std::vector<BlockAttachNode *>
+Block::get_block_attach_nodes(bool with_nodes_attached) {
+  std::vector<BlockAttachNode *> attached_blocks_vec;
 
-  // Since positions are already cached.
-  // TODO? Are positions cached always??
-  // TODO: Maybe create a cache of all positions and use that everywhere.
-  // Seems like that is the best thing to do.
-  std::vector<sf::Vector2f> attached_blocks_positions;
+  for (auto &child : childrens) {
+    if (child->type != BLOCK_ATTACH_NODE) {
+      continue;
+    }
 
-  for (const auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      attached_blocks_positions.push_back(child->_pos +
-                                          sf::Vector2f(15.0f, 0.0f));
+    auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
+
+    if (child_casted) {
+      auto attached_block = child_casted->attached_block;
+
+      if (with_nodes_attached) {
+        if (attached_block != nullptr) {
+          attached_blocks_vec.push_back(child_casted);
+        }
+      } else {
+        attached_blocks_vec.push_back(child_casted);
+      }
     }
   }
 
-  for (auto &[index, block_ptr] : attached_blocks) {
-    auto block_pos = attached_blocks_positions.at(index);
-    block_ptr->set_position(block_pos);
-  }
+  return attached_blocks_vec;
 }
 
 void Block::_recalculate_rect() {
@@ -266,16 +278,6 @@ void Block::RenderRectsBackground() {
   window.draw(block_bg);
 }
 
-Block *Block::_attached_block_at_index(const uint8_t index) {
-  for (const auto [idx, block] : attached_blocks) {
-    if (index == idx) {
-      return block;
-    }
-  }
-
-  return nullptr;
-}
-
 sf::FloatRect Block::full_rect() {
   // Top most block's rect.
   sf::FloatRect rect = block_rect.getGlobalBounds();
@@ -291,54 +293,30 @@ sf::FloatRect Block::full_rect() {
 
   // These are 'BlockAttachNodes'.
   // They occupy some space too.
-  uint8_t block_attach_node_index = 0;
+  // Blocks without any blocks attached to them also have some rect_size().
+  auto nodes = get_block_attach_nodes(false);
 
-  for (auto &child : childrens) {
-    if (child->type != BLOCK_ATTACH_NODE) {
-      continue;
+  for (auto &node : nodes) {
+    sf::FloatRect l_shape_rect = node->rect_size_with_outlines();
+    //+  sf::Vector2f(0.0f, 45.0f));
+
+    if (auto attached_block = node->attached_block; attached_block != nullptr) {
+      l_shape_rect = merge_rects(l_shape_rect, attached_block->full_rect());
     }
 
-    auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
-    if (child_casted) {
-      sf::FloatRect l_shape_rect = child_casted->rect_size_with_outlines();
-      //+  sf::Vector2f(0.0f, 45.0f));
-
-      auto attached_block = _attached_block_at_index(block_attach_node_index);
-      if (attached_block != nullptr) {
-        l_shape_rect = merge_rects(l_shape_rect, attached_block->full_rect());
-      }
-
-      rect = merge_rects(rect, l_shape_rect);
-    }
-
-    block_attach_node_index++;
+    rect = merge_rects(rect, l_shape_rect);
   }
 
   return rect;
 }
 
 void Block::update_children_sizes() {
-  uint8_t block_attach_node_index = 0;
+  // TODO?? Do other kinds of nodes require _update() ??
+  //  Block_Attach_Node's require their internal sizes to be updated.
+  auto nodes = get_block_attach_nodes();
 
-  // Block_Attach_Node's require their internal sizes to be updated.
-  for (auto &child : childrens) {
-    if (child->type != BLOCK_ATTACH_NODE) {
-      continue;
-    }
-
-    auto attached_block = _attached_block_at_index(block_attach_node_index);
-    if (attached_block != nullptr) {
-      auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
-
-      if (child_casted) {
-        attached_block->update_children_sizes();
-        auto attached_rect = attached_block->full_rect();
-        sf::Vector2f rec_size{attached_rect.width, attached_rect.height};
-        child_casted->set_enclosed_rect_size(rec_size);
-      }
-    }
-
-    block_attach_node_index++;
+  for (auto &node : nodes) {
+    node->_update_internal_sizes();
   }
 }
 
@@ -361,8 +339,6 @@ void Block::resort_children() {
       pos.y += child->rect_size().y;
     }
   }
-
-  _move_attached_blocks(position);
 }
 
 void Block::RenderDebugForAttachedBlocks() {
@@ -382,17 +358,14 @@ void Block::render_children() {
     child->Render(child->_pos);
   }
 
-  constexpr bool draw_visualization = false;
-  if (!draw_visualization) {
+  constexpr bool visualize_attached_blocks = false;
+  if (!visualize_attached_blocks) {
     return;
   }
 
-  for (auto &[index, child] : attached_blocks) {
-    if (child == nullptr) {
-      continue;
-    }
-
-    child->RenderDebugForAttachedBlocks();
+  const auto nodes = get_block_attach_nodes();
+  for (auto &node : nodes) {
+    node->attached_block->RenderDebugForAttachedBlocks();
   }
 }
 
@@ -542,25 +515,19 @@ std::string Block::get_code() {
     code += "{\n";
   }
 
-  if (attached_blocks.size() > 0) {
-    // We create a string buffer that is the size of all attachable nodes.
-    // since nodes are paired with their respective indices.
-    // we get the blocks code and keep it in the respective index of the codes
-    // vector, so that it will be easy to iterate over.
-    auto n = attached_blocks.size();
-    std::vector<std::string> codes(n, "");
+  auto nodes = get_block_attach_nodes();
 
-    for (const auto [index, block] : attached_blocks) {
-      codes.at(index) = block->get_code();
-    }
+  if (!nodes.empty()) {
+    size_t n = nodes.size();
+    size_t i = 0;
 
-    // Now we have got the generated code in proper order.
-    int i = 0;
-    for (auto gen_code : codes) {
-      code += gen_code;
+    for (auto &node : nodes) {
+      code += node->attached_block->get_code();
+
       if (i < n - 1) {
         code += "}else{";
       }
+
       i++;
     }
   }

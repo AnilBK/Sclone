@@ -37,11 +37,13 @@ private:
 
   sf::FloatRect _previous_block_snap_rect();
   sf::FloatRect _next_block_snap_rect();
-  void _move_attached_blocks(sf::Vector2f p_pos);
-  Block *_attached_block_at_index(const uint8_t index);
+
+  /// @brief Get 'BlockAttachNodes' which has blocks attached to them.
+  /// @return Pointers of 'BlockAttachNodes'.
+  std::vector<BlockAttachNode *>
+  get_block_attach_nodes(bool with_nodes_attached = true);
 
   // Recalculates children postions.
-  void update_children_sizes();
   void resort_children();
   void render_children();
   void RenderDebugForAttachedBlocks();
@@ -68,14 +70,6 @@ public:
   // These are the blocks that are attached inside a block.
   // For a given block these exist only if 'BlockAttachNode' nodes are attached
   // to it.
-
-  // We store which 'BlockAttachNode' index is it referencing to.
-  // While looping  through the childrens vector.
-  // We just know it's a 'BlockAttachNode' node.
-  // But we don't know which block is actually attached to it.
-  // so we store a index.
-  // TODO: do this by some other approach, like strings maybe.
-  std::vector<std::pair<int, Block *>> attached_blocks;
 
   // We use this block identifier to spawn new blocks.
   std::string function_identifier = "block_default";
@@ -114,6 +108,8 @@ public:
 
   bool _any_node_already_pressed();
   void _deselect_all_nodes();
+
+  void update_children_sizes();
 
   void Render();
   void RenderRectsBackground();

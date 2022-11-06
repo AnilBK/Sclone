@@ -6,6 +6,8 @@
 #include "LineInput.hpp"
 #include <initializer_list>
 
+class Block;
+
 class NODEBaseClass {
 
 protected:
@@ -122,6 +124,7 @@ private:
   sf::Vector2f enclosed_rect_size{15, 2 * 45.0f};
 
 public:
+  Block *attached_block;
   bool draw_bottom_part = true;
 
   // TODO-Handle the size of all the blocks attached to it.
@@ -136,9 +139,11 @@ public:
                   const std::string &p_bind_str = "",
                   bool p_draw_bottom_part = true)
       : NODEBaseClass(p_text_str, p_bind_str),
-        draw_bottom_part(p_draw_bottom_part) {
+        draw_bottom_part(p_draw_bottom_part), attached_block(nullptr) {
     type = NODE_TYPE::BLOCK_ATTACH_NODE;
   }
+
+  void _update_internal_sizes();
 
   // It's size changes depends on the blocks attached to it.
   void set_enclosed_rect_size(sf::Vector2f p_size);
