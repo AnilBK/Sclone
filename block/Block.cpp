@@ -341,7 +341,7 @@ void Block::resort_children() {
   }
 }
 
-void Block::RenderDebugForAttachedBlocks() {
+void Block::RenderFullRect() {
   auto rect = full_rect();
   sf::Vector2f size = {rect.width, rect.height};
 
@@ -365,7 +365,7 @@ void Block::render_children() {
 
   const auto nodes = get_block_attach_nodes();
   for (auto &node : nodes) {
-    node->attached_block->RenderDebugForAttachedBlocks();
+    node->attached_block->RenderFullRect();
   }
 }
 

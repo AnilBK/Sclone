@@ -46,7 +46,7 @@ private:
   // Recalculates children postions.
   void resort_children();
   void render_children();
-  void RenderDebugForAttachedBlocks();
+  void RenderFullRect();
 
 public:
   Block();
