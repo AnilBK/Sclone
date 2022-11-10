@@ -118,14 +118,15 @@ bool Block::can_mouse_snap_to_top() {
     return false;
   }
 
-  return _previous_block_snap_rect().contains((sf::Vector2f)mouse_position);
+  return isMouseOverRect(_previous_block_snap_rect());
 }
 
 bool Block::can_mouse_snap_to_bottom() {
   if (next_block != nullptr) {
     return false;
   }
-  return _next_block_snap_rect().contains((sf::Vector2f)mouse_position);
+
+  return isMouseOverRect(_next_block_snap_rect());
 }
 
 void Block::process_inside_snap_hints(bool attach_block_requested,

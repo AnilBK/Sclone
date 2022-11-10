@@ -166,8 +166,7 @@ void BlockAttachNode::_show_snap_for_attachable_block() {
 }
 
 bool BlockAttachNode::can_snap_block_inside() {
-  return _attachable_block_snap_hint_rect().contains(
-      (sf::Vector2f)mouse_position);
+  return isMouseOverRect(_attachable_block_snap_hint_rect());
 }
 
 // The rect size with the L-shaped outlines.

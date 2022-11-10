@@ -57,6 +57,12 @@ template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
   return sprite.getGlobalBounds().contains(m_pos.x, m_pos.y);
 }
 
+[[nodiscard]] static bool isMouseOverRect(const sf::FloatRect rect) {
+  auto m_pos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
+  return rect.contains(m_pos);
+  //  return rect.contains((sf::Vector2f)mouse_position);
+}
+
 static void init_global_font_and_label() {
   ERR_FAIL_COND_CRASH(!font.loadFromFile("alaska.ttf"), "Error Loading Font.");
   draw_text_label.setFont(font);
