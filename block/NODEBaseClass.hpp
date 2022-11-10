@@ -123,6 +123,8 @@ class BlockAttachNode : public NODEBaseClass {
 private:
   sf::Vector2f enclosed_rect_size{15, 2 * 45.0f};
 
+  sf::FloatRect _attachable_block_snap_hint_rect();
+
 public:
   Block *attached_block;
   bool draw_bottom_part = true;
@@ -149,6 +151,10 @@ public:
   void set_enclosed_rect_size(sf::Vector2f p_size);
 
   sf::Vector2f rect_size() override;
+
+  void _show_snap_for_attachable_block();
+
+  bool can_snap_block_inside();
 
   // The rect size with the L-shaped outlines.
   sf::FloatRect rect_size_with_outlines();

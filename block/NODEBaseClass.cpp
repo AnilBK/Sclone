@@ -142,6 +142,34 @@ void BlockAttachNode::set_enclosed_rect_size(sf::Vector2f p_size) {
 
 sf::Vector2f BlockAttachNode::rect_size() { return enclosed_rect_size; }
 
+sf::FloatRect BlockAttachNode::_attachable_block_snap_hint_rect() {
+  // The attachable block starts from the top left of the vertical 'L' shaped
+  // line.
+  // What is supposed to be snap highlight.
+  auto snap_rect_size = sf::Vector2f(250.0f, 10.0f);
+  auto snap_rect_position = _pos + sf::Vector2f{15.0f, 0.0f};
+  return sf::FloatRect{snap_rect_position, snap_rect_size};
+}
+
+void BlockAttachNode::_show_snap_for_attachable_block() {
+  const auto r = _attachable_block_snap_hint_rect();
+  // r is _attachable_block_snap_hint_rect.
+  auto r_pos = sf::Vector2f(r.left, r.top);
+  auto r_size = sf::Vector2f(r.width + 45, r.height);
+
+  sf::RectangleShape block_snap_hint;
+  block_snap_hint.setPosition(r_pos);
+  block_snap_hint.setSize(r_size);
+
+  block_snap_hint.setFillColor(sf::Color::White);
+  window.draw(block_snap_hint);
+}
+
+bool BlockAttachNode::can_snap_block_inside() {
+  return _attachable_block_snap_hint_rect().contains(
+      (sf::Vector2f)mouse_position);
+}
+
 // The rect size with the L-shaped outlines.
 sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
   auto l_shape_pos = _pos;

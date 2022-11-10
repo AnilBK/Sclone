@@ -130,57 +130,22 @@ bool Block::can_mouse_snap_to_bottom() {
 
 void Block::process_inside_snap_hints(bool attach_block_requested,
                                       Block *current_dragging_block_ref) {
-  // These two Lambdas functions below were implemented in the
-  // classe itself, but those gave rise to having a extra virtual function in
-  // the base class just for 'BlockAttachNode'.
-  auto _attachable_block_snap_hint_rect = [](sf::Vector2f pos) {
-    // The attachable block starts from the top left of the vertical 'L' shaped
-    // line.
-    // What is supposed to be snap highlight.
-    auto snap_rect_size = sf::Vector2f(250.0f, 10.0f);
-    auto snap_rect_position = pos + sf::Vector2f{15.0f, 0.0f};
-    return sf::FloatRect{snap_rect_position, snap_rect_size};
-  };
-
-  auto _show_snap_for_attachable_block = [](sf::FloatRect r) {
-    // r is _attachable_block_snap_hint_rect.
-    auto r_pos = sf::Vector2f(r.left, r.top);
-    auto r_size = sf::Vector2f(r.width + 45, r.height);
-
-    sf::RectangleShape block_snap_hint;
-    block_snap_hint.setPosition(r_pos);
-    block_snap_hint.setSize(r_size);
-
-    block_snap_hint.setFillColor(sf::Color::White);
-    window.draw(block_snap_hint);
-  };
-
-  for (auto &child : childrens) {
-    if (child->type != BLOCK_ATTACH_NODE) {
+  auto nodes = get_block_attach_nodes(false);
+  for (auto &node : nodes) {
+    if (!node->can_snap_block_inside()) {
       continue;
     }
 
-    auto r = _attachable_block_snap_hint_rect(child->_pos);
-    bool can_attach_inside = r.contains((sf::Vector2f)mouse_position);
+    node->_show_snap_for_attachable_block();
 
-    if (!can_attach_inside) {
-      continue;
-    }
-
-    _show_snap_for_attachable_block(r);
     if (attach_block_requested) {
       // TODO :: Check if the snap place is already occupied.
       // TODO :: current dragging block ref should be pushed back where the
       // snap hint is showing.
-      // attached_blocks.push_back({i, current_dragging_block_ref});
+      node->attached_block = current_dragging_block_ref;
+      node->attached_block->dragging = false;
+      current_dragging_block_ref->dragging = false;
 
-      auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
-      if (child_casted) {
-        child_casted->attached_block = current_dragging_block_ref;
-        child_casted->attached_block->dragging = false;
-      }
-
-      // current_dragging_block_ref->dragging = false;
       set_position(position); // Refresh for the newly added block.
       return;
     }
