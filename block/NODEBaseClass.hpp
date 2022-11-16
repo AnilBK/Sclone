@@ -2,6 +2,7 @@
 #define NODEBASECLASS_HPP
 
 #include "../Globals.hpp"
+#include "../UI/UIButton.hpp"
 #include "DropDown.hpp"
 #include "LineInput.hpp"
 #include <initializer_list>
@@ -51,18 +52,20 @@ public:
 };
 
 class ButtonNode : public NODEBaseClass {
+private:
+  UIButton btn;
+
 public:
   ButtonNode(const std::string &p_text_str, const std::string &p_bind_str = "")
-      : NODEBaseClass(p_text_str, p_bind_str) {
+      : NODEBaseClass(p_text_str, p_bind_str), btn(p_text_str) {
     type = NODE_TYPE::BUTTON;
+    btn.is_flat = false;
+    btn.button_fill_color = sf::Color(192, 195, 198, 255);
   }
 
   sf::Vector2f rect_size() override;
 
   bool left_click_action() override;
-
-  void _draw_button(const sf::Vector2f p_position, const sf::Vector2f p_size,
-                    sf::Color color = sf::Color(192, 195, 198, 255));
 
   void Render(sf::Vector2f pos) override;
 };

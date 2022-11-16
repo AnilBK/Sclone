@@ -31,41 +31,16 @@ void LabelNode::Render(sf::Vector2f pos) { draw_text(text, pos); }
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-sf::Vector2f ButtonNode::rect_size() {
-  sf::Vector2f text_box_size{text_rect_size(text)};
-  sf::Vector2f btn_size{std::max(text_box_size.x, min_size().x) + 5,
-                        std::max(text_box_size.y, min_size().y)};
-  return btn_size;
-}
+sf::Vector2f ButtonNode::rect_size() { return btn.rect_size(); }
 
 bool ButtonNode::left_click_action() {
   pressed = true;
   return true;
 }
 
-void ButtonNode::_draw_button(const sf::Vector2f p_position,
-                              const sf::Vector2f p_size, sf::Color color) {
-  sf::RectangleShape r;
-  r.setPosition(p_position);
-  r.setSize(p_size);
-  r.setFillColor(color);
-  window.draw(r);
-}
-
 void ButtonNode::Render(sf::Vector2f pos) {
-  sf::Vector2f btn_size = rect_size();
-
-  _draw_button(pos, btn_size);
-  if (pressed) {
-    sf::Vector2f pressed_highlight_pos =
-        pos + sf::Vector2f{0, (float)(0.85 * btn_size.y)};
-    sf::Vector2f pressed_highlight_size = {btn_size.x,
-                                           (float)(0.15 * btn_size.y)};
-    _draw_button(pressed_highlight_pos, pressed_highlight_size,
-                 {41, 44, 247, 255});
-  }
-
-  draw_text(text, pos);
+  btn.setPosition(pos);
+  btn.Render();
 }
 
 /////////////////////////////////////////////////////////////
