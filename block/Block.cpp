@@ -397,7 +397,7 @@ void Block::_process_events(sf::Event event) {
   for (auto &child : childrens) {
     if (child->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD ||
         child->type == NODE_TYPE::DROP_DOWN) {
-      child->_process_event(event);
+      child->handle_inputs(event);
       if (child->pressed) {
         any_line_inputs_pressed = true;
       }

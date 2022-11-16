@@ -33,7 +33,7 @@ public:
 
   virtual bool left_click_action();
 
-  virtual void _process_event(sf::Event event){};
+  virtual void handle_inputs(sf::Event event){};
 
   virtual sf::Vector2f rect_size() = 0;
   virtual void Render(sf::Vector2f pos) = 0;
@@ -91,7 +91,7 @@ public:
 
   bool left_click_action() override;
 
-  void _process_event(sf::Event event) override;
+  void handle_inputs(sf::Event event) override;
 
   void Render(sf::Vector2f pos) override;
 };
@@ -117,7 +117,7 @@ public:
 
   bool left_click_action() override;
 
-  void _process_event(sf::Event event) override;
+  void handle_inputs(sf::Event event) override;
 
   void Render(sf::Vector2f pos) override;
 };

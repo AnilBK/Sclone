@@ -65,7 +65,7 @@ bool LineInputAttachFieldNode::left_click_action() {
   return true;
 }
 
-void LineInputAttachFieldNode::_process_event(sf::Event event) {
+void LineInputAttachFieldNode::handle_inputs(sf::Event event) {
   text_area.handle_inputs(event);
 }
 
@@ -87,7 +87,7 @@ bool DropDownNode::left_click_action() {
   return true;
 }
 
-void DropDownNode::_process_event(sf::Event event) {
+void DropDownNode::handle_inputs(sf::Event event) {
   dropdown.handle_inputs(event);
 }
 
