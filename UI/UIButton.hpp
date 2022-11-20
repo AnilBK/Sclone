@@ -21,6 +21,8 @@ public:
     text.setText(btn_text);
   }
 
+  void deselect() { clicked = false; }
+
   bool is_clicked() { return clicked; }
 
   sf::Vector2f text_size();

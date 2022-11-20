@@ -28,6 +28,8 @@ public:
 
   bool is_mouse_over(sf::Vector2f this_nodes_pos);
 
+  virtual void deselect_node();
+
   virtual std::string get_text();
   virtual void set_text(const std::string &str);
 

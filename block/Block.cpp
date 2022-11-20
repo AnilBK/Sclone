@@ -378,7 +378,7 @@ bool Block::_any_node_already_pressed() {
 void Block::_deselect_all_nodes() {
   for (auto &child : childrens) {
     if (child->pressed) {
-      child->pressed = false;
+      child->deselect_node();
     }
   }
 }

@@ -11,6 +11,8 @@ bool NODEBaseClass::is_mouse_over(sf::Vector2f this_nodes_pos) {
           mouse_position.y <= this_nodes_pos.y + size.y);
 }
 
+void NODEBaseClass::deselect_node() { pressed = false; }
+
 std::string NODEBaseClass::get_text() { return text; }
 
 void NODEBaseClass::set_text(const std::string &str) { text = str; }
