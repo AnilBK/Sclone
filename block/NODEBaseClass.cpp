@@ -3,7 +3,8 @@
 
 sf::Vector2f NODEBaseClass::min_size() { return {35.0f, 45.0f}; }
 
-bool NODEBaseClass::is_mouse_over(sf::Vector2f this_nodes_pos) {
+bool NODEBaseClass::is_mouse_over() {
+  sf::Vector2f this_nodes_pos = _pos;
   sf::Vector2f size = rect_size();
   return (mouse_position.x >= this_nodes_pos.x &&
           mouse_position.x <= this_nodes_pos.x + size.x) &&
@@ -27,7 +28,7 @@ sf::Vector2f LabelNode::rect_size() {
   return {std::max(text_rect_size(text).x, min_size().x) + 15, min_size().y};
 }
 
-void LabelNode::Render(sf::Vector2f pos) { draw_text(text, pos); }
+void LabelNode::Render() { draw_text(text, _pos); }
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
@@ -42,8 +43,8 @@ bool ButtonNode::left_click_action() {
 
 void ButtonNode::handle_inputs(sf::Event event) { btn.handle_inputs(event); }
 
-void ButtonNode::Render(sf::Vector2f pos) {
-  btn.setPosition(pos);
+void ButtonNode::Render() {
+  btn.setPosition(_pos);
   btn.Render();
 }
 
@@ -82,8 +83,8 @@ void LineInputAttachFieldNode::handle_inputs(sf::Event event) {
   text_area.handle_inputs(event);
 }
 
-void LineInputAttachFieldNode::Render(sf::Vector2f pos) {
-  text_area.position = pos;
+void LineInputAttachFieldNode::Render() {
+  text_area.position = _pos;
   text_area.Render();
 }
 
@@ -104,8 +105,8 @@ void DropDownNode::handle_inputs(sf::Event event) {
   dropdown.handle_inputs(event);
 }
 
-void DropDownNode::Render(sf::Vector2f pos) {
-  dropdown.position = pos;
+void DropDownNode::Render() {
+  dropdown.position = _pos;
   dropdown.Render();
 }
 
@@ -177,14 +178,14 @@ sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
   return l_shape_rect;
 }
 
-void BlockAttachNode::Render(sf::Vector2f pos) {
+void BlockAttachNode::Render() {
   if (attached_block != nullptr) {
     attached_block->set_position(_pos + sf::Vector2f(15.0f, 0.0f));
   }
 
   // Draw the long vertical line on the left.
   sf::RectangleShape r;
-  r.setPosition(pos);
+  r.setPosition(_pos);
   r.setSize({15, enclosed_rect_size.y}); //{15, 2 * 45.0f};
   r.setFillColor(sf::Color::Yellow);
   window.draw(r);
@@ -196,7 +197,7 @@ void BlockAttachNode::Render(sf::Vector2f pos) {
   // The horizontal block on the bottom.
   // Which marks the end of the block.
   sf::RectangleShape r2;
-  r2.setPosition(pos + sf::Vector2f(0.0f, r.getSize().y));
+  r2.setPosition(_pos + sf::Vector2f(0.0f, r.getSize().y));
   // A block is 45 units.
   r2.setSize({300, 45.0f});
   r2.setFillColor(sf::Color::Yellow);

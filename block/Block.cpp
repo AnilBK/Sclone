@@ -321,7 +321,7 @@ void Block::RenderFullRect() {
 
 void Block::render_children() {
   for (const auto &child : childrens) {
-    child->Render(child->_pos);
+    child->Render();
   }
 
   constexpr bool visualize_attached_blocks = false;
@@ -350,17 +350,13 @@ void Block::Render() {
 
 bool Block::_process_left_click_on_children(sf::Event event) {
   // Returns true if any of the child performed 'press' action.
-  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
   // First process child inputs separately.
   for (const auto &child : childrens) {
-    if (child->is_mouse_over(pos)) {
+    if (child->is_mouse_over()) {
       if (child->left_click_action()) {
         return true;
       }
     }
-
-    pos.x += child->rect_size().x;
-    pos.x += spacing;
   }
 
   return false;

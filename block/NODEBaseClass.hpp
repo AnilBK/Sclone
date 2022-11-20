@@ -26,7 +26,7 @@ public:
 
   sf::Vector2f min_size();
 
-  bool is_mouse_over(sf::Vector2f this_nodes_pos);
+  bool is_mouse_over();
 
   virtual void deselect_node();
 
@@ -38,7 +38,8 @@ public:
   virtual void handle_inputs(sf::Event event){};
 
   virtual sf::Vector2f rect_size() = 0;
-  virtual void Render(sf::Vector2f pos) = 0;
+  virtual void Render() = 0;
+  // virtual void RenderOverride(sf::Vector2f pos) = 0;
 };
 
 class LabelNode : public NODEBaseClass {
@@ -50,7 +51,7 @@ public:
 
   sf::Vector2f rect_size() override;
 
-  void Render(sf::Vector2f pos) override;
+  void Render() override;
 };
 
 class ButtonNode : public NODEBaseClass {
@@ -71,7 +72,7 @@ public:
 
   void handle_inputs(sf::Event event) override;
 
-  void Render(sf::Vector2f pos) override;
+  void Render() override;
 };
 
 class PickWithMouseNode : public ButtonNode {
@@ -110,7 +111,7 @@ public:
 
   void handle_inputs(sf::Event event) override;
 
-  void Render(sf::Vector2f pos) override;
+  void Render() override;
 };
 
 class DropDownNode : public NODEBaseClass {
@@ -136,7 +137,7 @@ public:
 
   void handle_inputs(sf::Event event) override;
 
-  void Render(sf::Vector2f pos) override;
+  void Render() override;
 };
 
 class BlockAttachNode : public NODEBaseClass {
@@ -179,7 +180,7 @@ public:
   // The rect size with the L-shaped outlines.
   sf::FloatRect rect_size_with_outlines();
 
-  void Render(sf::Vector2f pos) override;
+  void Render() override;
 };
 
 #endif // NODEBASECLASS_HPP
