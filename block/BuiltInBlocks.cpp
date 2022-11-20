@@ -95,7 +95,7 @@ void block_go_to_xy(Block *block_go_to_xy) {
   block_go_to_xy->add_node(LineInputAttachFieldNode("", "x"));
   block_go_to_xy->add_node(LabelNode("Y"));
   block_go_to_xy->add_node(LineInputAttachFieldNode("", "y"));
-  block_go_to_xy->add_node(ButtonNode("Pick^"));
+  block_go_to_xy->add_node(PickWithMouseNode(2, 4));
   block_go_to_xy->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
   block_go_to_xy->output_code_callback = code_sprite_set_position;
   block_go_to_xy->function_identifier = "block_go_to_xy";
@@ -109,7 +109,7 @@ void block_glide_to_xy(Block *block_glide_to_xy) {
   block_glide_to_xy->add_node(LineInputAttachFieldNode("", "x"));
   block_glide_to_xy->add_node(LabelNode("Y"));
   block_glide_to_xy->add_node(LineInputAttachFieldNode("", "y"));
-  block_glide_to_xy->add_node(ButtonNode("Pick^"));
+  block_glide_to_xy->add_node(PickWithMouseNode(2, 4));
   block_glide_to_xy->add_node(LabelNode("For"));
   block_glide_to_xy->add_node(LineInputAttachFieldNode("", "length"));
   block_glide_to_xy->add_node(LabelNode("seconds"));
@@ -126,7 +126,7 @@ void block_glide_point_to_point(Block *block_glide_point_to_point) {
   block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "x"));
   block_glide_point_to_point->add_node(LabelNode("Y"));
   block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "y"));
-  block_glide_point_to_point->add_node(ButtonNode("Pick^"));
+  block_glide_point_to_point->add_node(PickWithMouseNode(2, 4));
   block_glide_point_to_point->add_node(LabelNode("For"));
   block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "length"));
   block_glide_point_to_point->add_node(LabelNode("seconds"));
@@ -134,6 +134,7 @@ void block_glide_point_to_point(Block *block_glide_point_to_point) {
   block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "x1"));
   block_glide_point_to_point->add_node(LabelNode("Y1"));
   block_glide_point_to_point->add_node(LineInputAttachFieldNode("", "y1"));
+  block_glide_point_to_point->add_node(PickWithMouseNode(10, 12));
 
   block_glide_point_to_point->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
   block_glide_point_to_point->output_code_callback =

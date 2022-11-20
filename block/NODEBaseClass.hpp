@@ -54,7 +54,7 @@ public:
 };
 
 class ButtonNode : public NODEBaseClass {
-private:
+protected:
   UIButton btn;
 
 public:
@@ -69,7 +69,22 @@ public:
 
   bool left_click_action() override;
 
+  void handle_inputs(sf::Event event) override;
+
   void Render(sf::Vector2f pos) override;
+};
+
+class PickWithMouseNode : public ButtonNode {
+public:
+  int childs_index_for_x, childs_index_for_y;
+
+  PickWithMouseNode(int p_index_x = -1, int p_index_y = -1)
+      : ButtonNode("Pick^", ""), childs_index_for_x(p_index_x),
+        childs_index_for_y(p_index_y) {}
+
+  bool is_pressed() { return btn.is_clicked(); }
+
+  void deselect_node() override;
 };
 
 class LineInputAttachFieldNode : public NODEBaseClass {

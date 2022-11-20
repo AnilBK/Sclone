@@ -395,26 +395,27 @@ void Block::_process_events(sf::Event event) {
   bool any_line_inputs_pressed = false;
 
   for (auto &child : childrens) {
-    if (child->type == NODE_TYPE::LINE_INPUT_ATTACH_FIELD ||
-        child->type == NODE_TYPE::DROP_DOWN) {
-      child->handle_inputs(event);
-      if (child->pressed) {
-        any_line_inputs_pressed = true;
-      }
-    }
-
-    if (child->type != NODE_TYPE::BUTTON) {
-      continue;
-    }
-
-    if (child->get_text() != "Pick^") {
-      continue;
-    }
-
+    child->handle_inputs(event);
     if (child->pressed) {
-      childrens[2]->set_text(std::to_string(mouse_position.x));
-      childrens[4]->set_text(std::to_string(mouse_position.y));
-      rect_dirty = true;
+      any_line_inputs_pressed = true;
+    }
+  }
+
+  for (auto &child : childrens) {
+    auto pick_button = dynamic_cast<PickWithMouseNode *>(child.get());
+    if (pick_button) {
+      if (pick_button->is_pressed()) {
+        auto x_index = pick_button->childs_index_for_x;
+        auto y_index = pick_button->childs_index_for_y;
+
+        if (x_index != -1) {
+          childrens[x_index]->set_text(std::to_string(mouse_position.x));
+        }
+
+        if (y_index != -1) {
+          childrens[y_index]->set_text(std::to_string(mouse_position.y));
+        }
+      }
     }
   }
 
