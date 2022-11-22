@@ -47,7 +47,7 @@ public:
 
   void add_tab(std::string tab_name);
   void handle_inputs(sf::Event event);
-  void _select_tab(int idx);
+  void _select_tab(int new_tab_id);
   void recalculate_post_add_tabs();
   int get_scroll_value();
   void set_spacing_between_tab_btns(float spacing);

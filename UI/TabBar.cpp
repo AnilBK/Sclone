@@ -29,31 +29,29 @@ void TabBar::add_tab(std::string tab_name) {
   tab_bar_scroll_value.push_back(0.0f);
 }
 
-void TabBar::_select_tab(int idx) {
-  ERR_FAIL_COND_CRASH(idx < 0 || idx > tab_bar_buttons.size(),
+void TabBar::_select_tab(int new_tab_id) {
+  ERR_FAIL_COND_CRASH(new_tab_id < 0 || new_tab_id > tab_bar_buttons.size(),
                       "Invalid tab selected. Provided index: " +
-                          std::to_string(idx));
+                          std::to_string(new_tab_id));
   // Unselect all.
   // Buttons can have individual colors.
   // But let's not give them.
   // Since they are a part of a tab bar, every buttons should have the same
   // color.
 
+  currently_selected_tab = new_tab_id;
+
   int i = 0;
-  Button *currently_selected_tab_ptr = nullptr;
   for (auto &_tab_bar_btn : tab_bar_buttons) {
-    _tab_bar_btn.clicked = false;
-    _tab_bar_btn.button_fill_color = btn_default_fill_color;
-    if (i == idx) {
-      currently_selected_tab_ptr = &_tab_bar_btn;
+    if (i == new_tab_id) {
+      _tab_bar_btn.clicked = true;
+      _tab_bar_btn.button_fill_color = btn_selected_fill_color;
+    } else {
+      _tab_bar_btn.clicked = false;
+      _tab_bar_btn.button_fill_color = btn_default_fill_color;
     }
     i++;
   }
-
-  // Select only that tab.
-  currently_selected_tab_ptr->clicked = true;
-  currently_selected_tab_ptr->button_fill_color = btn_selected_fill_color;
-  currently_selected_tab = idx;
 }
 
 void TabBar::handle_inputs(sf::Event event) {
