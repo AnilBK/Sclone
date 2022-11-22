@@ -64,6 +64,25 @@ template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
   return rect.contains(get_mouse_position());
 }
 
+/// @brief Check if cached mouse position is inside the given rect.
+/// @param rect Rect to check.
+/// @return True if mouse is over.
+[[nodiscard]] static inline bool
+isCachedMousePosOverRect(const sf::FloatRect rect) {
+  sf::Vector2f position{rect.left, rect.top};
+  sf::Vector2f size{rect.width, rect.height};
+
+  return (mouse_position.x >= position.x &&
+          mouse_position.x <= position.x + size.x) &&
+         (mouse_position.y >= position.y &&
+          mouse_position.y <= position.y + size.y);
+
+  // We could use this VV
+  //  return rect.contains(static_cast<sf::Vector2f>(mouse_position));
+  // but it has certain checks to handle 'Rectangles with negative dimensions'.
+  // We don't need that.
+}
+
 static void init_global_font_and_label() {
   ERR_FAIL_COND_CRASH(!font.loadFromFile("alaska.ttf"), "Error Loading Font.");
   draw_text_label.setFont(font);

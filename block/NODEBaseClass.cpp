@@ -4,12 +4,10 @@
 sf::Vector2f NODEBaseClass::min_size() { return {35.0f, 45.0f}; }
 
 bool NODEBaseClass::is_mouse_over() {
-  sf::Vector2f this_nodes_pos = _pos;
+  sf::Vector2f position = _pos;
   sf::Vector2f size = rect_size();
-  return (mouse_position.x >= this_nodes_pos.x &&
-          mouse_position.x <= this_nodes_pos.x + size.x) &&
-         (mouse_position.y >= this_nodes_pos.y &&
-          mouse_position.y <= this_nodes_pos.y + size.y);
+
+  return isCachedMousePosOverRect(sf::FloatRect(position, size));
 }
 
 void NODEBaseClass::deselect_node() { pressed = false; }

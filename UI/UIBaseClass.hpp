@@ -21,10 +21,7 @@ public:
     sf::Vector2f size = rect_size();
     sf::Vector2f position = getPosition();
 
-    return (mouse_position.x >= position.x &&
-            mouse_position.x <= position.x + size.x) &&
-           (mouse_position.y >= position.y &&
-            mouse_position.y <= position.y + size.y);
+    return isCachedMousePosOverRect(sf::FloatRect(position, size));
   }
 };
 

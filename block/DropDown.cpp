@@ -2,10 +2,7 @@
 
 bool DropDown::is_mouse_over() {
   sf::Vector2f size = rect_size();
-  return (mouse_position.x >= position.x &&
-          mouse_position.x <= position.x + size.x) &&
-         (mouse_position.y >= position.y &&
-          mouse_position.y <= position.y + size.y);
+  return isCachedMousePosOverRect(sf::FloatRect(position, size));
 }
 
 void DropDown::handle_inputs(sf::Event event) {
