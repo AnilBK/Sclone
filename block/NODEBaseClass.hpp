@@ -125,8 +125,8 @@ public:
                std::initializer_list<std::string> options = {})
       : NODEBaseClass(p_text_str, p_bind_str) {
     type = NODE_TYPE::DROP_DOWN;
-    dropdown.items.clear();
-    dropdown.items = options;
+    dropdown.clear_items();
+    dropdown.add_items(options);
   }
 
   sf::Vector2f rect_size() override;

@@ -24,52 +24,42 @@ void DropDown::handle_inputs(sf::Event event) {
     }
   }
 
-  auto is_mouse_over_rect = [](sf::Vector2f pos, sf::Vector2f size) {
-    return (mouse_position.x >= pos.x && mouse_position.x <= pos.x + size.x) &&
-           (mouse_position.y >= pos.y && mouse_position.y <= pos.y + size.y);
-  };
+  if (dropdown_clicked) {
+    // Find the item over which the mouse is being hovered.
+    sf::Vector2f draw_position = position;
+    const auto content_size = rect_size();
 
-  int number_of_item_to_draw = dropdown_clicked ? items.size() : 1;
-  sf::Vector2f draw_position = position;
-
-  for (int i = 0; i < number_of_item_to_draw; i++) {
-    auto content_size = rect_size();
-    if (is_mouse_over_rect(draw_position, content_size)) {
-      mouse_over_index = i;
-      break;
+    for (int i = 0; i < items.size(); i++) {
+      draw_position.y += content_size.y;
+      if (isCachedMousePosOverRect(
+              sf::FloatRect(draw_position, content_size))) {
+        mouse_over_index = i;
+        break;
+      }
     }
-    draw_position.y += content_size.y;
   }
 }
 
-void DropDown::Render() {
+void DropDown::_draw_base_button() {
+  const auto content_size = rect_size();
+
+  sf::RectangleShape bg_rect;
+  bg_rect.setPosition(position);
+  bg_rect.setSize(content_size);
+  bg_rect.setFillColor(sf::Color::Green);
+  bg_rect.setOutlineThickness(2.5);
+  bg_rect.setOutlineColor(sf::Color(31, 142, 255, 255));
+
+  window.draw(bg_rect);
+  draw_text(get_text(), position);
+}
+
+void DropDown::_draw_whole_list() {
   sf::Vector2f draw_position = position;
+  const auto content_size = rect_size();
 
-  if (!dropdown_clicked) {
-    auto text = get_text();
-    auto content_size = rect_size();
-
-    sf::RectangleShape bg_rect;
-    bg_rect.setPosition(draw_position);
-    bg_rect.setSize(content_size);
-    bg_rect.setFillColor(sf::Color::Green);
-
-    bg_rect.setOutlineThickness(2.5);
-    bg_rect.setOutlineColor(sf::Color(31, 142, 255, 255));
-
-    window.draw(bg_rect);
-    draw_text(text, draw_position);
-
+  for (int i = 0; i < items.size(); i++) {
     draw_position.y += content_size.y;
-
-    return;
-  }
-
-  int number_of_item_to_draw = dropdown_clicked ? items.size() : 1;
-
-  for (int i = 0; i < number_of_item_to_draw; i++) {
-    auto text = get_text(i);
-    auto content_size = rect_size();
 
     sf::RectangleShape bg_rect;
     bg_rect.setPosition(draw_position);
@@ -79,13 +69,30 @@ void DropDown::Render() {
     if (i == mouse_over_index) {
       bg_rect.setOutlineThickness(2.5);
       bg_rect.setOutlineColor(sf::Color(31, 142, 255, 255));
-    } else {
-      bg_rect.setOutlineThickness(0.0);
     }
 
     window.draw(bg_rect);
-    draw_text(text, draw_position);
-
-    draw_position.y += content_size.y;
+    draw_text(items[i], draw_position);
   }
+}
+
+void DropDown::Render() {
+  _draw_base_button();
+  if (dropdown_clicked) {
+    _draw_whole_list();
+  }
+}
+
+void DropDown::_compute_largest_item_rect_size() {
+  sf::Vector2f max_text_size{0.0f, 0.0f};
+  for (const auto &item : items) {
+    auto text_size = text_rect_size(item);
+    max_text_size.x = std::max(max_text_size.x, text_size.x);
+    max_text_size.y = std::max(max_text_size.y, text_size.y);
+  }
+  largest_item_rect_size = max_text_size;
+
+  // BUG: Add these extra 10 Pixels, because we have a bug in text_rect_size(),
+  // that it returns a smaller rect size.
+  largest_item_rect_size += sf::Vector2f(0, 10);
 }
