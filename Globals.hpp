@@ -50,17 +50,18 @@ extern sf::Text draw_text_label;
 
 extern sf::RenderWindow window;
 
-template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
-  // return sprite.getGlobalBounds().contains(mouse_position.x,
-  // mouse_position.y);
+[[nodiscard]] static inline sf::Vector2f get_mouse_position() {
   sf::Vector2i m_pos = sf::Mouse::getPosition(window);
-  return sprite.getGlobalBounds().contains(m_pos.x, m_pos.y);
+  auto mouse_world_pos = window.mapPixelToCoords(m_pos);
+  return mouse_world_pos;
+}
+
+template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
+  return sprite.getGlobalBounds().contains(get_mouse_position());
 }
 
 [[nodiscard]] static bool isMouseOverRect(const sf::FloatRect rect) {
-  auto m_pos = static_cast<sf::Vector2f>(sf::Mouse::getPosition(window));
-  return rect.contains(m_pos);
-  //  return rect.contains((sf::Vector2f)mouse_position);
+  return rect.contains(get_mouse_position());
 }
 
 static void init_global_font_and_label() {

@@ -79,7 +79,7 @@ int main() {
       editor.handle_inputs(event);
     }
 
-    mouse_position = sf::Mouse::getPosition(window);
+    mouse_position = static_cast<sf::Vector2i>(get_mouse_position());
 
     window.clear(window_clear_color);
 
