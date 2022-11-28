@@ -1,4 +1,3 @@
-#include "CodeGen/CodeGenerator.hpp"
 #include "Editor/Editor.hpp"
 #include "Globals.hpp"
 #include <SFML/Graphics.hpp>
@@ -69,11 +68,6 @@ int main() {
           (event.type == sf::Event::KeyReleased &&
            event.key.code == sf::Keyboard::Escape)) {
         window.close();
-      } else if (event.type == sf::Event::KeyReleased) {
-        if (event.key.code == sf::Keyboard::LAlt) {
-          CodeGenerator CodeGen(editor);
-          CodeGen.generate_code();
-        }
       }
 
       editor.handle_inputs(event);

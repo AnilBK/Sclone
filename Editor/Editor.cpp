@@ -291,6 +291,8 @@ void Editor::handle_inputs(sf::Event event) {
   if (event.type == sf::Event::KeyReleased) {
     if (event.key.code == sf::Keyboard::Slash) {
       toggle_tab_bar_folding();
+    } else if (event.key.code == sf::Keyboard::LAlt) {
+      _build_and_run();
     }
   } else if (event.type == sf::Event::MouseButtonPressed) {
     if (event.mouseButton.button == sf::Mouse::Button::XButton1) {
