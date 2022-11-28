@@ -382,6 +382,7 @@ int main() {
   ///////////////////////////////////////
 
   sf::Clock frameClock;
+  const auto window_clear_color = sf::Color(153, 195, 180);
 
   while (window.isOpen()) {
     sf::Event e;
@@ -393,7 +394,7 @@ int main() {
       //###INPUT_CODE###
     }
 
-    window.clear();
+    window.clear(window_clear_color);
     auto deltaTime = frameClock.restart();
 
     //###MAINLOOP_CODE###
