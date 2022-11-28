@@ -9,6 +9,9 @@
 #include <string>
 #include <vector>
 
+class Editor;
+class EditorSprite;
+
 class CodeGenerator {
 private:
   // The CodeGenerator Object takes Reference to the editor so that it has

@@ -1,4 +1,5 @@
 #include "Editor.hpp"
+#include <cstdlib>
 
 int Editor::_selected_sprite_layer() {
   int layer_value = std::stoi(sprite_layer_value_input.text.getText());
@@ -300,6 +301,7 @@ void Editor::handle_inputs(sf::Event event) {
 
   built_in_blocks_tab_bar.handle_inputs(event);
   blocks_tab_bar_collapse_btn.handle_inputs(event);
+  build_and_run_btn.handle_inputs(event);
 }
 
 void Editor::_render_ui() {
@@ -307,6 +309,7 @@ void Editor::_render_ui() {
   _refresh_layout();
   user_added_sprites_list.Render();
   editor_inspector.Render();
+  build_and_run_btn.Render();
 }
 
 std::vector<const EditorSprite *> Editor::get_sprites_sorted_by_layers() const {
@@ -537,4 +540,10 @@ void Editor::_render_tab() {
     float height_of_cur_block = block.block_full_size.y;
     block_in_tabs_draw_position.y += height_of_cur_block + 20;
   }
+}
+
+void Editor::_build_and_run() {
+  CodeGenerator CodeGen(*this);
+  CodeGen.generate_code();
+  std::system("GeneratedOutput\\build_and_execute.bat");
 }

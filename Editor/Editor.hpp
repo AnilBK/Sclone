@@ -1,6 +1,7 @@
 #ifndef EDITOR_HPP
 #define EDITOR_HPP
 
+#include "../CodeGen/CodeGenerator.hpp"
 #include "../Globals.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/Label.hpp"
@@ -72,6 +73,8 @@ private:
   TabBar built_in_blocks_tab_bar = TabBar(tab_pos, tab_size);
   UIButton blocks_tab_bar_collapse_btn = UIButton("V");
 
+  UIButton build_and_run_btn = UIButton("Play");
+
   /// @brief Contains functions that generates different blocks and the strings
   /// that identify that block generator function.
   BlockBinder bound_blocks;
@@ -116,6 +119,8 @@ private:
   void _add_movement_script();
 
   void _spawn_block_at_mouse_pos(const Block &block);
+
+  void _build_and_run();
 
 public:
   std::vector<EditorSprite> user_added_sprites;
@@ -207,6 +212,10 @@ public:
     editor_inspector.add_child(fourth_line);
     editor_inspector.add_child(show_more_hbox);
     editor_inspector.setPosition({250, 10});
+
+    build_and_run_btn.setPosition(sf::Vector2f(600, 0));
+    std::function<void()> build_and_run_func = [this]() { _build_and_run(); };
+    build_and_run_btn.clicked_callback = build_and_run_func;
 
     // Stuffs Related To Add New Sprite Inspector.
     std::function<void()> add_sprite = [this]() { _create_new_sprite(); };
