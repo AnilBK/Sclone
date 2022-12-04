@@ -92,7 +92,6 @@ void Block::show_previous_block_snap_hint() {
   sf::RectangleShape previous_block_snap_hint;
   previous_block_snap_hint.setPosition(r_pos);
   previous_block_snap_hint.setSize(r_size);
-
   previous_block_snap_hint.setFillColor(sf::Color::White);
   window.draw(previous_block_snap_hint);
 }
@@ -105,7 +104,6 @@ void Block::show_next_block_snap_hint() {
   sf::RectangleShape next_block_snap_hint;
   next_block_snap_hint.setPosition(r_pos);
   next_block_snap_hint.setSize(r_size);
-
   next_block_snap_hint.setFillColor(sf::Color::White);
   window.draw(next_block_snap_hint);
 }
@@ -314,7 +312,6 @@ void Block::RenderFullRect() {
   sf::RectangleShape debug_block_rect_full;
   debug_block_rect_full.setPosition(position);
   debug_block_rect_full.setSize(size);
-
   debug_block_rect_full.setFillColor(sf::Color(255, 0, 0, 200));
   window.draw(debug_block_rect_full);
 }
