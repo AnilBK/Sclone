@@ -7,6 +7,20 @@ namespace BUILT_IN_BLOCKS {
 // These functions take a pointer to a 'block' and add all the required
 // childrens. The 'block' passed to it is supposed to have no childrens at all.
 
+//------------------------------------------------------------------
+// Final Block Output:
+// .-----------------------------.
+// | Say "Text" for "2" seconds. |
+// .-----------------------------.
+
+// Stacking of children to form the above output:
+//   Label("Say")
+//     LineInputAttachField(text_variable)
+//       Label("for")
+//         LineInputAttachField(time_variable)
+//           Label("seconds").
+//------------------------------------------------------------------
+
 // Control Blocks
 void block_program_started(Block *block_program_started);
 void block_forever(Block *block_forever);

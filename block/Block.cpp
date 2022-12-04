@@ -15,10 +15,9 @@ void Block::set_block_type(BLOCK_TYPES p_type) {
 
 void Block::attach_block_next(Block *p_next_block) {
   ERR_FAIL_COND_CRASH(p_next_block == this, "Children is same as parent.");
-
   next_block = p_next_block;
-  set_position(position);
   // Set same position again, so it's child's position can be updated too.
+  set_position(position);
 }
 
 void Block::set_position(const sf::Vector2f p_pos) {
@@ -151,34 +150,7 @@ void Block::process_inside_snap_hints(bool attach_block_requested,
   }
 }
 
-std::vector<BlockAttachNode *>
-Block::get_block_attach_nodes(bool with_nodes_attached) {
-  std::vector<BlockAttachNode *> attached_blocks_vec;
-
-  for (auto &child : childrens) {
-    if (child->type != BLOCK_ATTACH_NODE) {
-      continue;
-    }
-
-    auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
-
-    if (child_casted) {
-      auto attached_block = child_casted->attached_block;
-
-      if (with_nodes_attached) {
-        if (attached_block != nullptr) {
-          attached_blocks_vec.push_back(child_casted);
-        }
-      } else {
-        attached_blocks_vec.push_back(child_casted);
-      }
-    }
-  }
-
-  return attached_blocks_vec;
-}
-
-void Block::_recalculate_rect() {
+void Block::recalculate_rect() {
   sf::Vector2f pos = position;
   sf::FloatRect merged_rect(pos, STARTING_BLOCK_SIZE);
 
@@ -213,7 +185,7 @@ void Block::_recalculate_rect() {
   block_full_size = {full_size_x, full_size_y};
 }
 
-void Block::RenderRectsBackground() {
+void Block::render_base() {
   sf::RectangleShape block_bg;
   block_bg.setOutlineThickness(2.0f);
   block_bg.setPosition(position);
@@ -251,7 +223,7 @@ sf::FloatRect Block::full_rect() {
     rect = merge_rects(rect, next_block->full_rect());
   }
 
-  if (!can_block_snap_inside) {
+  if (!can_block_attach_inside) {
     return rect;
   }
 
@@ -262,7 +234,7 @@ sf::FloatRect Block::full_rect() {
 
   for (auto &node : nodes) {
     sf::FloatRect l_shape_rect = node->rect_size_with_outlines();
-    //+  sf::Vector2f(0.0f, 45.0f));
+    //  +  sf::Vector2f(0.0f, 45.0f));
 
     if (auto attached_block = node->attached_block; attached_block != nullptr) {
       l_shape_rect = merge_rects(l_shape_rect, attached_block->full_rect());
@@ -305,7 +277,7 @@ void Block::resort_children() {
   }
 }
 
-void Block::RenderFullRect() {
+void Block::render_full_rect() {
   auto rect = full_rect();
   sf::Vector2f size = {rect.width, rect.height};
 
@@ -321,32 +293,19 @@ void Block::render_children() {
     child->Render();
   }
 
-  constexpr bool visualize_attached_blocks = false;
-  if (!visualize_attached_blocks) {
-    return;
+  constexpr bool visualize_block = false;
+  if (visualize_block) {
+    render_full_rect();
   }
-
-  const auto nodes = get_block_attach_nodes();
-  for (auto &node : nodes) {
-    node->attached_block->RenderFullRect();
-  }
-}
-
-// Draw text and all other components.
-void Block::RenderComponents() {
-  resort_children();
-  render_children();
 }
 
 void Block::Render() {
-  // Draw the background rect.
-  // window.draw(block_rect);
-  RenderRectsBackground();
-  RenderComponents();
+  resort_children();
+  render_base();
+  render_children();
 }
 
 bool Block::_process_left_click_on_children(sf::Event event) {
-  // Returns true if any of the child performed 'press' action.
   // First process child inputs separately.
   for (const auto &child : childrens) {
     if (child->is_mouse_over()) {
@@ -359,7 +318,7 @@ bool Block::_process_left_click_on_children(sf::Event event) {
   return false;
 }
 
-bool Block::_any_node_already_pressed() {
+bool Block::any_node_already_pressed() {
   for (const auto &child : childrens) {
     if (child->pressed) {
       return true;
@@ -368,7 +327,7 @@ bool Block::_any_node_already_pressed() {
   return false;
 }
 
-void Block::_deselect_all_nodes() {
+void Block::deselect_all_nodes() {
   for (auto &child : childrens) {
     if (child->pressed) {
       child->deselect_node();
@@ -376,7 +335,7 @@ void Block::_deselect_all_nodes() {
   }
 }
 
-void Block::_process_events(sf::Event event) {
+void Block::handle_inputs(sf::Event event) {
   // For some reason, if we do this check on Render()
   // then the value resets after we press right click.
   // Weird.
@@ -417,7 +376,7 @@ void Block::_process_events(sf::Event event) {
   // Also, if LineInput Node isn't selected then there's no change i.e it's
   // rect can change. any_line_inputs_pressed -> workaround variable.
   if (rect_dirty || any_line_inputs_pressed) {
-    _recalculate_rect();
+    recalculate_rect();
   }
 
   if (event.type == sf::Event::MouseButtonPressed) {
@@ -425,8 +384,8 @@ void Block::_process_events(sf::Event event) {
     // We may use left to undrag as well, but those clicks occur so
     // fast, mostly it causes toggle on/off/on.. conditions.
     if (event.mouseButton.button == sf::Mouse::Left) {
-      if (_any_node_already_pressed()) {
-        _deselect_all_nodes();
+      if (any_node_already_pressed()) {
+        deselect_all_nodes();
       }
 
       if (_process_left_click_on_children(event)) {
@@ -441,13 +400,40 @@ void Block::_process_events(sf::Event event) {
     } else if (event.mouseButton.button == sf::Mouse::Right) {
       // TODO: All clicks outside a block should invalidate pressed state of
       // any NODE.
-      _deselect_all_nodes();
+      deselect_all_nodes();
 
       if (dragging) {
         dragging = false;
       }
     }
   }
+}
+
+std::vector<BlockAttachNode *>
+Block::get_block_attach_nodes(bool with_nodes_attached) {
+  std::vector<BlockAttachNode *> attached_blocks_vec;
+
+  for (auto &child : childrens) {
+    if (child->type != BLOCK_ATTACH_NODE) {
+      continue;
+    }
+
+    auto child_casted = dynamic_cast<BlockAttachNode *>(child.get());
+
+    if (child_casted) {
+      auto attached_block = child_casted->attached_block;
+
+      if (with_nodes_attached) {
+        if (attached_block != nullptr) {
+          attached_blocks_vec.push_back(child_casted);
+        }
+      } else {
+        attached_blocks_vec.push_back(child_casted);
+      }
+    }
+  }
+
+  return attached_blocks_vec;
 }
 
 std::optional<std::string>
@@ -471,7 +457,7 @@ std::string Block::get_code() {
     code += output_code_callback(*this);
   }
 
-  if (can_block_snap_inside) {
+  if (can_block_attach_inside) {
     code += "{\n";
   }
 
@@ -492,7 +478,7 @@ std::string Block::get_code() {
     }
   }
 
-  if (can_block_snap_inside) {
+  if (can_block_attach_inside) {
     code += "\n}\n";
   }
 

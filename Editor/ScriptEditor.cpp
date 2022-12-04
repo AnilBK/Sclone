@@ -8,7 +8,7 @@ void ScriptEditor::handle_inputs(sf::Event event) {
   middle_click = false;
 
   for (auto &block : script->blocks) {
-    block._process_events(event);
+    block.handle_inputs(event);
   }
 
   if (event.type == sf::Event::MouseButtonPressed &&
