@@ -11,7 +11,8 @@ sf::Vector2f Label::getPosition() {
 }
 
 sf::Vector2f Label::getRectPosition() {
-  return {label.getGlobalBounds().left, label.getGlobalBounds().top};
+  const auto bounds = label.getGlobalBounds();
+  return {bounds.left, bounds.top};
 }
 
 void Label::setPosition(sf::Vector2f pos) { label.setPosition(pos); }
@@ -23,8 +24,7 @@ sf::Vector2f Label::rect_size() {
 
 void Label::RenderDebug() {
   sf::RectangleShape debug_shape;
-  debug_shape.setPosition(label.getGlobalBounds().left,
-                          label.getGlobalBounds().top);
+  debug_shape.setPosition(getRectPosition());
   debug_shape.setSize(rect_size());
   debug_shape.setFillColor(sf::Color::Green);
   debug_shape.setOutlineThickness(1.0f);

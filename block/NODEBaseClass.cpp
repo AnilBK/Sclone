@@ -147,7 +147,6 @@ void BlockAttachNode::_show_snap_for_attachable_block() {
   sf::RectangleShape block_snap_hint;
   block_snap_hint.setPosition(r_pos);
   block_snap_hint.setSize(r_size);
-
   block_snap_hint.setFillColor(sf::Color::White);
   window.draw(block_snap_hint);
 }

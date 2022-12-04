@@ -10,9 +10,11 @@ sf::Vector2f UISprite::rect_size() {
 }
 
 void UISprite::RenderDebug() {
+  auto bounds = sprite.getGlobalBounds();
+  sf::Vector2f pos = {bounds.left, bounds.top};
+
   sf::RectangleShape debug_shape;
-  debug_shape.setPosition(sprite.getGlobalBounds().left,
-                          sprite.getGlobalBounds().top);
+  debug_shape.setPosition(pos);
   debug_shape.setSize(rect_size());
   debug_shape.setFillColor(sf::Color::Green);
   debug_shape.setOutlineThickness(1.0f);

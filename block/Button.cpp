@@ -17,7 +17,6 @@ void Button::handle_inputs(sf::Event event) {
       event.mouseButton.button == sf::Mouse::Left) {
     clicked = !clicked;
     if (clicked_callback) {
-      //    std::cout << "Button Pressed. \n";
       clicked_callback();
     }
   }

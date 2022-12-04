@@ -38,7 +38,9 @@ public:
   virtual void handle_inputs(sf::Event event){};
 
   virtual sf::Vector2f rect_size() = 0;
+
   virtual void Render() = 0;
+
   // virtual void RenderOverride(sf::Vector2f pos) = 0;
 };
 

@@ -49,30 +49,28 @@ private:
   void render_children();
   void RenderFullRect();
 
+  bool _process_left_click_on_children(sf::Event event);
+
 public:
   Block();
   ~Block();
 
   bool dragging = false;
 
+  /// @brief The base rectangle which draws the entire shape of the block.
   sf::RectangleShape block_rect;
 
-  sf::FloatRect full_rect();
-
   sf::Vector2f block_full_size{0.0f, 0.0f};
-  // This is the tab name in the editor where this block can be spawned from..
-  // std::string TabItBelongsToName = "Control";
-  // String would be flexible but use enums for speed now.
+
+  /// @brief This is the tab name in the editor where this block can be spawned
+  /// from.
   BLOCKS_TAB_NAME TabItBelongsToName = BLOCKS_TAB_NAME::TAB_CONTROL;
 
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;
 
   Block *next_block = nullptr;
-  // These are the blocks that are attached inside a block.
-  // For a given block these exist only if 'BlockAttachNode' nodes are attached
-  // to it.
 
-  // We use this block identifier to spawn new blocks.
+  /// @brief We use this block identifier to spawn new blocks of this type.
   std::string function_identifier = "block_default";
   std::function<std::string(const Block &b)> output_code_callback;
 
@@ -102,9 +100,9 @@ public:
   void process_inside_snap_hints(bool attach_block_requested,
                                  Block *current_dragging_block_ref);
 
+  sf::FloatRect full_rect();
   // Maybe use some dirty flag ???
   void _recalculate_rect();
-  bool _process_left_click_on_children(sf::Event event);
   void _process_events(sf::Event event);
 
   bool _any_node_already_pressed();

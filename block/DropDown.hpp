@@ -30,6 +30,7 @@ public:
   sf::Vector2f position = sf::Vector2f(410, 40);
 
   bool is_mouse_over();
+
   std::string get_text() { return items.at(currently_selected_index); }
   std::string get_text(int index) { return items.at(index); }
 

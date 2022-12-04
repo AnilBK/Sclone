@@ -93,8 +93,8 @@ static void init_global_font_and_label() {
 
 [[nodiscard]] static sf::Vector2f text_rect_size(const std::string &str) {
   draw_text_label.setString(str);
-  return {draw_text_label.getGlobalBounds().width,
-          draw_text_label.getGlobalBounds().height};
+  auto bounds = draw_text_label.getGlobalBounds();
+  return {bounds.width, bounds.height};
 }
 
 static void draw_text(const std::string &str, const sf::Vector2f p_position) {
