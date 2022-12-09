@@ -185,20 +185,12 @@ void Block::recalculate_rect() {
   block_full_size = {full_size_x, full_size_y};
 }
 
-void Block::render_base() {
-  sf::RectangleShape block_bg;
-  block_bg.setOutlineThickness(2.0f);
-  block_bg.setPosition(position);
-  block_bg.setFillColor(block_rect.getFillColor());
-
+sf::Vector2f Block::base_size() {
   sf::FloatRect merged_rect(position, STARTING_BLOCK_SIZE);
 
   for (const auto &child : childrens) {
     if (child->type == BLOCK_ATTACH_NODE) {
-      // Render everything till now.
-      block_bg.setSize({merged_rect.width, merged_rect.height});
-      window.draw(block_bg);
-      return;
+      return {merged_rect.width, merged_rect.height};
     }
 
     sf::FloatRect current_rect(child->_pos, child->rect_size());
@@ -210,8 +202,7 @@ void Block::render_base() {
   merged_rect.width += padding_left + padding_right;
   merged_rect.height += padding_up; // + padding_down;
 
-  block_bg.setSize({merged_rect.width, merged_rect.height});
-  window.draw(block_bg);
+  return {merged_rect.width, merged_rect.height};
 }
 
 sf::FloatRect Block::full_rect() {
@@ -286,6 +277,15 @@ void Block::render_full_rect() {
   debug_block_rect_full.setSize(size);
   debug_block_rect_full.setFillColor(sf::Color(255, 0, 0, 200));
   window.draw(debug_block_rect_full);
+}
+
+void Block::render_base() {
+  sf::RectangleShape block_bg;
+  block_bg.setOutlineThickness(2.0f);
+  block_bg.setPosition(position);
+  block_bg.setFillColor(block_rect.getFillColor());
+  block_bg.setSize(base_size());
+  window.draw(block_bg);
 }
 
 void Block::render_children() {

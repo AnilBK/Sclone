@@ -40,6 +40,11 @@ private:
   sf::FloatRect _previous_block_snap_rect();
   sf::FloatRect _next_block_snap_rect();
 
+  /// @brief The size of the base block. The base block is the one that can be
+  /// dragged.
+  /// @return The size of the base block.
+  sf::Vector2f base_size();
+
   /// @brief Perform actions associated with some children's on left click.
   /// @return Returns true if any of the children performed 'press' action.
   bool _process_left_click_on_children(sf::Event event);
