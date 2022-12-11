@@ -14,7 +14,7 @@ void block_program_started(Block *block_program_started) {
   // Editor blocks position is set by the tab view anyway.
   // Newly spawned blocks spawn at mouse position.
   // block_program_started.set_position({425.0f, 25.0f});
-  block_program_started->recalculate_rect();
+
   // return std::move(block_program_started);
 }
 
@@ -24,8 +24,6 @@ void block_forever(Block *block_forever) {
   block_forever->set_block_type(BLOCK_TYPES::CONTROL);
   block_forever->output_code_callback = code_sprite_forever;
   block_forever->function_identifier = "block_forever";
-
-  block_forever->recalculate_rect();
 }
 
 void block_if(Block *block_if) {
@@ -41,8 +39,6 @@ void block_if(Block *block_if) {
   block_if->add_node(BlockAttachNode(""));
   block_if->output_code_callback = code_sprite_if_else;
   block_if->function_identifier = "block_if";
-
-  block_if->recalculate_rect();
 }
 
 void block_key_pressed(Block *block_key_pressed) {
@@ -53,8 +49,6 @@ void block_key_pressed(Block *block_key_pressed) {
   block_key_pressed->add_node(BlockAttachNode(""));
   block_key_pressed->output_code_callback = code_input_key_pressed;
   block_key_pressed->function_identifier = "block_key_pressed";
-
-  block_key_pressed->recalculate_rect();
 }
 
 void block_sprite_touching(Block *block_sprite_touching) {
@@ -64,8 +58,6 @@ void block_sprite_touching(Block *block_sprite_touching) {
   block_sprite_touching->add_node(BlockAttachNode(""));
   block_sprite_touching->output_code_callback = code_sprite_touching;
   block_sprite_touching->function_identifier = "block_sprite_touching";
-
-  block_sprite_touching->recalculate_rect();
 }
 
 void block_sprite_clicked(Block *block_sprite_clicked) {
@@ -73,8 +65,6 @@ void block_sprite_clicked(Block *block_sprite_clicked) {
   block_sprite_clicked->set_block_type(BLOCK_TYPES::CONTROL);
   block_sprite_clicked->function_identifier = "block_sprite_clicked";
   block_sprite_clicked->output_code_callback = code_sprite_clicked;
-
-  block_sprite_clicked->recalculate_rect();
 }
 
 // Motion Blocks
@@ -86,7 +76,6 @@ void block_default_character_controller(Block *block_def_char_con) {
   block_def_char_con->output_code_callback = code_default_character_controller;
   block_def_char_con->function_identifier =
       "block_default_character_controller";
-  block_def_char_con->recalculate_rect();
 }
 
 void block_go_to_xy(Block *block_go_to_xy) {
@@ -99,8 +88,6 @@ void block_go_to_xy(Block *block_go_to_xy) {
   block_go_to_xy->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
   block_go_to_xy->output_code_callback = code_sprite_set_position;
   block_go_to_xy->function_identifier = "block_go_to_xy";
-
-  block_go_to_xy->recalculate_rect();
 }
 
 void block_glide_to_xy(Block *block_glide_to_xy) {
@@ -116,8 +103,6 @@ void block_glide_to_xy(Block *block_glide_to_xy) {
   block_glide_to_xy->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
   block_glide_to_xy->output_code_callback = code_sprite_glide_to_xy;
   block_glide_to_xy->function_identifier = "block_glide_to_xy";
-
-  block_glide_to_xy->recalculate_rect();
 }
 
 void block_glide_point_to_point(Block *block_glide_point_to_point) {
@@ -141,8 +126,6 @@ void block_glide_point_to_point(Block *block_glide_point_to_point) {
       code_sprite_glide_point_to_point;
   block_glide_point_to_point->function_identifier =
       "block_glide_point_to_point";
-
-  block_glide_point_to_point->recalculate_rect();
 }
 
 void block_change_x_by(Block *block_change_x_by) {
@@ -151,8 +134,6 @@ void block_change_x_by(Block *block_change_x_by) {
   block_change_x_by->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
   block_change_x_by->output_code_callback = code_sprite_change_x_by;
   block_change_x_by->function_identifier = "block_change_x_by";
-
-  block_change_x_by->recalculate_rect();
 }
 
 void block_change_y_by(Block *block_change_y_by) {
@@ -161,8 +142,6 @@ void block_change_y_by(Block *block_change_y_by) {
   block_change_y_by->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
   block_change_y_by->output_code_callback = code_sprite_change_y_by;
   block_change_y_by->function_identifier = "block_change_y_by";
-
-  block_change_y_by->recalculate_rect();
 }
 
 // Draw Primitive Blocks.
@@ -182,7 +161,7 @@ void block_say(Block *block_say) {
   block_say->function_identifier = "block_say";
 
   //  block_say.set_position({70.0f, 250.0f});
-  block_say->recalculate_rect();
+
   // return std::move(block_say);
 }
 
@@ -195,8 +174,6 @@ void block_draw_line(Block *block_draw_line) {
   block_draw_line->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES;
   block_draw_line->output_code_callback = code_sprite_draw_line;
   block_draw_line->function_identifier = "block_draw_line";
-
-  block_draw_line->recalculate_rect();
 }
 
 void block_draw_circle(Block *block_draw_circle) {
@@ -208,8 +185,6 @@ void block_draw_circle(Block *block_draw_circle) {
   block_draw_circle->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES;
   block_draw_circle->output_code_callback = code_sprite_draw_circle;
   block_draw_circle->function_identifier = "block_draw_circle";
-
-  block_draw_circle->recalculate_rect();
 }
 
 void block_draw_rectangle(Block *block_draw_rectangle) {
@@ -222,8 +197,6 @@ void block_draw_rectangle(Block *block_draw_rectangle) {
       BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES;
   block_draw_rectangle->output_code_callback = code_sprite_draw_rectangle;
   block_draw_rectangle->function_identifier = "block_draw_rectangle";
-
-  block_draw_rectangle->recalculate_rect();
 }
 
 void block_draw_triangle(Block *block_draw_triangle) {
@@ -239,8 +212,6 @@ void block_draw_triangle(Block *block_draw_triangle) {
       BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES;
   block_draw_triangle->output_code_callback = code_sprite_draw_triangle;
   block_draw_triangle->function_identifier = "block_draw_triangle";
-
-  block_draw_triangle->recalculate_rect();
 }
 
 // Create Variables Blocks.
@@ -253,8 +224,6 @@ void block_create_int(Block *block_create_int) {
   block_create_int->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
   block_create_int->output_code_callback = code_create_int;
   block_create_int->function_identifier = "block_create_int";
-
-  block_create_int->recalculate_rect();
 }
 
 void block_set_int(Block *block_set_int) {
@@ -266,8 +235,6 @@ void block_set_int(Block *block_set_int) {
   block_set_int->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
   block_set_int->output_code_callback = code_set_int;
   block_set_int->function_identifier = "block_set_int";
-
-  block_set_int->recalculate_rect();
 }
 
 void block_create_float(Block *block_create_float) {
@@ -279,8 +246,6 @@ void block_create_float(Block *block_create_float) {
   block_create_float->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
   block_create_float->output_code_callback = code_create_float;
   block_create_float->function_identifier = "block_create_float";
-
-  block_create_float->recalculate_rect();
 }
 
 void block_set_float(Block *block_set_float) {
@@ -292,8 +257,6 @@ void block_set_float(Block *block_set_float) {
   block_set_float->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
   block_set_float->output_code_callback = code_set_float;
   block_set_float->function_identifier = "block_set_float";
-
-  block_set_float->recalculate_rect();
 }
 
 void block_create_string(Block *block_create_string) {
@@ -305,8 +268,6 @@ void block_create_string(Block *block_create_string) {
   block_create_string->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
   block_create_string->output_code_callback = code_create_string;
   block_create_string->function_identifier = "block_create_string";
-
-  block_create_string->recalculate_rect();
 }
 
 void block_set_string(Block *block_set_string) {
@@ -318,8 +279,6 @@ void block_set_string(Block *block_set_string) {
   block_set_string->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
   block_set_string->output_code_callback = code_set_string;
   block_set_string->function_identifier = "block_set_string";
-
-  block_set_string->recalculate_rect();
 }
 
 void block_create_vector2f(Block *block_create_vector2f) {
@@ -337,8 +296,6 @@ void block_create_vector2f(Block *block_create_vector2f) {
   block_create_vector2f->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
   block_create_vector2f->output_code_callback = code_create_vector2f;
   block_create_vector2f->function_identifier = "block_create_vector2f";
-
-  block_create_vector2f->recalculate_rect();
 }
 
 void block_set_vector2f(Block *block_set_vector2f) {
@@ -355,8 +312,6 @@ void block_set_vector2f(Block *block_set_vector2f) {
   block_set_vector2f->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
   block_set_vector2f->output_code_callback = code_set_vector2f;
   block_set_vector2f->function_identifier = "block_set_vector2f";
-
-  block_set_vector2f->recalculate_rect();
 }
 
 } // namespace BUILT_IN_BLOCKS

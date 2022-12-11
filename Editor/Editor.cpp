@@ -522,7 +522,6 @@ void Editor::_render_tab() {
     }
 
     block.set_position(block_in_tabs_draw_position);
-    // block.recalculate_rect();
 
     // Scrolling above the tab.
     if (block_in_tabs_draw_position.y >=

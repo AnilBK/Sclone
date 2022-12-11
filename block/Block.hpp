@@ -108,8 +108,6 @@ public:
   /// @return The enclosing rect.
   sf::FloatRect full_rect();
 
-  // TODO: Maybe use some dirty flag if we need to recalculate.
-  void recalculate_rect();
   void update_children_sizes();
 
   void handle_inputs(sf::Event event);

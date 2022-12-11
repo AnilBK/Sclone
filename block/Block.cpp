@@ -150,41 +150,6 @@ void Block::process_inside_snap_hints(bool attach_block_requested,
   }
 }
 
-void Block::recalculate_rect() {
-  sf::Vector2f pos = position;
-  sf::FloatRect merged_rect(pos, STARTING_BLOCK_SIZE);
-
-  for (const auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      // Reset it's x to create a block on the next line.
-      pos.x = position.x + 15.0f;
-      pos.y += merged_rect.height; // STARTING_BLOCK_SIZE.y;
-      continue;
-    }
-
-    sf::FloatRect current_rect(pos, child->rect_size());
-    merged_rect = merge_rects(merged_rect, current_rect);
-
-    pos.x += child->rect_size().x;
-    pos.x += spacing;
-  }
-
-  // Margins
-  // Account for the block position decreased during padding.
-  merged_rect.width += padding_left + padding_right;
-  merged_rect.height += padding_up + padding_down;
-
-  block_rect.setSize({merged_rect.width, merged_rect.height});
-
-  // The next block snap rect is at the bottomm of the block which effectively
-  // gives the height of the current block.
-  auto next_block_snap_rect = _next_block_snap_rect();
-  auto full_size_x = next_block_snap_rect.width;
-  auto full_size_y = next_block_snap_rect.top - block_rect.getPosition().y;
-
-  block_full_size = {full_size_x, full_size_y};
-}
-
 sf::Vector2f Block::base_size() {
   sf::FloatRect merged_rect(position, STARTING_BLOCK_SIZE);
 
@@ -270,6 +235,12 @@ void Block::resort_children() {
       pos.y += child->rect_size().y;
     }
   }
+
+  // Calculate the values once a frame and cache it.
+  block_rect.setSize(base_size());
+
+  auto rect = full_rect();
+  block_full_size = {rect.width, rect.height};
 }
 
 void Block::render_full_rect() {
@@ -347,14 +318,8 @@ void Block::handle_inputs(sf::Event event) {
     set_position((sf::Vector2f)mouse_position);
   }
 
-  bool rect_dirty = false;
-  bool any_line_inputs_pressed = false;
-
   for (auto &child : childrens) {
     child->handle_inputs(event);
-    if (child->pressed) {
-      any_line_inputs_pressed = true;
-    }
   }
 
   for (auto &child : childrens) {
@@ -373,14 +338,6 @@ void Block::handle_inputs(sf::Event event) {
         }
       }
     }
-  }
-
-  // BUG: Typing on a LineInput Node should trigger recalculation of rect.
-  // Workaround: We always _recalculate rect like below
-  // Also, if LineInput Node isn't selected then there's no change i.e it's
-  // rect can change. any_line_inputs_pressed -> workaround variable.
-  if (rect_dirty || any_line_inputs_pressed) {
-    recalculate_rect();
   }
 
   if (event.type == sf::Event::MouseButtonPressed) {
