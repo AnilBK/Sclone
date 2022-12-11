@@ -238,12 +238,16 @@ sf::FloatRect Block::full_rect() {
 }
 
 void Block::update_children_sizes() {
-  // TODO?? Do other kinds of nodes require _update() ??
-  //  Block_Attach_Node's require their internal sizes to be updated.
-  auto nodes = get_block_attach_nodes();
+  // TODO: Do other kinds of nodes require _update() ??
 
-  for (auto &node : nodes) {
-    node->_update_internal_sizes();
+  if (can_block_attach_inside) {
+    // As of now, only BlockAttachNode's require their internal sizes to be
+    // updated.
+    auto nodes = get_block_attach_nodes();
+
+    for (auto &node : nodes) {
+      node->_update_internal_sizes();
+    }
   }
 }
 
