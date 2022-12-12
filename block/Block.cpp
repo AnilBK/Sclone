@@ -254,14 +254,7 @@ void Block::render_full_rect() {
   window.draw(debug_block_rect_full);
 }
 
-void Block::render_base() {
-  sf::RectangleShape block_bg;
-  block_bg.setOutlineThickness(2.0f);
-  block_bg.setPosition(position);
-  block_bg.setFillColor(block_rect.getFillColor());
-  block_bg.setSize(base_size());
-  window.draw(block_bg);
-}
+void Block::render_base() { window.draw(block_rect); }
 
 void Block::render_children() {
   for (const auto &child : childrens) {
