@@ -190,7 +190,6 @@ sf::FloatRect Block::full_rect() {
 
   for (auto &node : nodes) {
     sf::FloatRect l_shape_rect = node->rect_size_with_outlines();
-    //  +  sf::Vector2f(0.0f, 45.0f));
 
     if (auto attached_block = node->attached_block; attached_block != nullptr) {
       l_shape_rect = merge_rects(l_shape_rect, attached_block->full_rect());

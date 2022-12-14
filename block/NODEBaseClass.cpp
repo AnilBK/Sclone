@@ -120,6 +120,11 @@ void BlockAttachNode::_update_internal_sizes() {
   auto attached_rect = attached_block->full_rect();
   sf::Vector2f rec_size{attached_rect.width, attached_rect.height};
 
+  // Add additional 45 units of space inside the l-shape, so we see some space
+  // there.
+  // It is to hint other blocks that they can be snapped to it.
+  rec_size.y += 45.0f;
+
   set_enclosed_rect_size(rec_size);
 }
 
