@@ -163,8 +163,8 @@ public:
   BlockAttachNode(const std::string &p_text_str,
                   const std::string &p_bind_str = "",
                   bool p_draw_bottom_part = true)
-      : NODEBaseClass(p_text_str, p_bind_str),
-        draw_bottom_part(p_draw_bottom_part), attached_block(nullptr) {
+      : NODEBaseClass(p_text_str, p_bind_str), attached_block(nullptr),
+        draw_bottom_part(p_draw_bottom_part) {
     type = NODE_TYPE::BLOCK_ATTACH_NODE;
   }
 
