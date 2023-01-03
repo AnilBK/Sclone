@@ -164,7 +164,6 @@ bool BlockAttachNode::can_snap_block_inside() {
 sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
   auto l_shape_pos = _pos;
   sf::Vector2f l_shape_size{15, rect_size().y};
-  l_shape_size += sf::Vector2f(0.0f, 45.0f); // Just an extra space.
 
   sf::FloatRect l_shape_rect(l_shape_pos, l_shape_size);
 

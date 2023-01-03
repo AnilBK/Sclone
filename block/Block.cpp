@@ -64,22 +64,10 @@ sf::FloatRect Block::_previous_block_snap_rect() {
 }
 
 sf::FloatRect Block::_next_block_snap_rect() {
-  sf::Vector2f pos{0.0f, STARTING_BLOCK_SIZE.y};
-
-  for (const auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      // Reset it's x to create a block on the next line.
-      pos.y += child->rect_size().y + 45; // STARTING_BLOCK_SIZE.y;
-    }
-  }
-
-  // Margins
-  // Account for the block position decreased during padding.
-  pos.y += padding_up + padding_down;
-
   auto snap_rect_size = sf::Vector2f(block_rect.getSize().x, 10);
   auto snap_rect_position =
-      block_rect.getPosition() + sf::Vector2f(0.0f, pos.y);
+      block_rect.getPosition() +
+      sf::Vector2f(0.0f, block_without_attached_block_size.height);
   return {snap_rect_position, snap_rect_size};
 }
 
@@ -191,6 +179,8 @@ sf::FloatRect Block::full_rect() {
       rect = merge_rects(rect, l_shape_rect);
     }
   }
+
+  block_without_attached_block_size = rect;
 
   // Attached Block's rect.
   if (next_block != nullptr) {

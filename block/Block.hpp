@@ -57,6 +57,10 @@ private:
   std::vector<BlockAttachNode *>
   get_block_attach_nodes(bool with_nodes_attached = true);
 
+  /// @brief We use it to get the size of the block without the attached block.
+  /// That size is used to calculate the position of the block attached to it.
+  sf::FloatRect block_without_attached_block_size;
+
 public:
   Block();
   ~Block();
