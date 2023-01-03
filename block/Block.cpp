@@ -174,28 +174,27 @@ sf::FloatRect Block::full_rect() {
   // Top most block's rect.
   sf::FloatRect rect = block_rect.getGlobalBounds();
 
+  if (can_block_attach_inside) {
+    // These are 'BlockAttachNodes'.
+    // They occupy some space too.
+    // Blocks without any blocks attached to them also have some rect_size().
+    auto nodes = get_block_attach_nodes(false);
+
+    for (auto &node : nodes) {
+      sf::FloatRect l_shape_rect = node->rect_size_with_outlines();
+
+      if (auto attached_block = node->attached_block;
+          attached_block != nullptr) {
+        l_shape_rect = merge_rects(l_shape_rect, attached_block->full_rect());
+      }
+
+      rect = merge_rects(rect, l_shape_rect);
+    }
+  }
+
   // Attached Block's rect.
   if (next_block != nullptr) {
     rect = merge_rects(rect, next_block->full_rect());
-  }
-
-  if (!can_block_attach_inside) {
-    return rect;
-  }
-
-  // These are 'BlockAttachNodes'.
-  // They occupy some space too.
-  // Blocks without any blocks attached to them also have some rect_size().
-  auto nodes = get_block_attach_nodes(false);
-
-  for (auto &node : nodes) {
-    sf::FloatRect l_shape_rect = node->rect_size_with_outlines();
-
-    if (auto attached_block = node->attached_block; attached_block != nullptr) {
-      l_shape_rect = merge_rects(l_shape_rect, attached_block->full_rect());
-    }
-
-    rect = merge_rects(rect, l_shape_rect);
   }
 
   return rect;
