@@ -74,8 +74,8 @@ void Editor::_add_movement_script() {
 
 sf::Texture *Editor::load_texture(const std::string &texture_file) {
   std::shared_ptr<sf::Texture> texture(new sf::Texture());
-  ERR_FAIL_COND_CRASH(!texture.get()->loadFromFile(texture_file),
-                      "Error while loading texture.");
+  ERR_CRASH_IF(!texture.get()->loadFromFile(texture_file),
+               "Error while loading texture.");
   texture.get()->setSmooth(true);
   textures.emplace_back(texture);
 

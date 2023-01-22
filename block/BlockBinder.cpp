@@ -5,9 +5,9 @@ void BlockBinder::bind_function(
     const block_generator_fn_ptr fn_that_returns_the_block) {
   for (const auto &b_block : bound_blocks) {
     auto b_bind_string = b_block.first;
-    ERR_FAIL_COND_CRASH(b_bind_string == bind_string,
-                        "[Debug] String \"" + bind_string +
-                            "\" Previously bound to some function.");
+    ERR_CRASH_IF(b_bind_string == bind_string,
+                 "[Debug] String \"" + bind_string +
+                     "\" Previously bound to some function.");
   }
 
   bound_blocks.push_back({bind_string, fn_that_returns_the_block});
@@ -23,7 +23,7 @@ BlockBinder::get_bound_block_gen_fn(const std::string &query) {
   }
 
   auto unbound_msg_str = "[Debug] Function \"" + query + "\" Possibly Unbound.";
-  ERR_FAIL_COND_CRASH(true, unbound_msg_str);
+  ERR_CRASH_IF(true, unbound_msg_str);
 
   return {};
 }

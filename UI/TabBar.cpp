@@ -30,9 +30,9 @@ void TabBar::add_tab(std::string tab_name) {
 }
 
 void TabBar::_select_tab(int new_tab_id) {
-  ERR_FAIL_COND_CRASH(new_tab_id < 0 || new_tab_id > tab_bar_buttons.size(),
-                      "Invalid tab selected. Provided index: " +
-                          std::to_string(new_tab_id));
+  ERR_CRASH_IF(new_tab_id < 0 || new_tab_id > tab_bar_buttons.size(),
+               "Invalid tab selected. Provided index: " +
+                   std::to_string(new_tab_id));
   // Unselect all.
   // Buttons can have individual colors.
   // But let's not give them.
@@ -97,7 +97,7 @@ int TabBar::get_scroll_value() {
   }
 
   if (currently_selected_tab > tab_bar_scroll_value.size()) {
-    ERR_FAIL_COND_CRASH(true, "Invalid Selected tab index.");
+    ERR_CRASH_IF(true, "Invalid Selected tab index.");
   }
 
   return tab_bar_scroll_value.at(currently_selected_tab);

@@ -14,7 +14,7 @@ void Block::set_block_type(BLOCK_TYPES p_type) {
 }
 
 void Block::attach_block_next(Block *p_next_block) {
-  ERR_FAIL_COND_CRASH(p_next_block == this, "Children is same as parent.");
+  ERR_CRASH_IF(p_next_block == this, "Children is same as parent.");
   next_block = p_next_block;
   // Set same position again, so it's child's position can be updated too.
   set_position(position);
@@ -387,7 +387,7 @@ Block::get_bound_value(const std::string &query) const {
   }
 
   auto unbound_msg_str = "[Debug] String \"" + query + "\" Possibly Unbound.";
-  ERR_FAIL_COND_CRASH(true, unbound_msg_str);
+  ERR_CRASH_IF(true, unbound_msg_str);
 
   return {};
 }

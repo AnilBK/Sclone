@@ -32,8 +32,8 @@ int main() {
   init_global_font_and_label();
 
   sf::Font alaska;
-  ERR_FAIL_COND_CRASH(!alaska.loadFromFile("alaska.ttf"),
-                      "Error Loading Font \"alaska\".");
+  ERR_CRASH_IF(!alaska.loadFromFile("alaska.ttf"),
+               "Error Loading Font \"alaska\".");
 
   height = sf::VideoMode::getDesktopMode().height;
   width = sf::VideoMode::getDesktopMode().width;
