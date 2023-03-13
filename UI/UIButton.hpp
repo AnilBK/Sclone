@@ -33,7 +33,9 @@ public:
 
   void RenderDebug() override;
   void Render() override;
+  void RenderTo(sf::RenderWindow &target_window);
 
   void handle_inputs(sf::Event event) override;
+  void handle_inputs_to(sf::Event event, sf::RenderWindow &target_window);
 };
 #endif // UI_BUTTON

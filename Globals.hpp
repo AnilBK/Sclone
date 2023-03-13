@@ -17,8 +17,10 @@
 #define RETURN_IF_STRING_HAS_SPACE(m_string, m_message)                        \
   for (const auto &ch : m_string) {                                            \
     if (ch == ' ') {                                                           \
-      std::cout << "[Error] \"" << __FILE__ << "\" :: " << __LINE__ << " "     \
-                << m_message << "\n";                                          \
+      std::string msg("[Error] \"");                                           \
+      msg += std::string(__FILE__) + "\" :: " + std::to_string(__LINE__) +     \
+             "\n" + m_message;                                                 \
+      ALERT(msg);                                                              \
       return;                                                                  \
     }                                                                          \
   }
@@ -50,10 +52,33 @@ extern sf::Text draw_text_label;
 
 extern sf::RenderWindow window;
 
-[[nodiscard]] static inline sf::Vector2f get_mouse_position() {
-  sf::Vector2i m_pos = sf::Mouse::getPosition(window);
-  auto mouse_world_pos = window.mapPixelToCoords(m_pos);
+// ALERT Window Related Members :
+// This window is accessed globally by 'GlobalAlertWindow' Class, so declare
+// here.
+extern sf::RenderWindow alert_window;
+
+// We could make AlertWindow an extern, but we have weird missing defination
+// errors for UIBaseClass then. So, we use this hack of using a bool to indicate
+// a new popup is required.
+
+// This message will be checked and responded to, in main loop.
+extern bool new_alert_requested;
+extern std::string alert_message;
+
+static void ALERT(const std::string &message) {
+  new_alert_requested = true;
+  alert_message = message;
+}
+
+[[nodiscard]] static inline sf::Vector2f
+get_mouse_position(const sf::RenderWindow &p_window) {
+  sf::Vector2i m_pos = sf::Mouse::getPosition(p_window);
+  auto mouse_world_pos = p_window.mapPixelToCoords(m_pos);
   return mouse_world_pos;
+}
+
+[[nodiscard]] static inline sf::Vector2f get_mouse_position() {
+  return get_mouse_position(window);
 }
 
 template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {

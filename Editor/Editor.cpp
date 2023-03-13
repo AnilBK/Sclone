@@ -107,7 +107,7 @@ void Editor::_update_sprite_texure() {
   }
 
   RETURN_IF_STRING_HAS_SPACE(sprite_texture_name.get_text(),
-                             "No space allowed for sprite texture.")
+                             "Texture file name should not contain space.")
 
   selected_sprite->texture = sprite_texture_name.get_text();
   selected_sprite->sprite.setTexture(*load_texture(selected_sprite->texture));
@@ -131,7 +131,7 @@ void Editor::_update_sprite_name() {
   }
 
   RETURN_IF_STRING_HAS_SPACE(sprite_name.get_text(),
-                             "No space allowed for sprite name.")
+                             "Sprite name shouldn't contain spaces.")
 
   selected_sprite->name = sprite_name.get_text();
   if (selected_sprite->ui_btn_ref != nullptr) {
@@ -177,7 +177,7 @@ void Editor::_highlight_selected_btn_in_list(const UIButton *btn_to_highlight) {
 }
 
 void Editor::add_new_sprite(const std::string &p_name) {
-  RETURN_IF_STRING_HAS_SPACE(p_name, "No space allowed for sprite name.")
+  RETURN_IF_STRING_HAS_SPACE(p_name, "Sprite name shouldn't contain space.")
 
   for (const auto &sprite : user_added_sprites) {
     if (sprite.name == p_name) {

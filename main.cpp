@@ -1,4 +1,5 @@
 #include "Editor/Editor.hpp"
+#include "Editor/Windows/GlobalAlertWindow.hpp"
 #include "Globals.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -14,7 +15,18 @@ sf::Vector2i mouse_position;
 // Externs from globals.hpp
 sf::Font font;
 sf::Text draw_text_label;
+
+/// @brief The main editor window where everything is drawn.
 sf::RenderWindow window;
+
+/// @brief Seperate window for alerts.
+sf::RenderWindow alert_window;
+
+/// @brief This message indicated that new AlertWindow popup should be spawned.
+bool new_alert_requested = false;
+
+/// @brief The required message for the popup window.
+std::string alert_message;
 
 #ifdef SHOW_FPS
 float get_fps() {
@@ -39,6 +51,7 @@ int main() {
   width = sf::VideoMode::getDesktopMode().width;
 
   window.create(sf::VideoMode(width, height), "SClone V2");
+  window.requestFocus();
 
 #ifdef SHOW_FPS
   sf::Text show_fps_btn;
@@ -58,6 +71,7 @@ int main() {
 
   const auto window_clear_color = sf::Color(153, 195, 180);
 
+  GlobalAlertWindow MainAlert;
   Editor editor;
 
   while (window.isOpen()) {
@@ -70,7 +84,11 @@ int main() {
         window.close();
       }
 
-      editor.handle_inputs(event);
+      if (!MainAlert.is_window_active()) {
+        // Disable inputs for the editor window, if there's an alert message at
+        // the top.
+        editor.handle_inputs(event);
+      }
     }
 
     mouse_position = static_cast<sf::Vector2i>(get_mouse_position());
@@ -92,6 +110,15 @@ int main() {
 #endif
 
     window.display();
+
+    if (new_alert_requested) {
+      MainAlert.PopupWithMessage(alert_message);
+      new_alert_requested = false;
+    }
+
+    // Since Alert Windows are drawn at last, that means we don't even need a
+    // window. We can just draw a rect with label as well.
+    MainAlert.MainLoop();
   }
 
   std::cout << "\nProgram Terminated.\n\n";

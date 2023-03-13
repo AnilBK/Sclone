@@ -59,6 +59,8 @@
 		<Unit filename="Editor/ScriptEditor.hpp" />
 		<Unit filename="Editor/TransformGizmo2D.cpp" />
 		<Unit filename="Editor/TransformGizmo2D.hpp" />
+		<Unit filename="Editor/Windows/GlobalAlertWindow.cpp" />
+		<Unit filename="Editor/Windows/GlobalAlertWindow.hpp" />
 		<Unit filename="Globals.hpp" />
 		<Unit filename="UI/Container.cpp" />
 		<Unit filename="UI/Container.hpp" />

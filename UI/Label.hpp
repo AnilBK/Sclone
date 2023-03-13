@@ -21,6 +21,8 @@ public:
   void setText(std::string txt);
   std::string getText();
 
+  sf::Text &get_label() { return label; }
+
   sf::Vector2f getPosition() override;
   void setPosition(sf::Vector2f pos) override;
   sf::Vector2f rect_size() override;
