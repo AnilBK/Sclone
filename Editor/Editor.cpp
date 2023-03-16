@@ -181,7 +181,7 @@ void Editor::add_new_sprite(const std::string &p_name) {
 
   for (const auto &sprite : user_added_sprites) {
     if (sprite.name == p_name) {
-      std::cout << "[Error] Sprite with given name Already Exits.\n";
+      SHOW_ERROR_ALERT("[Error] Sprite with given name Already Exits.\n");
       return;
     }
   }

@@ -13,6 +13,11 @@
     exit(1);                                                                   \
   }
 
+#define SHOW_ERROR_ALERT(m_message)                                            \
+  std::string msg = std::string(__FILE__) +                                    \
+                    "\" :: " + std::to_string(__LINE__) + "\n" + m_message;    \
+  ALERT(msg);
+
 // Break from a function if the string contains a space.
 #define RETURN_IF_STRING_HAS_SPACE(m_string, m_message)                        \
   for (const auto &ch : m_string) {                                            \
