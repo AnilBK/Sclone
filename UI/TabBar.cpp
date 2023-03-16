@@ -55,7 +55,8 @@ void TabBar::_select_tab(int new_tab_id) {
 }
 
 void TabBar::handle_inputs(sf::Event event) {
-  if (render_status != TabBarStatus::SHOW_ONLY_TITLE) {
+  if (render_status != TabBarStatus::SHOW_ONLY_TITLE &&
+      isMouseOverSprite(tab_bg)) {
     if (event.type == sf::Event::MouseWheelMoved) {
       add_scroll_value_to_current_tab(event.mouseWheel.delta);
     }
