@@ -23,9 +23,7 @@ void TransformGizmo2D::_draw_gizmo_axes() {
     auto y_pos = target_sprite->getPosition().y;
     float width = window.getSize().x;
 
-    sf::Vertex x_vertices[2] = {sf::Vertex({0, y_pos}, x_line_color),
-                                sf::Vertex({width, y_pos}, x_line_color)};
-    window.draw(x_vertices, 2, sf::Lines);
+    draw_line({0, y_pos}, {width, y_pos}, x_line_color);
 
     target_sprite->setPosition(mouse_position.x - 100.0f, y_pos);
   } break;
@@ -36,9 +34,7 @@ void TransformGizmo2D::_draw_gizmo_axes() {
     auto x_pos = target_sprite->getPosition().x;
     float height = window.getSize().y;
 
-    sf::Vertex y_vertices[2] = {sf::Vertex({x_pos, 0}, y_line_color),
-                                sf::Vertex({x_pos, height}, y_line_color)};
-    window.draw(y_vertices, 2, sf::Lines);
+    draw_line({x_pos, 0}, {x_pos, height}, y_line_color);
 
     target_sprite->setPosition(x_pos, mouse_position.y + 100.0f);
   } break;
@@ -64,16 +60,13 @@ void TransformGizmo2D::_draw_gizmo() {
   //////////////////////////////////////////////////////////////////////
   auto x_line_end = line_start + sf::Vector2f(100.0f, 0.0f);
   const sf::Color x_line_color = sf::Color::Red;
-  sf::Vertex x_vertices[2] = {sf::Vertex(line_start, x_line_color),
-                              sf::Vertex(x_line_end, x_line_color)};
-  window.draw(x_vertices, 2, sf::Lines);
+  draw_line(line_start, x_line_end, x_line_color);
 
   const sf::Vector2f gizmo_pick_size = sf::Vector2f(15.0f, 15.0f);
 
   sf::RectangleShape x;
   x.setSize(gizmo_pick_size);
-  x.setPosition(x_vertices[1].position -
-                sf::Vector2f(0.0f, x.getSize().y * 0.5f));
+  x.setPosition(x_line_end - sf::Vector2f(0.0f, x.getSize().y * 0.5f));
   x.setFillColor(x_line_color);
   if (isMouseOverSprite(x) || current_gizmo_state == GIZMO_SELECT_STATE::X) {
     x.setOutlineThickness(2.0f);
@@ -86,13 +79,12 @@ void TransformGizmo2D::_draw_gizmo() {
   //////////////////////////////////////////////////////////////////////
   auto y_line_end = line_start - sf::Vector2f(0.0f, 100.0f);
   const sf::Color y_line_color = sf::Color::Green;
-  sf::Vertex y_vertices[2] = {sf::Vertex(line_start, y_line_color),
-                              sf::Vertex(y_line_end, y_line_color)};
-  window.draw(y_vertices, 2, sf::Lines);
+
+  draw_line(line_start, y_line_end, y_line_color);
 
   sf::RectangleShape y;
   y.setSize(gizmo_pick_size);
-  y.setPosition(y_vertices[1].position - y.getSize() * 0.5f);
+  y.setPosition(y_line_end - y.getSize() * 0.5f);
   y.setFillColor(y_line_color);
   if (isMouseOverSprite(y) || current_gizmo_state == GIZMO_SELECT_STATE::Y) {
     y.setOutlineThickness(2.0f);
@@ -106,7 +98,7 @@ void TransformGizmo2D::_draw_gizmo() {
   // Dragging it will drag the sprite to mouse position.
   sf::RectangleShape c;
   c.setSize(gizmo_pick_size);
-  c.setPosition(y_vertices[0].position - gizmo_pick_size * 0.5f);
+  c.setPosition(line_start - gizmo_pick_size * 0.5f);
   c.setFillColor(sf::Color::White);
   if (isMouseOverSprite(c) ||
       current_gizmo_state == GIZMO_SELECT_STATE::CENTER) {

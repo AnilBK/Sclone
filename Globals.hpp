@@ -192,4 +192,10 @@ static void remove_last_occurence(std::string &s, char ch) {
   }
 }
 
+static inline void draw_line(sf::Vector2f from, sf::Vector2f to,
+                             sf::Color color) {
+  sf::Vertex vertices[2] = {sf::Vertex(from, color), sf::Vertex(to, color)};
+  window.draw(vertices, 2, sf::Lines);
+}
+
 #endif
