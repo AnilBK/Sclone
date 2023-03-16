@@ -133,12 +133,7 @@ void Editor::_update_sprite_name() {
   RETURN_IF_STRING_HAS_SPACE(sprite_name.get_text(),
                              "Sprite name shouldn't contain spaces.")
 
-  selected_sprite->name = sprite_name.get_text();
-  if (selected_sprite->ui_btn_ref != nullptr) {
-    // Update the label of the button, which points to the currently
-    // selected sprite.
-    selected_sprite->ui_btn_ref->text.setText(selected_sprite->name);
-  }
+  selected_sprite->update_name(sprite_name.get_text());
 
   sprite_name.line_input_active = false;
   sprite_name.emit_signal("resized");

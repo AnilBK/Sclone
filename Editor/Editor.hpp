@@ -30,6 +30,15 @@ public:
   // Points to the button that is related with this sprite.
   UIButton *ui_btn_ref = nullptr;
   sf::Sprite sprite;
+
+  void update_name(const std::string &p_name) {
+    name = p_name;
+    if (ui_btn_ref != nullptr) {
+      // Update the label of the button, which points to the currently
+      // selected sprite.
+      ui_btn_ref->text.setText(name);
+    }
+  }
 };
 
 class Editor {
