@@ -110,7 +110,7 @@ private:
   // Textures are loaded using shared_ptrs, so that they are alive throughout
   // the entire program and freed when the program terminates. The pointer
   // to the texture is same throughout the program execution.
-  sf::Texture *load_texture(const std::string &texture_file);
+  std::optional<sf::Texture *> load_texture(const std::string &texture_file);
 
   std::string _position_to_string(sf::Vector2f pos);
   void _create_new_sprite();

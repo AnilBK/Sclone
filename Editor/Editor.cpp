@@ -72,10 +72,14 @@ void Editor::_add_movement_script() {
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-sf::Texture *Editor::load_texture(const std::string &texture_file) {
+std::optional<sf::Texture *>
+Editor::load_texture(const std::string &texture_file) {
   std::shared_ptr<sf::Texture> texture(new sf::Texture());
-  ERR_CRASH_IF(!texture.get()->loadFromFile(texture_file),
-               "Error while loading texture.");
+  if (!texture.get()->loadFromFile(texture_file)) {
+    SHOW_ERROR_ALERT("Error while loading texture.");
+    return std::nullopt;
+  }
+
   texture.get()->setSmooth(true);
   textures.emplace_back(texture);
 
@@ -109,8 +113,13 @@ void Editor::_update_sprite_texure() {
   RETURN_IF_STRING_HAS_SPACE(sprite_texture_name.get_text(),
                              "Texture file name should not contain space.")
 
+  auto texture_ref = load_texture(selected_sprite->texture);
+  if (!texture_ref) {
+    return;
+  }
+
   selected_sprite->texture = sprite_texture_name.get_text();
-  selected_sprite->sprite.setTexture(*load_texture(selected_sprite->texture));
+  selected_sprite->sprite.setTexture(*texture_ref.value());
 
   auto texture_size =
       (sf::Vector2f)selected_sprite->sprite.getTexture()->getSize();
@@ -211,8 +220,14 @@ void Editor::add_new_sprite(const std::string &p_name) {
   e_spr.texture = (new_working_id % 2 == 0) ? "cat.png" : "fish.png";
   e_spr.visibility = true;
 
+  auto texture_ref = load_texture(e_spr.texture);
+  if (!texture_ref) {
+    // Should never happen, because we always have "cat" & "fish" textures.
+    return;
+  }
+
   sf::Sprite spr;
-  spr.setTexture(*load_texture(e_spr.texture));
+  spr.setTexture(*texture_ref.value());
   sf::FloatRect textureSize = spr.getGlobalBounds();
   spr.setOrigin(textureSize.width / 2.0f, textureSize.height / 2.0f);
   spr.setPosition(e_spr.position);
