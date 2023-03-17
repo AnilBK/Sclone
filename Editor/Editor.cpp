@@ -283,7 +283,38 @@ void Editor::toggle_tab_bar_folding() {
   }
 }
 
+void Editor::_handle_2D_world_inputs(sf::Event event) {
+  if (isMouseOverRect(world)) {
+    if (event.type == sf::Event::MouseWheelMoved) {
+      view.zoom(1.0f - event.mouseWheel.delta / 10.0f);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+      view.move(5.f, 0.f);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+      view.move(-5.f, 0.f);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+      view.move(0.f, 5.f);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+      view.move(0.f, -5.f);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
+      view.zoom(0.99f);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
+      view.zoom(1.01f);
+    }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
+      auto delta = old_mouse_pos - new_mouse_pos;
+      view.move(delta);
+    }
+  }
+}
+
 void Editor::handle_inputs(sf::Event event) {
+  old_mouse_pos = new_mouse_pos;
+  new_mouse_pos = get_mouse_position();
+
+  _handle_2D_world_inputs(event);
 
   user_added_sprites_list_parent.handle_inputs(event);
   editor_inspector.handle_inputs(event);
@@ -365,6 +396,7 @@ void Editor::_render_bounding_box_over_selected_sprite() {
 void Editor::_render_sprites() {
   /*
   for (const auto &sprite : user_added_sprites) {
+    //TODO ?? if(!sprite.visible){continue;}
     window.draw(sprite.sprite);
   }
   */
@@ -399,14 +431,18 @@ void Editor::_process_2D_gizmo() {
 }
 
 void Editor::Render() {
-  // TODO???
-  // if (sprite_visible) {
-  //    ......
-  // }
+  // Setup & Draw 2D World.
+  window.draw(world2d_border);
+  window.setView(view);
+  window.draw(grid_x_axis_line);
+  window.draw(grid_y_axis_line);
   _render_bounding_box_over_selected_sprite();
   _render_sprites();
-  _render_ui();
   _process_2D_gizmo();
+  window.setView(window.getDefaultView());
+
+  // Render UI on top of all.
+  _render_ui();
   _render_tab();
   script_editor.Render();
 }

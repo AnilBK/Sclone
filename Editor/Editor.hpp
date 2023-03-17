@@ -33,6 +33,18 @@ public:
 class Editor {
 
 private:
+  // 2D World.
+  /// @brief 2D World, where the sprites are seen.
+  ///  This contains a freely draggable view.
+  ///  https://www.sfml-dev.org/tutorials/2.5/graphics-view.php
+  sf::View view;
+  sf::FloatRect world;
+
+  /// @brief The lines that show X-axis and Y-axis inside the 2D world.
+  sf::RectangleShape grid_x_axis_line, grid_y_axis_line, world2d_border;
+  /// @brief Mouse tracking for world panning.
+  sf::Vector2f old_mouse_pos, new_mouse_pos;
+
   // Inspector.
   UILineInput sprite_name = UILineInput("Cat");
   // UIButton sprite_visibility = UIButton("Visible"); Not Used At the moment.
@@ -122,6 +134,7 @@ private:
   void _add_movement_script();
 
   void _spawn_block_at_mouse_pos(const Block &block);
+  void _handle_2D_world_inputs(sf::Event event);
 
   void _build_and_run();
 
@@ -239,6 +252,30 @@ public:
     // gizmo_2D.setTargetSprite(&sprites.at(0));
 
     script_editor.script = selected_script_ptr();
+
+    // Set up the 2D world.
+    world = sf::FloatRect(sf::Vector2f(0, 305), sf::Vector2f(700, 455));
+    view = sf::View({0, 0, 1200, 800});
+
+    view.setViewport(
+        {world.left / window.getSize().x, world.top / window.getSize().y,
+         world.width / window.getSize().x, world.height / window.getSize().y});
+
+    view.move({-60.0, -60.0});
+
+    grid_x_axis_line.setPosition(sf::Vector2f());
+    grid_x_axis_line.setSize({static_cast<float>(window.getSize().x), 5});
+    grid_x_axis_line.setFillColor(sf::Color::Red);
+
+    grid_y_axis_line.setPosition(sf::Vector2f());
+    grid_y_axis_line.setSize({5, static_cast<float>(window.getSize().y)});
+    grid_y_axis_line.setFillColor(sf::Color::Green);
+
+    world2d_border.setPosition({world.left, world.top});
+    world2d_border.setSize({world.width, world.height});
+    world2d_border.setFillColor(sf::Color::Cyan);
+    world2d_border.setOutlineColor(sf::Color(130, 130, 130));
+    world2d_border.setOutlineThickness(3.0f);
   }
 
   void spawn_and_bind_editor_blocks();
