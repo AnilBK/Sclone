@@ -273,9 +273,9 @@ public:
 
     world2d_border.setPosition({world.left, world.top});
     world2d_border.setSize({world.width, world.height});
-    world2d_border.setFillColor(sf::Color::Cyan);
-    world2d_border.setOutlineColor(sf::Color(130, 130, 130));
-    world2d_border.setOutlineThickness(3.0f);
+    world2d_border.setFillColor(sf::Color(153, 195, 180));
+    world2d_border.setOutlineColor(sf::Color(71, 71, 71));
+    world2d_border.setOutlineThickness(4.0f);
   }
 
   void spawn_and_bind_editor_blocks();

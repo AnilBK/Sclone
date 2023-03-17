@@ -65,7 +65,7 @@ int main() {
   show_mouse_pos_text.setFillColor(sf::Color::Black);
 #endif
 
-  const auto window_clear_color = sf::Color(153, 195, 180);
+  const auto window_clear_color = sf::Color(143, 185, 170);
 
   GlobalAlertWindow MainAlert;
   Editor editor;
