@@ -1,7 +1,7 @@
 #include "GlobalAlertWindow.hpp"
 
 void GlobalAlertWindow::Init() {
-  label_font.loadFromFile("alaska.ttf");
+  label_font.loadFromFile("OpenSans-Regular.ttf");
   message_label.setFont(label_font);
   message_label.setCharacterSize(30);
   message_label.setPosition(sf::Vector2f(20, 20));

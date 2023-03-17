@@ -114,7 +114,8 @@ isCachedMousePosOverRect(const sf::FloatRect rect) {
 }
 
 static void init_global_font_and_label() {
-  ERR_CRASH_IF(!font.loadFromFile("alaska.ttf"), "Error Loading Font.");
+  ERR_CRASH_IF(!font.loadFromFile("OpenSans-Regular.ttf"),
+               "Error Loading Font.");
   draw_text_label.setFont(font);
   draw_text_label.setCharacterSize(32);
   draw_text_label.setPosition(sf::Vector2f(20, 20));
