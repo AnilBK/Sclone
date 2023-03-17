@@ -27,18 +27,7 @@ public:
   bool visibility;
   bool add_movement_script = false;
   std::string texture;
-  // Points to the button that is related with this sprite.
-  UIButton *ui_btn_ref = nullptr;
   sf::Sprite sprite;
-
-  void update_name(const std::string &p_name) {
-    name = p_name;
-    if (ui_btn_ref != nullptr) {
-      // Update the label of the button, which points to the currently
-      // selected sprite.
-      ui_btn_ref->text.setText(name);
-    }
-  }
 };
 
 class Editor {
@@ -72,8 +61,9 @@ private:
   UILineInput new_sprite_name_input = UILineInput("Sprite");
   UIButton add_new_sprite_btn = UIButton("+");
   HBoxContainer new_sprite_hbox;
+  VBoxContainer user_added_sprites_list_parent;
+  VBoxContainer user_added_sprites_list_vbox;
 
-  VBoxContainer user_added_sprites_list;
   TransformGizmo2D gizmo_2D;
 
   // The editor spawn blocks section.
@@ -92,7 +82,11 @@ private:
   /// in the editor.
   std::vector<Block> editor_blocks;
 
-  std::vector<std::shared_ptr<UIButton>> user_added_sprite_ptrs;
+  using BtnIDPair = std::pair<std::shared_ptr<UIButton>, int>;
+  /// @brief We store an UIButton. This is the button that is shown left on the
+  /// list of sprites. We also save an ID of the sprite associated with this
+  /// UIButton.
+  std::vector<BtnIDPair> btn_id_pairs;
 
   std::vector<std::shared_ptr<sf::Texture>> textures;
 
@@ -113,7 +107,7 @@ private:
   void _update_sprite_name();
 
   void select_sprite_by_id(int id);
-  void _highlight_selected_btn_in_list(const UIButton *btn_to_highlight);
+  void _highlight_btn_in_list(const int id);
   void add_new_sprite(const std::string &p_name);
 
   void _refresh_layout();
@@ -234,8 +228,9 @@ public:
 
     new_sprite_hbox.add_child(new_sprite_name_input);
     new_sprite_hbox.add_child(add_new_sprite_btn);
-    user_added_sprites_list.add_child(new_sprite_hbox);
-    user_added_sprites_list.setPosition({15, 110});
+    user_added_sprites_list_parent.add_child(new_sprite_hbox);
+    user_added_sprites_list_parent.add_child(user_added_sprites_list_vbox);
+    user_added_sprites_list_parent.setPosition({15, 110});
 
     // add_new_sprite("StarFish");
     add_new_sprite("Cat");

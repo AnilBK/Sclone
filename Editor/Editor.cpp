@@ -133,7 +133,14 @@ void Editor::_update_sprite_name() {
   RETURN_IF_STRING_HAS_SPACE(sprite_name.get_text(),
                              "Sprite name shouldn't contain spaces.")
 
-  selected_sprite->update_name(sprite_name.get_text());
+  selected_sprite->name = sprite_name.get_text();
+  // Update the text in the UIButton that toggles this sprite, as well.
+  for (const auto &[btn_ref, sprite_id] : btn_id_pairs) {
+    if (sprite_id == selected_sprite->id) {
+      btn_ref.get()->text.setText(selected_sprite->name);
+      break; // There's no reason two buttons are assigned to a single sprite.
+    }
+  }
 
   sprite_name.line_input_active = false;
   sprite_name.emit_signal("resized");
@@ -147,7 +154,7 @@ void Editor::select_sprite_by_id(int id) {
       sprite_pos.setText(_position_to_string(sprite.position));
       sprite_texture_name.set_text(sprite.texture);
       sprite_layer_value_input.set_text(std::to_string(sprite.layer));
-      _highlight_selected_btn_in_list(sprite.ui_btn_ref);
+      _highlight_btn_in_list(sprite.id);
       // _refresh_layout();
 
       // Undrag if any sprite was being dragged.
@@ -160,14 +167,11 @@ void Editor::select_sprite_by_id(int id) {
   }
 }
 
-void Editor::_highlight_selected_btn_in_list(const UIButton *btn_to_highlight) {
-  // Set 'flat' to everything.
-  // Only selected btn isn't 'flat'.
-
+void Editor::_highlight_btn_in_list(const int id) {
   // The selected button only looks like button, all other buttons are 'flat',
   // meaning they just look like a label.
-  for (auto &btn : user_added_sprite_ptrs) {
-    btn.get()->is_flat = btn.get() != btn_to_highlight;
+  for (const auto &[btn_ref, target_sprite_id] : btn_id_pairs) {
+    btn_ref.get()->is_flat = (target_sprite_id != id);
   }
 }
 
@@ -187,14 +191,16 @@ void Editor::add_new_sprite(const std::string &p_name) {
   btn.get()->is_flat = true;
 
   btn.get()->clicked_callback = [new_working_id, this]() {
-    std::cout << "Assigned ID: " << new_working_id << " for callback. \n";
     select_sprite_by_id(new_working_id);
   };
 
-  // Adding the shared_ptr to a vector, so that it's lifetime is untill
-  // the program ends and is freed when the program ends.
-  user_added_sprite_ptrs.emplace_back(btn);
-  user_added_sprites_list.add_child(*btn);
+  BtnIDPair pair;
+  pair.first = std::move(btn);
+  pair.second = new_working_id;
+
+  btn_id_pairs.push_back(pair);
+
+  user_added_sprites_list_vbox.add_child(*pair.first);
 
   EditorSprite e_spr;
   e_spr.id = new_working_id;
@@ -203,7 +209,6 @@ void Editor::add_new_sprite(const std::string &p_name) {
   e_spr.position =
       sf::Vector2f(200.0f + (new_working_id * 200), window.getSize().y / 2.0f);
   e_spr.texture = (new_working_id % 2 == 0) ? "cat.png" : "fish.png";
-  e_spr.ui_btn_ref = btn.get();
   e_spr.visibility = true;
 
   sf::Sprite spr;
@@ -227,7 +232,7 @@ void Editor::add_new_sprite(const std::string &p_name) {
 ////////////////////////////////////////////////////
 
 void Editor::_refresh_layout() {
-  user_added_sprites_list.reposition_children();
+  user_added_sprites_list_parent.reposition_children();
   editor_inspector.reposition_children();
 }
 
@@ -279,7 +284,8 @@ void Editor::toggle_tab_bar_folding() {
 }
 
 void Editor::handle_inputs(sf::Event event) {
-  user_added_sprites_list.handle_inputs(event);
+
+  user_added_sprites_list_parent.handle_inputs(event);
   editor_inspector.handle_inputs(event);
   script_editor.handle_inputs(event);
 
@@ -304,7 +310,7 @@ void Editor::handle_inputs(sf::Event event) {
 void Editor::_render_ui() {
   // TODO ??? move refreshing to where needed.
   _refresh_layout();
-  user_added_sprites_list.Render();
+  user_added_sprites_list_parent.Render();
   editor_inspector.Render();
   build_and_run_btn.Render();
 }
