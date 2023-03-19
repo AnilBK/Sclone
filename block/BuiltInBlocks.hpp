@@ -39,6 +39,7 @@ void block_change_y_by(Block *block_change_y_by);
 
 // Draw Primitive Blocks.
 void block_say(Block *block_say);
+void block_draw_text(Block *block_draw_text);
 void block_draw_line(Block *block_draw_line);
 void block_draw_circle(Block *block_draw_circle);
 void block_draw_rectangle(Block *block_draw_rectangle);

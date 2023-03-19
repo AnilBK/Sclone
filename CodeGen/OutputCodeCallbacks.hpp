@@ -74,6 +74,53 @@ std::string code_sprite_say(const Block &block) {
          ", \"" + message + "\");";
 }
 
+std::string code_draw_text(const Block &block) {
+  /*
+  //https: // www.sfml-dev.org/tutorials/2.5/graphics-text.php
+  sf::Text text;
+
+  // select the font
+  text.setFont(font); // font is a sf::Font
+
+  // set the string to display
+  text.setString("Hello world");
+
+  // set the character size
+  text.setCharacterSize(24); // in pixels, not points!
+
+  // set the color
+  text.setFillColor(sf::Color::Red);
+
+  // set the text style
+  text.setStyle(sf::Text::Bold | sf::Text::Underlined);
+
+  ...
+
+  // inside the main loop, between window.clear() and window.display()
+  window.draw(text);
+  */
+
+  std::string code;
+  code += "window.draw(##SPRITE_NAME##__text);";
+  return code;
+}
+
+std::string code_draw_text_init(const Block &block) {
+  auto x = block.get_bound_value("x").value();
+  auto y = block.get_bound_value("y").value();
+  auto string = block.get_bound_value("string").value();
+
+  std::string code;
+  code += "sf::Text ##SPRITE_NAME##__text;";
+  code += "##SPRITE_NAME##__text.setPosition({" + x + " , " + y + " });";
+  code += "##SPRITE_NAME##__text.setFont(text_font);";
+  code += "##SPRITE_NAME##__text.setCharacterSize(24);";
+  code += "##SPRITE_NAME##__text.setFillColor(sf::Color::Red);";
+
+  code += "##SPRITE_NAME##__text.setString(\"" + string + "\");";
+  return code;
+}
+
 std::string code_sprite_change_x_by(const Block &block) {
   auto x_offset = block.get_bound_value("x_offset").value();
   return "##SPRITE_NAME##.move(sf::Vector2f(" + x_offset + ", 0.0f));";

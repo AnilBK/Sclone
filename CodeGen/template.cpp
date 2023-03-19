@@ -370,6 +370,15 @@ int main() {
 
   init_bubble_label();
   // MODULE_END //
+
+  // MODULE : "DRAW_TEXT" //
+  sf::Font text_font;
+  if (!text_font.loadFromFile("alaska.ttf")) {
+    std::cout << "Error Loading Font. \n";
+    exit(1);
+  }
+  // MODULE_END //
+
   unsigned int height = sf::VideoMode::getDesktopMode().height;
   unsigned int width = sf::VideoMode::getDesktopMode().width;
   window.create(sf::VideoMode(width, height), "SClone Generated Output");

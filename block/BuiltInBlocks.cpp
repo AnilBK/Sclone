@@ -165,6 +165,20 @@ void block_say(Block *block_say) {
   // return std::move(block_say);
 }
 
+void block_draw_text(Block *block_draw_text) {
+  block_draw_text->add_node(LabelNode("Draw Text : "));
+  block_draw_text->add_node(LineInputAttachFieldNode("", "string"));
+  block_draw_text->add_node(LabelNode("At X"));
+  block_draw_text->add_node(LineInputAttachFieldNode("", "x"));
+  block_draw_text->add_node(LabelNode("Y"));
+  block_draw_text->add_node(LineInputAttachFieldNode("", "y"));
+
+  block_draw_text->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES;
+  block_draw_text->output_code_callback = code_draw_text;
+  block_draw_text->output_code_for_init_callback = code_draw_text_init;
+  block_draw_text->function_identifier = "block_draw_text";
+}
+
 void block_draw_line(Block *block_draw_line) {
   block_draw_line->add_node(LabelNode("Draw Line"));
   block_draw_line->add_node(LabelNode("From"));
