@@ -225,6 +225,26 @@ std::string CodeGenerator::when_program_starts_code() {
   return init_code;
 }
 
+std::string CodeGenerator::blocks_init_code() {
+  std::string init_code;
+
+  for (auto &spr : editor_ref.user_added_sprites) {
+    auto *script = editor_ref.get_script_attached_to_editor_sprite(&spr);
+    if (script == nullptr) {
+      continue;
+    }
+
+    auto sprite_name = spr.name;
+
+    for (auto &block : script->blocks) {
+      init_code += block.get_code_for_init();
+      _substitute_sprite_name(init_code, sprite_name);
+    }
+  }
+
+  return init_code;
+}
+
 std::set<std::string> CodeGenerator::get_all_modules_required() {
   std::set<std::string> all_modules;
 
@@ -243,7 +263,8 @@ std::set<std::string> CodeGenerator::get_all_modules_required() {
 
 void CodeGenerator::generate_code() {
   auto init_code = construct_code() + "\n";
-  init_code += when_program_starts_code();
+  init_code += when_program_starts_code() + "\n";
+  init_code += blocks_init_code();
 
   auto _main_loop_code = main_loop_code();
   auto _input_code = input_code();

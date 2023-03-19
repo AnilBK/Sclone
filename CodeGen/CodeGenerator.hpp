@@ -29,6 +29,7 @@ private:
   std::string main_loop_code();
   std::string input_code();
   std::string when_program_starts_code();
+  std::string blocks_init_code();
 
   std::set<std::string> get_all_modules_required();
 

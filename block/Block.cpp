@@ -428,14 +428,37 @@ std::string Block::get_code() {
     code += next_block->get_code();
   }
 
+  // This applies to code everywhere, so we perform the replace
+  //  operation here.
+  _apply_editor_shortcut_macros(code);
+
+  return code;
+}
+
+void Block::_apply_editor_shortcut_macros(std::string &code) {
   // EDITOR SHORCUT MACROS:
-  //  Shortcut in the editor to get position of the current sprite.
-  //  This applies to code everywhere, so we perform the replace operation here.
+  //  E.g: Writing #POS# in any input fields of the editor -> gets position
+  //  of the current sprite.
   replaceAll(code, "#POS#", "##SPRITE_NAME##.getPosition()");
   replaceAll(code, "#WIN_W#", "width");
   replaceAll(code, "#WIN_H#", "height");
   replaceAll(code, "#M_X#", "sf::Mouse::getPosition(window).x");
   replaceAll(code, "#M_Y#", "sf::Mouse::getPosition(window).y");
+}
+
+std::string Block::get_code_for_init() {
+  // Very few blocks require initialization code.
+  // So, generate code only if there is some code callbacks for initialization.
+  // The generated code from here goes to ' //###INIT_CODES### ' section of
+  // template.cpp.
+
+  if (!output_code_for_init_callback) {
+    return "";
+  }
+
+  std::string code = output_code_for_init_callback(*this);
+
+  _apply_editor_shortcut_macros(code);
 
   return code;
 }

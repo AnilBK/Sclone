@@ -57,6 +57,10 @@ private:
   std::vector<BlockAttachNode *>
   get_block_attach_nodes(bool with_nodes_attached = true);
 
+  /// @brief This replaces macros(shortcuts) that can be used in editor, with
+  /// their correct expansions.
+  void _apply_editor_shortcut_macros(std::string &code);
+
   /// @brief We use it to get the size of the block without the attached block.
   /// That size is used to calculate the position of the block attached to it.
   sf::FloatRect block_without_attached_block_size;
@@ -82,7 +86,13 @@ public:
 
   /// @brief Use this block identifier to spawn new blocks of this type.
   std::string function_identifier = "block_default";
+
+  /// @brief Callback to the code generator for the main loop.
   std::function<std::string(const Block &b)> output_code_callback;
+
+  /// @brief Stores initialization callbacks, as some objects require
+  /// initialization of some data before entering the main loop.
+  std::function<std::string(const Block &b)> output_code_for_init_callback;
 
   template <class T> void add_node(T node_class) {
     if (node_class.type == NODE_TYPE::BLOCK_ATTACH_NODE) {
@@ -118,6 +128,8 @@ public:
   void Render();
 
   std::string get_code();
+  std::string get_code_for_init();
+
   std::optional<std::string> get_bound_value(const std::string &query) const;
 };
 
