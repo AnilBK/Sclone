@@ -19,15 +19,6 @@ sf::Text draw_text_label;
 /// @brief The main editor window where everything is drawn.
 sf::RenderWindow window;
 
-/// @brief Seperate window for alerts.
-sf::RenderWindow alert_window;
-
-/// @brief This message indicated that new AlertWindow popup should be spawned.
-bool new_alert_requested = false;
-
-/// @brief The required message for the popup window.
-std::string alert_message;
-
 #ifdef SHOW_FPS
 float get_fps() {
   static sf::Clock clock;
@@ -106,11 +97,6 @@ int main() {
 #endif
 
     window.display();
-
-    if (new_alert_requested) {
-      MainAlert.PopupWithMessage(alert_message);
-      new_alert_requested = false;
-    }
 
     // Since Alert Windows are drawn at last, that means we don't even need a
     // window. We can just draw a rect with label as well.

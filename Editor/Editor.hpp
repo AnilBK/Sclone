@@ -14,6 +14,7 @@
 #include "../block/BuiltInBlocks.hpp"
 #include "ScriptEditor.hpp"
 #include "TransformGizmo2D.hpp"
+#include "Windows/GlobalAlertWindow.hpp"
 #include <memory>
 #include <vector>
 

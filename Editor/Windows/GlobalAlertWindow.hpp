@@ -3,6 +3,21 @@
 
 #include "../../UI/UIButton.hpp"
 #include <SFML/Graphics.hpp>
+#include <string>
+
+/// @brief This message indicates that new AlertWindow popup should be spawned.
+inline bool new_alert_requested = false;
+
+/// @brief The required message for the popup window.
+inline std::string alert_message;
+
+/// @brief Seperate window for alerts.
+inline sf::RenderWindow alert_window;
+
+inline void ALERT(const std::string &message) {
+  new_alert_requested = true;
+  alert_message = message;
+}
 
 class GlobalAlertWindow {
 private:

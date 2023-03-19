@@ -57,24 +57,6 @@ extern sf::Text draw_text_label;
 
 extern sf::RenderWindow window;
 
-// ALERT Window Related Members :
-// This window is accessed globally by 'GlobalAlertWindow' Class, so declare
-// here.
-extern sf::RenderWindow alert_window;
-
-// We could make AlertWindow an extern, but we have weird missing defination
-// errors for UIBaseClass then. So, we use this hack of using a bool to indicate
-// a new popup is required.
-
-// This message will be checked and responded to, in main loop.
-extern bool new_alert_requested;
-extern std::string alert_message;
-
-static void ALERT(const std::string &message) {
-  new_alert_requested = true;
-  alert_message = message;
-}
-
 [[nodiscard]] static inline sf::Vector2f
 get_mouse_position(const sf::RenderWindow &p_window) {
   sf::Vector2i m_pos = sf::Mouse::getPosition(p_window);

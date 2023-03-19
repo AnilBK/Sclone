@@ -42,6 +42,11 @@ void GlobalAlertWindow::PopupWithMessage(const std::string &message) {
 }
 
 void GlobalAlertWindow::MainLoop() {
+  if (new_alert_requested) {
+    PopupWithMessage(alert_message);
+    new_alert_requested = false;
+  }
+
   if (!is_window_active()) {
     return;
   }
