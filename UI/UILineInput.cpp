@@ -18,6 +18,8 @@ void UILineInput::set_text(const std::string &p_input_text) {
 
 std::string UILineInput::get_text() { return prefix + input_text; }
 
+std::string UILineInput::get_text_no_prefix() { return input_text; }
+
 void UILineInput::RenderDebug() {
   sf::RectangleShape debug_shape;
   // debug_shape.setPosition(text.getGlobalBounds().left,

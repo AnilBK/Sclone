@@ -47,6 +47,8 @@ public:
 
   std::string get_text();
 
+  std::string get_text_no_prefix();
+
   sf::Vector2f getPosition() override;
   void setPosition(sf::Vector2f pos) override;
   sf::Vector2f rect_size() override;

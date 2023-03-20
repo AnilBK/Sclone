@@ -3,8 +3,8 @@
 
 #include "../Globals.hpp"
 #include "../UI/UIButton.hpp"
+#include "../UI/UILineInput.hpp"
 #include "DropDown.hpp"
-#include "LineInput.hpp"
 #include <initializer_list>
 
 class Block;
@@ -93,14 +93,17 @@ public:
 class LineInputAttachFieldNode : public NODEBaseClass {
 
 private:
-  LineInput text_area;
+  UILineInput text_area;
 
 public:
   LineInputAttachFieldNode(const std::string &p_text_str,
                            const std::string &p_bind_str = "")
-      : NODEBaseClass(p_text_str, p_bind_str) {
+      : NODEBaseClass(p_text_str, p_bind_str), text_area("") {
     type = NODE_TYPE::LINE_INPUT_ATTACH_FIELD;
     text_area.line_input_active = false;
+    text_area.is_flat = false;
+    // Make it little bit wider than it is as used for other editor UI's.
+    text_area.min_size.x = 75.0F;
   }
 
   sf::Vector2f rect_size() override;

@@ -64,11 +64,11 @@ sf::Vector2f LineInputAttachFieldNode::rect_size() {
 }
 
 std::string LineInputAttachFieldNode::get_text() {
-  return text_area.input_text;
+  return text_area.get_text_no_prefix();
 }
 
 void LineInputAttachFieldNode::set_text(const std::string &str) {
-  text_area.input_text = str;
+  text_area.set_text(str);
 }
 
 bool LineInputAttachFieldNode::left_click_action() {
@@ -82,7 +82,7 @@ void LineInputAttachFieldNode::handle_inputs(sf::Event event) {
 }
 
 void LineInputAttachFieldNode::Render() {
-  text_area.position = _pos;
+  text_area.setPosition(_pos);
   text_area.Render();
 }
 
