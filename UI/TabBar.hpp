@@ -41,6 +41,8 @@ public:
     tab_bg.setSize(size);
   }
 
+  sf::Vector2f get_size() { return _initial_size; }
+
   void set_font(const sf::Font &font) { _font = font; }
   sf::Vector2f get_initial_position() { return _initial_pos; }
   sf::Vector2f get_visible_tab_position() { return tab_bg.getPosition(); }

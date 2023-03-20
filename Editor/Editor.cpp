@@ -458,7 +458,7 @@ void Editor::Render() {
 
   // Render UI on top of all.
   _render_ui();
-  _render_tab();
+  _render_block_spawner_tab();
   script_editor.Render();
 }
 
@@ -550,7 +550,7 @@ void Editor::_spawn_block_at_mouse_pos(const Block &block) {
   std::cout << "[Done]User Adding a Block.\n\n";
 }
 
-void Editor::_render_tab() {
+void Editor::_render_block_spawner_tab() {
   built_in_blocks_tab_bar.Render();
   blocks_tab_bar_collapse_btn.Render();
 
@@ -558,8 +558,17 @@ void Editor::_render_tab() {
     return;
   }
 
-  sf::Vector2f block_in_tabs_draw_position =
-      built_in_blocks_tab_bar.get_visible_tab_position() +
+  sf::FloatRect tab_world = {built_in_blocks_tab_bar.get_visible_tab_position(),
+                             built_in_blocks_tab_bar.get_size()};
+  sf::View tab_view({0, 0, tab_world.width, tab_world.height});
+  tab_view.setViewport({tab_world.left / window.getSize().x,
+                        tab_world.top / window.getSize().y,
+                        tab_world.width / window.getSize().x,
+                        tab_world.height / window.getSize().y});
+
+  window.setView(tab_view);
+
+  sf::Vector2f draw_position =
       sf::Vector2f(50, 50 + built_in_blocks_tab_bar.get_scroll_value() * 20.0f);
 
   int currently_selected_tab = built_in_blocks_tab_bar.currently_selected_tab;
@@ -574,14 +583,13 @@ void Editor::_render_tab() {
       continue;
     }
 
-    block.set_position(block_in_tabs_draw_position);
+    block.set_position(draw_position);
+    block.Render();
 
-    // Scrolling above the tab.
-    if (block_in_tabs_draw_position.y >=
-        built_in_blocks_tab_bar.get_visible_tab_position().y) {
-      block.Render();
-
-      // Select the blocks only that are visible.
+    // Even if the little bit of top of the block goes above the tab bar,
+    // then make it unselectable, as the mouse clicks in that area is for the
+    // actual buttons that are in that area.
+    if (draw_position.y >= 0.0F) {
       if (can_spawn_editor_block) {
         // Spawn New Block.
         if (block.is_mouse_over()) {
@@ -592,8 +600,10 @@ void Editor::_render_tab() {
     }
 
     float height_of_cur_block = block.block_full_size.y;
-    block_in_tabs_draw_position.y += height_of_cur_block + 20;
+    draw_position.y += height_of_cur_block + 20;
   }
+
+  window.setView(window.getDefaultView());
 }
 
 void Editor::_build_and_run() {

@@ -297,7 +297,7 @@ public:
 
   void toggle_tab_bar_folding();
 
-  void _render_tab();
+  void _render_block_spawner_tab();
 
   void Render();
 };
