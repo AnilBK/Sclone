@@ -1,11 +1,12 @@
-#include "DropDown.hpp"
+#include "UIDropDown.hpp"
 
-bool DropDown::is_mouse_over() {
-  sf::Vector2f size = rect_size();
-  return isCachedMousePosOverRect(sf::FloatRect(position, size));
-}
+sf::Vector2f UIDropDown::getPosition() { return position; }
 
-void DropDown::handle_inputs(sf::Event event) {
+void UIDropDown::setPosition(sf::Vector2f pos) { position = pos; }
+
+sf::Vector2f UIDropDown::rect_size() { return largest_item_rect_size; }
+
+void UIDropDown::handle_inputs(sf::Event event) {
   // Only the top rect.
   mouse_over = is_mouse_over();
 
@@ -40,7 +41,7 @@ void DropDown::handle_inputs(sf::Event event) {
   }
 }
 
-void DropDown::_draw_base_button() {
+void UIDropDown::_draw_base_button() {
   const auto content_size = rect_size();
 
   sf::RectangleShape bg_rect;
@@ -54,7 +55,7 @@ void DropDown::_draw_base_button() {
   draw_text(get_text(), position);
 }
 
-void DropDown::_draw_whole_list() {
+void UIDropDown::_draw_whole_list() {
   sf::Vector2f draw_position = position;
   const auto content_size = rect_size();
 
@@ -76,14 +77,14 @@ void DropDown::_draw_whole_list() {
   }
 }
 
-void DropDown::Render() {
+void UIDropDown::Render() {
   _draw_base_button();
   if (dropdown_clicked) {
     _draw_whole_list();
   }
 }
 
-void DropDown::_compute_largest_item_rect_size() {
+void UIDropDown::_compute_largest_item_rect_size() {
   sf::Vector2f max_text_size{0.0f, 0.0f};
   for (const auto &item : items) {
     auto text_size = text_rect_size(item);
@@ -92,7 +93,7 @@ void DropDown::_compute_largest_item_rect_size() {
   }
   largest_item_rect_size = max_text_size;
 
-  // BUG: Add these extra 10 Pixels, because we have a bug in text_rect_size(),
-  // that it returns a smaller rect size.
+  // TODO?? BUG: Add these extra 10 Pixels, because we have a bug in
+  // text_rect_size(), that it returns a smaller rect size.
   largest_item_rect_size += sf::Vector2f(0, 10);
 }

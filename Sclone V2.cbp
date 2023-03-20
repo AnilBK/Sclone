@@ -71,6 +71,8 @@
 		<Unit filename="UI/UIBaseClass.hpp" />
 		<Unit filename="UI/UIButton.cpp" />
 		<Unit filename="UI/UIButton.hpp" />
+		<Unit filename="UI/UIDropDown.cpp" />
+		<Unit filename="UI/UIDropDown.hpp" />
 		<Unit filename="UI/UILineInput.cpp" />
 		<Unit filename="UI/UILineInput.hpp" />
 		<Unit filename="UI/UISprite.cpp" />
@@ -81,8 +83,6 @@
 		<Unit filename="block/BlockBinder.hpp" />
 		<Unit filename="block/BuiltInBlocks.cpp" />
 		<Unit filename="block/BuiltInBlocks.hpp" />
-		<Unit filename="block/DropDown.cpp" />
-		<Unit filename="block/DropDown.hpp" />
 		<Unit filename="block/NODEBaseClass.cpp" />
 		<Unit filename="block/NODEBaseClass.hpp" />
 		<Unit filename="main.cpp" />

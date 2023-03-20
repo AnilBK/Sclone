@@ -3,8 +3,8 @@
 
 #include "../Globals.hpp"
 #include "../UI/UIButton.hpp"
+#include "../UI/UIDropDown.hpp"
 #include "../UI/UILineInput.hpp"
-#include "DropDown.hpp"
 #include <initializer_list>
 
 class Block;
@@ -122,7 +122,7 @@ public:
 class DropDownNode : public NODEBaseClass {
 
 private:
-  DropDown dropdown;
+  UIDropDown dropdown;
 
 public:
   DropDownNode(const std::string &p_text_str,

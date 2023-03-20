@@ -104,7 +104,9 @@ void DropDownNode::handle_inputs(sf::Event event) {
 }
 
 void DropDownNode::Render() {
-  dropdown.position = _pos;
+  // TODO ?? / Improvements :  Why are we updating positions every frame ??
+  // Should be done when position actually changes.
+  dropdown.setPosition(_pos);
   dropdown.Render();
 }
 
