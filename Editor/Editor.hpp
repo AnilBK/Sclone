@@ -154,8 +154,6 @@ public:
     built_in_blocks_tab_bar.set_pos(tab_pos);
     built_in_blocks_tab_bar.set_size(tab_size);
 
-    built_in_blocks_tab_bar.set_spacing_between_tab_btns(0.0f); // 5.0f
-
     blocks_tab_bar_collapse_btn.is_flat = false;
     blocks_tab_bar_collapse_btn.setPosition(
         tab_pos - sf::Vector2f(blocks_tab_bar_collapse_btn.rect_size().x, 0));
@@ -168,8 +166,7 @@ public:
     built_in_blocks_tab_bar.add_tab("Draw Blocks");
     built_in_blocks_tab_bar.add_tab("Motion");
     built_in_blocks_tab_bar.add_tab("Vars..");
-    built_in_blocks_tab_bar._select_tab(0);
-    built_in_blocks_tab_bar.recalculate_post_add_tabs();
+    built_in_blocks_tab_bar.select_tab(0);
   }
 
   Editor() {

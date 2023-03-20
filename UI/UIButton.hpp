@@ -7,10 +7,13 @@
 
 class UIButton : public UIBaseClass {
 private:
-  bool clicked = false;
   bool mouse_over = false;
 
 public:
+  // VVV Public because TabBar class requires it.
+  // TODO: Refactor that class so it doesn't require it to be public.
+  bool clicked = false;
+
   sf::Color button_fill_color = sf::Color::Green;
   bool is_flat = false;
   Label text;

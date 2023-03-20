@@ -81,8 +81,6 @@
 		<Unit filename="block/BlockBinder.hpp" />
 		<Unit filename="block/BuiltInBlocks.cpp" />
 		<Unit filename="block/BuiltInBlocks.hpp" />
-		<Unit filename="block/Button.cpp" />
-		<Unit filename="block/Button.hpp" />
 		<Unit filename="block/DropDown.cpp" />
 		<Unit filename="block/DropDown.hpp" />
 		<Unit filename="block/LineInput.cpp" />

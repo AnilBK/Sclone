@@ -2,57 +2,79 @@
 #define TAB_BAR_HPP
 
 #include "../Globals.hpp"
-#include "../block/Button.hpp"
+#include "Container.hpp"
+#include "UIButton.hpp"
 #include <SFML/Graphics.hpp>
+#include <memory>
 
 enum class TabBarStatus { SHOW_ALL, SHOW_ONLY_TITLE, SHOW_ONLY_BODY };
 
 class TabBar {
-
+  /*
+   vvv   tab_bg       vvv
+  .-----------------------.
+  . Control, Motion,....  .
+  .-----------------------.
+  .                       .
+  .                       .
+  .                       .
+  .-----------------------.
+   ^^^   tab_bg       ^^^
+  */
 private:
   sf::RectangleShape tab_bg;
-  std::vector<Button> tab_bar_buttons;
+  std::vector<std::shared_ptr<UIButton>> tab_bar_buttons;
+  HBoxContainer tab_container;
+
+  std::size_t currently_selected_tab = 0;
   std::vector<int> tab_bar_scroll_value;
 
-  sf::Font _font;
-  sf::Vector2f _initial_pos, _initial_size;
+  float btn_size_y_cached = 40.0;
 
   const sf::Color btn_selected_fill_color = sf::Color(206, 207, 131);
   const sf::Color btn_default_fill_color = sf::Color(144, 127, 66);
 
-  float btn_spacing = 30.0f;
-
-  void add_scroll_value_to_current_tab(int p_delta);
+  void _add_scroll_value_to_current_tab(int p_delta);
   void _render_title();
   void _render_body();
 
 public:
   TabBarStatus render_status = TabBarStatus::SHOW_ALL;
-  int currently_selected_tab = -1;
+
   TabBar(sf::Vector2f position, sf::Vector2f size);
 
-  void set_pos(sf::Vector2f pos) {
-    _initial_pos = pos;
-    tab_bg.setPosition(pos);
-  }
+  void set_pos(sf::Vector2f pos) { tab_bg.setPosition(pos); }
 
-  void set_size(sf::Vector2f size) {
-    _initial_size = size;
-    tab_bg.setSize(size);
-  }
-
-  sf::Vector2f get_size() { return _initial_size; }
-
-  void set_font(const sf::Font &font) { _font = font; }
-  sf::Vector2f get_initial_position() { return _initial_pos; }
-  sf::Vector2f get_visible_tab_position() { return tab_bg.getPosition(); }
+  void set_size(sf::Vector2f size) { tab_bg.setSize(size); }
 
   void add_tab(std::string tab_name);
+
+  void select_tab(std::size_t new_tab_id);
+
+  std::size_t get_currently_selected_tab() { return currently_selected_tab; }
+
+  int get_current_tab_body_scroll();
+
+  /// @brief Get the actual dimensions of the tab without the title buttons.
+  /// @return Rect enclosing actual body.
+  sf::FloatRect get_tab_body_size() {
+    auto body_position = tab_bg.getPosition();
+    auto body_size = tab_bg.getSize();
+
+    // tab_bg contains title bar buttons as well(Refer to the figure above).
+    // so, subtract them to get the dimensions of the body.
+    body_position.y += btn_size_y_cached;
+    body_size.y -= btn_size_y_cached;
+
+    return {body_position, body_size};
+  }
+
+  sf::Vector2f get_actual_body_position() { return sf::Vector2f(); }
+
+  sf::Vector2f get_actual_body_size() { return sf::Vector2f(); }
+
   void handle_inputs(sf::Event event);
-  void _select_tab(int new_tab_id);
-  void recalculate_post_add_tabs();
-  int get_scroll_value();
-  void set_spacing_between_tab_btns(float spacing);
+
   void Render();
 };
 

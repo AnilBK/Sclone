@@ -87,8 +87,8 @@ Editor::load_texture(const std::string &texture_file) {
 }
 
 std::string Editor::_position_to_string(sf::Vector2f pos) {
-  return "Position: X: " + std::to_string(int(pos.x)) +
-         " Y: " + std::to_string(int(pos.y));
+  return "Position: X: " + std::to_string(static_cast<int>(pos.x)) +
+         " Y: " + std::to_string(static_cast<int>(pos.y));
 }
 
 void Editor::_create_new_sprite() {
@@ -558,8 +558,8 @@ void Editor::_render_block_spawner_tab() {
     return;
   }
 
-  sf::FloatRect tab_world = {built_in_blocks_tab_bar.get_visible_tab_position(),
-                             built_in_blocks_tab_bar.get_size()};
+  sf::FloatRect tab_world = built_in_blocks_tab_bar.get_tab_body_size();
+
   sf::View tab_view({0, 0, tab_world.width, tab_world.height});
   tab_view.setViewport({tab_world.left / window.getSize().x,
                         tab_world.top / window.getSize().y,
@@ -568,10 +568,11 @@ void Editor::_render_block_spawner_tab() {
 
   window.setView(tab_view);
 
-  sf::Vector2f draw_position =
-      sf::Vector2f(50, 50 + built_in_blocks_tab_bar.get_scroll_value() * 20.0f);
+  sf::Vector2f draw_position = sf::Vector2f(
+      50, 50 + built_in_blocks_tab_bar.get_current_tab_body_scroll() * 20.0f);
 
-  int currently_selected_tab = built_in_blocks_tab_bar.currently_selected_tab;
+  auto currently_selected_tab =
+      built_in_blocks_tab_bar.get_currently_selected_tab();
 
   bool is_any_block_being_dragged = script_editor.is_any_block_dragging();
   bool can_spawn_editor_block = !is_any_block_being_dragged &&
