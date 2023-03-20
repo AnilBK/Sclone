@@ -246,7 +246,10 @@ std::string CodeGenerator::blocks_init_code() {
 }
 
 std::set<std::string> CodeGenerator::get_all_modules_required() {
-  std::set<std::string> all_modules;
+  // Multiple scripts can have multiple blocks of same name.
+  // So collect them all at once in a set(), so that we have non-repeated
+  // names.
+  std::set<std::string> block_names;
 
   for (auto &spr : editor_ref.user_added_sprites) {
     auto *script = editor_ref.get_script_attached_to_editor_sprite(&spr);
@@ -254,11 +257,33 @@ std::set<std::string> CodeGenerator::get_all_modules_required() {
       continue;
     }
 
-    auto spr_modules = script->get_all_modules_required();
-    all_modules.insert(spr_modules.begin(), spr_modules.end());
+    auto names = script->get_names_of_all_blocks();
+    block_names.insert(names.begin(), names.end());
   }
 
-  return all_modules;
+  // Get all the modules required for those block names.
+  using FUNCTION_IDENTIFIER = std::string;
+  using MODULE_REQUIRED = std::string;
+
+  const std::vector<std::pair<FUNCTION_IDENTIFIER, MODULE_REQUIRED>> db = {
+      {"block_sprite_clicked", "IS_MOUSE_OVER"},
+      {"block_sprite_touching", "ARE_SPRITES_COLLIDING"},
+      {"block_default_character_controller", "CHARACTER_MOVEMENT"},
+      {"block_say", "BUBBLE_TEXT"},
+      {"block_draw_text", "DRAW_TEXT"},
+      {"block_glide_to_xy", "MOVE_TO_POINT"},
+      {"block_glide_point_to_point", "MOVE_POINT_TO_POINT"}};
+
+  std::set<std::string> modules;
+  for (const auto &name : block_names) {
+    for (auto &[fn_identifier, module] : db) {
+      if (fn_identifier == name) {
+        modules.insert(module);
+      }
+    }
+  }
+
+  return modules;
 }
 
 void CodeGenerator::generate_code() {
