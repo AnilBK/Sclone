@@ -124,13 +124,7 @@ std::string CodeGenerator::main_loop_code() {
         continue;
       }
 
-      // The first child of "Forever" Block has text "Forever".
-      bool is_forever_block =
-          std::any_of(block.childrens.begin(), block.childrens.end(),
-                      [](std::shared_ptr<NODEBaseClass> p_block) {
-                        return p_block->get_text() == "Forever";
-                      });
-      if (!is_forever_block) {
+      if (!BLOCK_UTILITIES::is_forever_block(block)) {
         continue;
       }
 
@@ -168,12 +162,7 @@ std::string CodeGenerator::input_code() {
         continue;
       }
 
-      bool is_input_block =
-          std::any_of(block.childrens.begin(), block.childrens.end(),
-                      [](std::shared_ptr<NODEBaseClass> p_block) {
-                        return p_block->get_text() == "When It's Clicked";
-                      });
-      if (!is_input_block) {
+      if (!BLOCK_UTILITIES::is_input_block(block)) {
         continue;
       }
 
@@ -206,12 +195,7 @@ std::string CodeGenerator::when_program_starts_code() {
         continue;
       }
 
-      bool is_program_starts_block =
-          std::any_of(block.childrens.begin(), block.childrens.end(),
-                      [](std::shared_ptr<NODEBaseClass> p_block) {
-                        return p_block->get_text() == "When Program Starts";
-                      });
-      if (!is_program_starts_block) {
+      if (!BLOCK_UTILITIES::is_program_starts_block(block)) {
         continue;
       }
 

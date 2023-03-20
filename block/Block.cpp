@@ -462,3 +462,28 @@ std::string Block::get_code_for_init() {
 
   return code;
 }
+
+namespace BLOCK_UTILITIES {
+bool is_forever_block(const Block &block) {
+  // The first child of "Forever" Block has text "Forever".
+  return std::any_of(block.childrens.begin(), block.childrens.end(),
+                     [](std::shared_ptr<NODEBaseClass> p_block) {
+                       return p_block->get_text() == "Forever";
+                     });
+}
+
+bool is_input_block(const Block &block) {
+  return std::any_of(block.childrens.begin(), block.childrens.end(),
+                     [](std::shared_ptr<NODEBaseClass> p_block) {
+                       return p_block->get_text() == "When It's Clicked";
+                     });
+}
+
+bool is_program_starts_block(const Block &block) {
+  return std::any_of(block.childrens.begin(), block.childrens.end(),
+                     [](std::shared_ptr<NODEBaseClass> p_block) {
+                       return p_block->get_text() == "When Program Starts";
+                     });
+}
+
+} // namespace BLOCK_UTILITIES
