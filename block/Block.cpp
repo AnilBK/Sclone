@@ -215,7 +215,8 @@ void Block::resort_children() {
       pos.y += STARTING_BLOCK_SIZE.y;
     }
 
-    child->_pos = pos;
+    child->set_position(pos);
+
     pos.x += child->rect_size().x + spacing;
 
     if (child->type == BLOCK_ATTACH_NODE) {

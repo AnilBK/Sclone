@@ -35,13 +35,13 @@ public:
 
   virtual bool left_click_action();
 
+  virtual void set_position(sf::Vector2f pos) { _pos = pos; }
+
   virtual void handle_inputs(sf::Event event){};
 
   virtual sf::Vector2f rect_size() = 0;
 
   virtual void Render() = 0;
-
-  // virtual void RenderOverride(sf::Vector2f pos) = 0;
 };
 
 class LabelNode : public NODEBaseClass {
@@ -71,6 +71,8 @@ public:
   sf::Vector2f rect_size() override;
 
   bool left_click_action() override;
+
+  void set_position(sf::Vector2f pos) override;
 
   void handle_inputs(sf::Event event) override;
 
@@ -114,6 +116,8 @@ public:
 
   bool left_click_action() override;
 
+  void set_position(sf::Vector2f pos) override;
+
   void handle_inputs(sf::Event event) override;
 
   void Render() override;
@@ -139,6 +143,8 @@ public:
   std::string get_text() override;
 
   bool left_click_action() override;
+
+  void set_position(sf::Vector2f pos) override;
 
   void handle_inputs(sf::Event event) override;
 

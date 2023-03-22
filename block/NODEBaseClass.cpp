@@ -39,12 +39,14 @@ bool ButtonNode::left_click_action() {
   return true;
 }
 
+void ButtonNode::set_position(sf::Vector2f pos) {
+  NODEBaseClass::set_position(pos);
+  btn.setPosition(pos);
+}
+
 void ButtonNode::handle_inputs(sf::Event event) { btn.handle_inputs(event); }
 
-void ButtonNode::Render() {
-  btn.setPosition(_pos);
-  btn.Render();
-}
+void ButtonNode::Render() { btn.Render(); }
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
@@ -77,14 +79,16 @@ bool LineInputAttachFieldNode::left_click_action() {
   return true;
 }
 
+void LineInputAttachFieldNode::set_position(sf::Vector2f pos) {
+  NODEBaseClass::set_position(pos);
+  text_area.setPosition(pos);
+}
+
 void LineInputAttachFieldNode::handle_inputs(sf::Event event) {
   text_area.handle_inputs(event);
 }
 
-void LineInputAttachFieldNode::Render() {
-  text_area.setPosition(_pos);
-  text_area.Render();
-}
+void LineInputAttachFieldNode::Render() { text_area.Render(); }
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
@@ -99,16 +103,16 @@ bool DropDownNode::left_click_action() {
   return true;
 }
 
+void DropDownNode::set_position(sf::Vector2f pos) {
+  NODEBaseClass::set_position(pos);
+  dropdown.setPosition(pos);
+}
+
 void DropDownNode::handle_inputs(sf::Event event) {
   dropdown.handle_inputs(event);
 }
 
-void DropDownNode::Render() {
-  // TODO ?? / Improvements :  Why are we updating positions every frame ??
-  // Should be done when position actually changes.
-  dropdown.setPosition(_pos);
-  dropdown.Render();
-}
+void DropDownNode::Render() { dropdown.Render(); }
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
