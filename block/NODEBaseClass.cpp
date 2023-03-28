@@ -3,6 +3,14 @@
 
 sf::Vector2f NODEBaseClass::min_size() { return {35.0f, 45.0f}; }
 
+void NODEBaseClass::RenderDebug() {
+  sf::RectangleShape r;
+  r.setPosition(_pos);
+  r.setSize(rect_size());
+  r.setFillColor(sf::Color(0, 255, 0, 200));
+  window.draw(r);
+}
+
 bool NODEBaseClass::is_mouse_over() {
   sf::Vector2f position = _pos;
   sf::Vector2f size = rect_size();

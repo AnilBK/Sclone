@@ -42,6 +42,8 @@ public:
   virtual sf::Vector2f rect_size() = 0;
 
   virtual void Render() = 0;
+
+  virtual void RenderDebug();
 };
 
 class LabelNode : public NODEBaseClass {
