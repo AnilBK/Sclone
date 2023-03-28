@@ -1,8 +1,8 @@
 #ifndef UI_BUTTON
 #define UI_BUTTON
 
-#include "Label.hpp"
 #include "UIBaseClass.hpp"
+#include "UILabel.hpp"
 #include <functional>
 
 class UIButton : public UIBaseClass {
@@ -17,12 +17,12 @@ public:
 
   sf::Color button_fill_color = sf::Color::Green;
   bool is_flat = false;
-  Label text;
+  UILabel text;
   std::function<void()> clicked_callback;
 
   UIButton(const std::string &btn_text,
            sf::Vector2f pos = sf::Vector2f(0.0f, 0.0f)) {
-    text.setText(btn_text);
+    text.set_text(btn_text);
   }
 
   void deselect() { clicked = false; }

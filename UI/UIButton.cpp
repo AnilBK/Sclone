@@ -1,7 +1,7 @@
 #include "UIButton.hpp"
 
 sf::Vector2f UIButton::getPosition() {
-  return text.getRectPosition();
+  return text.get_actual_text_position();
   // return text.getPosition();
 }
 

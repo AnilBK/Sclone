@@ -29,12 +29,15 @@ public:
 
   const sf::RectangleShape &get_rectangle() { return outline; }
 
+  sf::Text &get_label() { return text; }
+
   void set_text(const std::string &str);
 
   std::string get_text();
 
   void handle_inputs(sf::Event event) override {}
 
-  UILabel(const std::string &str, const sf::Vector2f pos);
+  UILabel(const std::string &str = "",
+          const sf::Vector2f pos = sf::Vector2f(0.0F, 0.0F));
 };
 #endif

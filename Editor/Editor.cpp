@@ -146,7 +146,7 @@ void Editor::_update_sprite_name() {
   // Update the text in the UIButton that toggles this sprite, as well.
   for (const auto &[btn_ref, sprite_id] : btn_id_pairs) {
     if (sprite_id == selected_sprite->id) {
-      btn_ref.get()->text.setText(selected_sprite->name);
+      btn_ref.get()->text.set_text(selected_sprite->name);
       break; // There's no reason two buttons are assigned to a single sprite.
     }
   }
@@ -160,7 +160,7 @@ void Editor::select_sprite_by_id(int id) {
     if (sprite.id == id) {
       currently_selected_sprite_id = id;
       sprite_name.set_text(sprite.name);
-      sprite_pos.setText(_position_to_string(sprite.position));
+      sprite_pos.set_text(_position_to_string(sprite.position));
       sprite_texture_name.set_text(sprite.texture);
       sprite_layer_value_input.set_text(std::to_string(sprite.layer));
       _highlight_btn_in_list(sprite.id);
@@ -438,7 +438,7 @@ void Editor::_process_2D_gizmo() {
   gizmo_2D.Render();
 
   auto new_pos = target_sprite->getPosition();
-  sprite_pos.setText(_position_to_string(new_pos));
+  sprite_pos.set_text(_position_to_string(new_pos));
 
   // Setting the position again assuming the position was changed by the
   // gizmo.

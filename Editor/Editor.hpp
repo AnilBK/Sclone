@@ -4,9 +4,9 @@
 #include "../CodeGen/CodeGenerator.hpp"
 #include "../Globals.hpp"
 #include "../UI/Container.hpp"
-#include "../UI/Label.hpp"
 #include "../UI/TabBar.hpp"
 #include "../UI/UIButton.hpp"
+#include "../UI/UILabel.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../UI/UISprite.hpp"
 #include "../block/Block.hpp"
@@ -49,11 +49,11 @@ private:
   // Inspector.
   UILineInput sprite_name = UILineInput("Cat");
   // UIButton sprite_visibility = UIButton("Visible"); Not Used At the moment.
-  Label sprite_pos = Label("Position: X: Y:");
-  Label sprite_texture = Label("Texture:");
+  UILabel sprite_pos = UILabel("Position: X: Y:");
+  UILabel sprite_texture = UILabel("Texture:");
   UILineInput sprite_texture_name = UILineInput("cat.png");
 
-  Label sprite_layer_label = Label("Layer:");
+  UILabel sprite_layer_label = UILabel("Layer:");
   UILineInput sprite_layer_value_input = UILineInput("0");
   UIButton sprite_move_layer_up = UIButton("+");
   UIButton sprite_move_layer_down = UIButton("-");
