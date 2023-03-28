@@ -11,7 +11,7 @@ sf::Vector2f UIButton::text_size() { return text.rect_size(); }
 
 sf::Vector2f UIButton::rect_size() { return text_size() + (padding * 2.0f); }
 
-void UIButton::fit_text_to_size(sf::Vector2f new_size) {
+void UIButton::fit_to_size(sf::Vector2f new_size) {
   auto diff = new_size - text_size();
   diff *= 0.5f;
   padding = diff;
