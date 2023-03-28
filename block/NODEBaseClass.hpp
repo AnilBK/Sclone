@@ -4,6 +4,7 @@
 #include "../Globals.hpp"
 #include "../UI/UIButton.hpp"
 #include "../UI/UIDropDown.hpp"
+#include "../UI/UILabel.hpp"
 #include "../UI/UILineInput.hpp"
 #include <initializer_list>
 
@@ -47,15 +48,23 @@ public:
 };
 
 class LabelNode : public NODEBaseClass {
+private:
+  UILabel label = UILabel("", {0.0F, 0.0F});
+
 public:
   LabelNode(const std::string &p_text_str, const std::string &p_bind_str = "")
       : NODEBaseClass(p_text_str, p_bind_str) {
     type = NODE_TYPE::LABEL;
+    label.set_text(p_text_str);
   }
 
   sf::Vector2f rect_size() override;
 
+  void set_position(sf::Vector2f pos) override;
+
   void Render() override;
+
+  void RenderDebug() override;
 };
 
 class ButtonNode : public NODEBaseClass {

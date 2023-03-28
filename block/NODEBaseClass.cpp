@@ -30,11 +30,22 @@ bool NODEBaseClass::left_click_action() { return false; }
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-sf::Vector2f LabelNode::rect_size() {
-  return {std::max(text_rect_size(text).x, min_size().x) + 15, min_size().y};
+sf::Vector2f LabelNode::rect_size() { return label.get_actual_text_size(); }
+
+void LabelNode::set_position(sf::Vector2f pos) {
+  NODEBaseClass::set_position(pos);
+  label.setPosition(pos);
 }
 
-void LabelNode::Render() { draw_text(text, _pos); }
+void LabelNode::Render() { label.Render(); }
+
+void LabelNode::RenderDebug() {
+  sf::RectangleShape r;
+  r.setPosition(label.get_actual_text_position());
+  r.setSize(rect_size());
+  r.setFillColor(sf::Color(255, 0, 0, 200));
+  window.draw(r);
+}
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
