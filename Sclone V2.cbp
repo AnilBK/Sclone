@@ -73,6 +73,8 @@
 		<Unit filename="UI/UIButton.hpp" />
 		<Unit filename="UI/UIDropDown.cpp" />
 		<Unit filename="UI/UIDropDown.hpp" />
+		<Unit filename="UI/UILabel.cpp" />
+		<Unit filename="UI/UILabel.hpp" />
 		<Unit filename="UI/UILineInput.cpp" />
 		<Unit filename="UI/UILineInput.hpp" />
 		<Unit filename="UI/UISprite.cpp" />
