@@ -165,7 +165,7 @@ public:
     built_in_blocks_tab_bar.add_tab("Control Blocks");
     built_in_blocks_tab_bar.add_tab("Draw Blocks");
     built_in_blocks_tab_bar.add_tab("Motion");
-    built_in_blocks_tab_bar.add_tab("Vars..");
+    built_in_blocks_tab_bar.add_tab("Variables");
     built_in_blocks_tab_bar.select_tab(0);
   }
 
