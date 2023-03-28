@@ -8,6 +8,7 @@
 class UIButton : public UIBaseClass {
 private:
   bool mouse_over = false;
+  sf::Vector2f padding{5.0f, 5.0f};
 
 public:
   // VVV Public because TabBar class requires it.
@@ -29,6 +30,7 @@ public:
   bool is_clicked() { return clicked; }
 
   sf::Vector2f text_size();
+  void fit_to_size(sf::Vector2f new_size);
 
   sf::Vector2f getPosition() override;
   void setPosition(sf::Vector2f pos) override;

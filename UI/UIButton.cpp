@@ -9,9 +9,12 @@ void UIButton::setPosition(sf::Vector2f pos) { text.setPosition(pos); }
 
 sf::Vector2f UIButton::text_size() { return text.rect_size(); }
 
-sf::Vector2f UIButton::rect_size() {
-  sf::Vector2f padding{5.0f, 5.0f};
-  return text_size() + (padding * 2.0f);
+sf::Vector2f UIButton::rect_size() { return text_size() + (padding * 2.0f); }
+
+void UIButton::fit_text_to_size(sf::Vector2f new_size) {
+  auto diff = new_size - text_size();
+  diff *= 0.5f;
+  padding = diff;
 }
 
 void UIButton::RenderDebug() {
