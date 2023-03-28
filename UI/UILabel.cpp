@@ -22,6 +22,8 @@ void UILabel::set_text(const std::string &str) {
   update_internal();
 }
 
+std::string UILabel::get_text() { return text.getString(); }
+
 sf::Vector2f UILabel::rect_size() {
   sf::FloatRect textBounds = text.getGlobalBounds();
   return sf::Vector2f(textBounds.width, textBounds.height);
@@ -55,4 +57,15 @@ UILabel::UILabel(const std::string &str, const sf::Vector2f pos) {
 void UILabel::Render() {
   // window.draw(outline);
   window.draw(text);
+}
+
+void UILabel::RenderDebug() {
+  /*
+  sf::RectangleShape debug_shape;
+  debug_shape.setPosition(get_actual_text_position());
+  debug_shape.setSize(get_actual_text_size());
+  debug_shape.setFillColor(sf::Color(255, 0, 0, 200));
+  window.draw(debug_shape);
+  */
+  window.draw(outline);
 }

@@ -25,9 +25,13 @@ public:
 
   void Render() override;
 
-  sf::RectangleShape get_rectangle() { return outline; }
+  void RenderDebug() override;
+
+  const sf::RectangleShape &get_rectangle() { return outline; }
 
   void set_text(const std::string &str);
+
+  std::string get_text();
 
   void handle_inputs(sf::Event event) override {}
 

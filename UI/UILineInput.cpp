@@ -71,7 +71,7 @@ void UILineInput::Render() {
     _draw_button(getPosition(), rect_size());
   }
 
-  text.setText(get_text() + (show_cursor ? '_' : ' '));
+  text.set_text(get_text() + (show_cursor ? '_' : ' '));
   text.Render();
 }
 

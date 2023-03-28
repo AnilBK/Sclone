@@ -64,8 +64,6 @@
 		<Unit filename="Globals.hpp" />
 		<Unit filename="UI/Container.cpp" />
 		<Unit filename="UI/Container.hpp" />
-		<Unit filename="UI/Label.cpp" />
-		<Unit filename="UI/Label.hpp" />
 		<Unit filename="UI/TabBar.cpp" />
 		<Unit filename="UI/TabBar.hpp" />
 		<Unit filename="UI/UIBaseClass.hpp" />

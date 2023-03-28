@@ -1,8 +1,8 @@
 #ifndef UI_LINE_INPUT_HPP
 #define UI_LINE_INPUT_HPP
 
-#include "Label.hpp"
 #include "UIBaseClass.hpp"
+#include "UILabel.hpp"
 #include <functional>
 
 class UILineInput : public UIBaseClass {
@@ -21,7 +21,7 @@ public:
   // Things to do when enter is pressed on the Keyboard.
   std::function<void()> enter_pressed_callback;
 
-  Label text;
+  UILabel text = UILabel("", {0.0F, 0.0F});
 
   sf::Clock clock;
 
@@ -39,8 +39,8 @@ public:
   bool is_flat = true;
 
   UILineInput(const std::string &btn_text) {
-    text.setText(btn_text);
-    set_text(text.getText());
+    text.set_text(btn_text);
+    set_text(text.get_text());
   }
 
   void set_text(const std::string &p_input_text);

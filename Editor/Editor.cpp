@@ -2,7 +2,7 @@
 #include <cstdlib>
 
 int Editor::_selected_sprite_layer() {
-  int layer_value = std::stoi(sprite_layer_value_input.text.getText());
+  int layer_value = std::stoi(sprite_layer_value_input.text.get_text());
   return layer_value;
 }
 
