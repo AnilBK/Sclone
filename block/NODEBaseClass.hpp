@@ -103,20 +103,27 @@ public:
   void deselect_node() override;
 };
 
-class LineInputAttachFieldNode : public NODEBaseClass {
+enum class InputType { TEXT, NUMBER };
+
+class LineInputNode : public NODEBaseClass {
 
 private:
   UILineInput text_area;
 
 public:
-  LineInputAttachFieldNode(const std::string &p_text_str,
-                           const std::string &p_bind_str = "")
+  LineInputNode(const std::string &p_text_str,
+                const std::string &p_bind_str = "",
+                InputType input_type = InputType::TEXT)
       : NODEBaseClass(p_text_str, p_bind_str), text_area("") {
     type = NODE_TYPE::LINE_INPUT_ATTACH_FIELD;
     text_area.line_input_active = false;
     text_area.is_flat = false;
-    // Make it little bit wider than it is as used for other editor UI's.
-    text_area.min_size.x = 75.0F;
+
+    if (input_type == InputType::TEXT) {
+      text_area.min_size.x = 65.0F;
+    } else if (input_type == InputType::NUMBER) {
+      text_area.min_size.x = 30.0F;
+    }
   }
 
   sf::Vector2f rect_size() override;

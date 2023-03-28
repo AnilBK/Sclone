@@ -80,34 +80,30 @@ void PickWithMouseNode::deselect_node() {
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-sf::Vector2f LineInputAttachFieldNode::rect_size() {
-  return text_area.rect_size();
-}
+sf::Vector2f LineInputNode::rect_size() { return text_area.rect_size(); }
 
-std::string LineInputAttachFieldNode::get_text() {
-  return text_area.get_text_no_prefix();
-}
+std::string LineInputNode::get_text() { return text_area.get_text_no_prefix(); }
 
-void LineInputAttachFieldNode::set_text(const std::string &str) {
+void LineInputNode::set_text(const std::string &str) {
   text_area.set_text(str);
 }
 
-bool LineInputAttachFieldNode::left_click_action() {
+bool LineInputNode::left_click_action() {
   pressed = true;
   text_area.line_input_active = true;
   return true;
 }
 
-void LineInputAttachFieldNode::set_position(sf::Vector2f pos) {
+void LineInputNode::set_position(sf::Vector2f pos) {
   NODEBaseClass::set_position(pos);
   text_area.setPosition(pos);
 }
 
-void LineInputAttachFieldNode::handle_inputs(sf::Event event) {
+void LineInputNode::handle_inputs(sf::Event event) {
   text_area.handle_inputs(event);
 }
 
-void LineInputAttachFieldNode::Render() { text_area.Render(); }
+void LineInputNode::Render() { text_area.Render(); }
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////

@@ -32,7 +32,7 @@ public:
   bool allows_multi_line = false;
   bool line_input_active = false;
 
-  sf::Vector2f min_size = {30, 40}; //{75, 40};
+  sf::Vector2f min_size = {20, 25};
 
   // When button is flat the button renders like a normal text.
   // It shows the HAND cursor to let know it is clickable.
