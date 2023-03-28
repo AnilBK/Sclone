@@ -98,15 +98,6 @@ isCachedMousePosOverRect(const sf::FloatRect rect) {
   // We don't need that.
 }
 
-static void init_global_font_and_label() {
-  ERR_CRASH_IF(!font.loadFromFile("OpenSans-Regular.ttf"),
-               "Error Loading Font.");
-  draw_text_label.setFont(font);
-  draw_text_label.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
-  draw_text_label.setPosition(sf::Vector2f(20, 20));
-  draw_text_label.setFillColor(sf::Color::Black);
-}
-
 [[nodiscard]] static sf::Vector2f text_rect_size(const std::string &str) {
   draw_text_label.setString(str);
   auto bounds = draw_text_label.getGlobalBounds();
