@@ -151,16 +151,21 @@ void BlockAttachNode::_update_internal_sizes() {
 
 void BlockAttachNode::set_enclosed_rect_size(sf::Vector2f p_size) {
   enclosed_rect_size = p_size;
+  vertical_line.setSize({15, enclosed_rect_size.y});
 }
 
 sf::Vector2f BlockAttachNode::rect_size() { return enclosed_rect_size; }
+
+sf::Vector2f BlockAttachNode::_get_attach_block_position() {
+  return _pos + sf::Vector2f{15.0f, 0.0f};
+}
 
 sf::FloatRect BlockAttachNode::_attachable_block_snap_hint_rect() {
   // The attachable block starts from the top left of the vertical 'L' shaped
   // line.
   // What is supposed to be snap highlight.
   auto snap_rect_size = sf::Vector2f(250.0f, 10.0f);
-  auto snap_rect_position = _pos + sf::Vector2f{15.0f, 0.0f};
+  auto snap_rect_position = _get_attach_block_position();
   return sf::FloatRect{snap_rect_position, snap_rect_size};
 }
 
@@ -181,19 +186,23 @@ bool BlockAttachNode::can_snap_block_inside() {
   return isMouseOverRect(_attachable_block_snap_hint_rect());
 }
 
+void BlockAttachNode::set_position(sf::Vector2f pos) {
+  NODEBaseClass::set_position(pos);
+  if (attached_block != nullptr) {
+    attached_block->set_position(_get_attach_block_position());
+  }
+
+  vertical_line.setPosition(pos);
+  horizontal_line.setPosition(pos +
+                              sf::Vector2f(0.0f, vertical_line.getSize().y));
+}
+
 // The rect size with the L-shaped outlines.
 sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
-  auto l_shape_pos = _pos;
-  sf::Vector2f l_shape_size{15, rect_size().y};
-
-  sf::FloatRect l_shape_rect(l_shape_pos, l_shape_size);
+  sf::FloatRect l_shape_rect = vertical_line.getGlobalBounds();
 
   if (draw_bottom_part) {
-    auto l_shape_bottom_pos = _pos + sf::Vector2f(0.0f, l_shape_size.y);
-    auto l_shape_bottom_size = sf::Vector2f(300, 45.0f);
-
-    sf::FloatRect l_shape_bottom_rect(l_shape_bottom_pos, l_shape_bottom_size);
-
+    sf::FloatRect l_shape_bottom_rect = horizontal_line.getGlobalBounds();
     l_shape_rect = merge_rects(l_shape_rect, l_shape_bottom_rect);
   }
 
@@ -201,27 +210,9 @@ sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
 }
 
 void BlockAttachNode::Render() {
-  if (attached_block != nullptr) {
-    attached_block->set_position(_pos + sf::Vector2f(15.0f, 0.0f));
+  window.draw(vertical_line);
+
+  if (draw_bottom_part) {
+    window.draw(horizontal_line);
   }
-
-  // Draw the long vertical line on the left.
-  sf::RectangleShape r;
-  r.setPosition(_pos);
-  r.setSize({15, enclosed_rect_size.y}); //{15, 2 * 45.0f};
-  r.setFillColor(sf::Color::Yellow);
-  window.draw(r);
-
-  if (!draw_bottom_part) {
-    return;
-  }
-
-  // The horizontal block on the bottom.
-  // Which marks the end of the block.
-  sf::RectangleShape r2;
-  r2.setPosition(_pos + sf::Vector2f(0.0f, r.getSize().y));
-  // A block is 45 units.
-  r2.setSize({300, 45.0f});
-  r2.setFillColor(sf::Color::Yellow);
-  window.draw(r2);
 }

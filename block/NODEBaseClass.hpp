@@ -171,9 +171,21 @@ public:
 
 class BlockAttachNode : public NODEBaseClass {
 private:
-  sf::Vector2f enclosed_rect_size{15, 2 * 45.0f};
+  sf::Vector2f enclosed_rect_size;
+
+  /// @brief The long vertical line on the left of the 'L'.
+  sf::RectangleShape vertical_line;
+
+  /// @brief The horizontal block on the bottom of the 'L' which marks the end
+  /// of the block.
+  sf::RectangleShape horizontal_line;
 
   sf::FloatRect _attachable_block_snap_hint_rect();
+
+  /// @brief Returns the position inside the block where other block is attached
+  /// to.
+  /// @return Position.
+  sf::Vector2f _get_attach_block_position();
 
 public:
   Block *attached_block;
@@ -193,6 +205,12 @@ public:
       : NODEBaseClass(p_text_str, p_bind_str), attached_block(nullptr),
         draw_bottom_part(p_draw_bottom_part) {
     type = NODE_TYPE::BLOCK_ATTACH_NODE;
+    set_enclosed_rect_size({15, 45.0f});
+
+    vertical_line.setFillColor(sf::Color::Yellow);
+
+    horizontal_line.setFillColor(sf::Color::Yellow);
+    horizontal_line.setSize({240, 45.0f});
   }
 
   void _update_internal_sizes();
@@ -208,6 +226,8 @@ public:
 
   // The rect size with the L-shaped outlines.
   sf::FloatRect rect_size_with_outlines();
+
+  void set_position(sf::Vector2f pos) override;
 
   void Render() override;
 };
