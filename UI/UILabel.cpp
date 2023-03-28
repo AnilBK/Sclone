@@ -5,9 +5,22 @@ void UILabel::setPosition(sf::Vector2f pos) {
   update_internal();
 }
 
+sf::Vector2f UILabel::get_actual_text_position() {
+  const auto bounds = get_rectangle().getGlobalBounds();
+  return {bounds.left, bounds.top};
+}
+
+sf::Vector2f UILabel::get_actual_text_size() {
+  const auto bounds = get_rectangle().getGlobalBounds();
+  return {bounds.width, bounds.height};
+}
+
 sf::Vector2f UILabel::getPosition() { return text.getPosition(); }
 
-void UILabel::set_text(const std::string &str) { text.setString(str); }
+void UILabel::set_text(const std::string &str) {
+  text.setString(str);
+  update_internal();
+}
 
 sf::Vector2f UILabel::rect_size() {
   sf::FloatRect textBounds = text.getGlobalBounds();

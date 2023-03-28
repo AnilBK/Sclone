@@ -16,6 +16,9 @@ private:
 public:
   sf::Vector2f getPosition() override;
 
+  sf::Vector2f get_actual_text_position();
+  sf::Vector2f get_actual_text_size();
+
   void setPosition(sf::Vector2f) override;
 
   sf::Vector2f rect_size() override;
