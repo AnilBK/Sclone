@@ -10,7 +10,7 @@ private:
 public:
   Label(const std::string &p_label = "") {
     label.setFont(font);
-    label.setCharacterSize(32);
+    label.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
     label.setPosition(sf::Vector2f(65, 200));
     label.setFillColor(sf::Color::Black);
     setText(p_label);

@@ -44,6 +44,7 @@ int main() {
   sf::Text show_fps_btn;
   show_fps_btn.setString("FPS:");
   show_fps_btn.setFont(font);
+  show_fps_btn.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
   show_fps_btn.setPosition(sf::Vector2f(5, 40));
   show_fps_btn.setFillColor(sf::Color::Black);
 #endif
@@ -52,6 +53,7 @@ int main() {
   sf::Text show_mouse_pos_text;
   show_mouse_pos_text.setString("");
   show_mouse_pos_text.setFont(font);
+  show_mouse_pos_text.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
   show_mouse_pos_text.setPosition(sf::Vector2f(5, 5));
   show_mouse_pos_text.setFillColor(sf::Color::Black);
 #endif
