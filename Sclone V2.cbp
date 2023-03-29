@@ -77,6 +77,8 @@
 		<Unit filename="UI/UILineInput.hpp" />
 		<Unit filename="UI/UISprite.cpp" />
 		<Unit filename="UI/UISprite.hpp" />
+		<Unit filename="Utils.cpp" />
+		<Unit filename="Utils.hpp" />
 		<Unit filename="block/Block.cpp" />
 		<Unit filename="block/Block.hpp" />
 		<Unit filename="block/BlockBinder.cpp" />

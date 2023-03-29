@@ -1,4 +1,7 @@
 #include "Block.hpp"
+#include "../Utils.hpp"
+
+using namespace MATH_UTILITIES;
 
 bool Block::is_mouse_over() { return isMouseOverSprite(block_rect); }
 
@@ -449,6 +452,7 @@ void Block::_apply_editor_shortcut_macros(std::string &code) {
   // EDITOR SHORCUT MACROS:
   //  E.g: Writing #POS# in any input fields of the editor -> gets position
   //  of the current sprite.
+  using namespace STRING_UTILITIES;
   replaceAll(code, "#POS#", "##SPRITE_NAME##.getPosition()");
   replaceAll(code, "#WIN_W#", "width");
   replaceAll(code, "#WIN_H#", "height");
@@ -472,28 +476,3 @@ std::string Block::get_code_for_init() {
 
   return code;
 }
-
-namespace BLOCK_UTILITIES {
-bool is_forever_block(const Block &block) {
-  // The first child of "Forever" Block has text "Forever".
-  return std::any_of(block.childrens.begin(), block.childrens.end(),
-                     [](std::shared_ptr<NODEBaseClass> p_block) {
-                       return p_block->get_text() == "Forever";
-                     });
-}
-
-bool is_input_block(const Block &block) {
-  return std::any_of(block.childrens.begin(), block.childrens.end(),
-                     [](std::shared_ptr<NODEBaseClass> p_block) {
-                       return p_block->get_text() == "When It's Clicked";
-                     });
-}
-
-bool is_program_starts_block(const Block &block) {
-  return std::any_of(block.childrens.begin(), block.childrens.end(),
-                     [](std::shared_ptr<NODEBaseClass> p_block) {
-                       return p_block->get_text() == "When Program Starts";
-                     });
-}
-
-} // namespace BLOCK_UTILITIES

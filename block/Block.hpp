@@ -133,10 +133,4 @@ public:
   std::optional<std::string> get_bound_value(const std::string &query) const;
 };
 
-namespace BLOCK_UTILITIES {
-bool is_forever_block(const Block &block);
-bool is_input_block(const Block &block);
-bool is_program_starts_block(const Block &block);
-} // namespace BLOCK_UTILITIES
-
 #endif

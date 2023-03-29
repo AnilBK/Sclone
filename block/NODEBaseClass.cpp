@@ -1,4 +1,5 @@
 #include "NODEBaseClass.hpp"
+#include "../Utils.hpp"
 #include "Block.hpp"
 
 sf::Vector2f NODEBaseClass::min_size() { return {35.0f, 45.0f}; }
@@ -203,7 +204,8 @@ sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
 
   if (draw_bottom_part) {
     sf::FloatRect l_shape_bottom_rect = horizontal_line.getGlobalBounds();
-    l_shape_rect = merge_rects(l_shape_rect, l_shape_bottom_rect);
+    l_shape_rect =
+        MATH_UTILITIES::merge_rects(l_shape_rect, l_shape_bottom_rect);
   }
 
   return l_shape_rect;

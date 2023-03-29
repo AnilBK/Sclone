@@ -1,4 +1,7 @@
 #include "CodeGenerator.hpp"
+#include "../Utils.hpp"
+
+using namespace STRING_UTILITIES;
 
 void CodeGenerator::_substitute_sprite_name(std::string &code,
                                             const std::string &sprite_name) {
