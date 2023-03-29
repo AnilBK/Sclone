@@ -66,6 +66,17 @@ void block_sprite_clicked(Block *block_sprite_clicked) {
   block_sprite_clicked->output_code_callback = code_sprite_clicked;
 }
 
+void block_alternate_between(Block *block_alternate_between) {
+  block_alternate_between->add_node(LabelNode("Alternate between this"));
+  block_alternate_between->add_node(BlockAttachNode("", "", true));
+  block_alternate_between->add_node(LabelNode("And This"));
+  block_alternate_between->add_node(BlockAttachNode(""));
+  block_alternate_between->output_code_callback = code_alternate_between;
+  block_alternate_between->output_code_for_init_callback =
+      code_alternate_between_init;
+  block_alternate_between->function_identifier = "block_alternate_between";
+}
+
 // Motion Blocks
 void block_default_character_controller(Block *block_def_char_con) {
   block_def_char_con->add_node(LabelNode("Default Character Controller:"));

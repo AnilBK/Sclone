@@ -28,6 +28,7 @@ void block_if(Block *block_if);
 void block_key_pressed(Block *block_key_pressed);
 void block_sprite_touching(Block *block_sprite_touching);
 void block_sprite_clicked(Block *block_sprite_clicked);
+void block_alternate_between(Block *block_alternate_between);
 
 // Motion Blocks
 void block_default_character_controller(Block *block_def_char_con);

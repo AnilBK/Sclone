@@ -121,6 +121,16 @@ std::string code_draw_text_init(const Block &block) {
   return code;
 }
 
+std::string code_alternate_between_init(const Block &block) {
+  std::string code;
+  code += "bool ##SPRITE_NAME##__flip_flop = true;";
+  return code;
+}
+
+std::string code_alternate_between(const Block &block) {
+  return "if(##SPRITE_NAME##__flip_flop)";
+}
+
 std::string code_sprite_change_x_by(const Block &block) {
   auto x_offset = block.get_bound_value("x_offset").value();
   return "##SPRITE_NAME##.move(sf::Vector2f(" + x_offset + ", 0.0f));";

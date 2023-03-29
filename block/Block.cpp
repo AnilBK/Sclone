@@ -425,6 +425,15 @@ std::string Block::get_code() {
     code += "\n}\n";
   }
 
+  // We could make this a separate callback like 'output_code_callback', but
+  // there's no need to add an additional member to the block class, as most
+  // blocks don't require that.
+  if (function_identifier == "block_alternate_between") {
+    // Toggle the internal state of flip flop node.
+    // See code_alternate_between_init() in 'OutputCodeCallbacks.hpp'.
+    code += "##SPRITE_NAME##__flip_flop = !##SPRITE_NAME##__flip_flop;";
+  }
+
   if (next_block != nullptr) {
     code += next_block->get_code();
   }
