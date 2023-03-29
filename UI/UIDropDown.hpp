@@ -2,7 +2,9 @@
 #define UI_DROPDOWN
 
 #include "UIBaseClass.hpp"
+#include "UILabel.hpp"
 #include <initializer_list>
+#include <memory>
 
 class UIDropDown : public UIBaseClass {
 private:
@@ -20,9 +22,16 @@ private:
 
   // @brief The rect size required for the largest item in the list.
   sf::Vector2f largest_item_rect_size;
-  void _compute_largest_item_rect_size();
 
-  std::vector<std::string> items = {"Item 0", "Item 1", "Item 2"};
+  /// @brief Computes the maximum size that fits all the items in the list. All
+  /// the items in the list are then fit into this size while rendering.
+  void _compute_maximum_size_for_items();
+
+  /// @brief The single label at the base. Clicking this expands the DropDown.
+  UILabel base_label;
+
+  /// @brief All the items in the list.
+  std::vector<std::shared_ptr<UILabel>> items;
 
 public:
   bool dropdown_clicked = false;
@@ -34,15 +43,31 @@ public:
   void handle_inputs(sf::Event event) override;
   void Render() override;
 
-  std::string get_text() { return items.at(currently_selected_index); }
-  std::string get_text(int index) { return items.at(index); }
+  /// @brief Text of the currently selected item.
+  /// @return String containing the text.
+  std::string get_text() {
+    return items.at(currently_selected_index)->get_text();
+  }
 
-  void clear_items() { items.clear(); }
-  void add_items(std::initializer_list<std::string> options) {
-    for (const auto &option : options) {
-      items.push_back(option);
-    }
-    _compute_largest_item_rect_size();
+  void select_item(std::size_t idx) {
+    currently_selected_index = idx;
+    base_label.set_text(get_text());
+  }
+
+  /// @brief Draw a single item with given index.
+  /// @param idx Index of the item to draw.
+  void draw_item(std::size_t idx);
+
+  /// @brief Add a single item name to the list.
+  /// @param str The string to add to the list.
+  void add_item(const std::string &str);
+
+  void add_items(const std::initializer_list<std::string> options);
+
+  UIDropDown(std::initializer_list<std::string> options) {
+    add_items(options);
+    select_item(0);
+    _compute_maximum_size_for_items();
   }
 };
 

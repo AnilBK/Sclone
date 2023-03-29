@@ -150,10 +150,8 @@ public:
   DropDownNode(const std::string &p_text_str,
                const std::string &p_bind_str = "",
                std::initializer_list<std::string> options = {})
-      : NODEBaseClass(p_text_str, p_bind_str) {
+      : NODEBaseClass(p_text_str, p_bind_str), dropdown(options) {
     type = NODE_TYPE::DROP_DOWN;
-    dropdown.clear_items();
-    dropdown.add_items(options);
   }
 
   sf::Vector2f rect_size() override;

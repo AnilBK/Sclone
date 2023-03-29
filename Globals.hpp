@@ -98,18 +98,6 @@ isCachedMousePosOverRect(const sf::FloatRect rect) {
   // We don't need that.
 }
 
-[[nodiscard]] static sf::Vector2f text_rect_size(const std::string &str) {
-  draw_text_label.setString(str);
-  auto bounds = draw_text_label.getGlobalBounds();
-  return {bounds.width, bounds.height};
-}
-
-static void draw_text(const std::string &str, const sf::Vector2f p_position) {
-  draw_text_label.setString(str);
-  draw_text_label.setPosition(p_position);
-  window.draw(draw_text_label);
-}
-
 static void setCursor(sf::Cursor::Type cursor_type) {
   sf::Cursor cursor;
   if (cursor.loadFromSystem(cursor_type)) {
