@@ -39,5 +39,11 @@ public:
 
   UILabel(const std::string &str = "",
           const sf::Vector2f pos = sf::Vector2f(0.0F, 0.0F));
+
+  /// @brief Returns the maximum character size for a given font.
+  /// @param p_text Reference to the text object, whose character size is to be
+  /// calculated.
+  /// @return The maximum size.
+  static std::size_t max_character_size(sf::Text &p_text);
 };
 #endif

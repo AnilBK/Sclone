@@ -69,3 +69,27 @@ void UILabel::RenderDebug() {
   */
   window.draw(outline);
 }
+
+std::size_t UILabel::max_character_size(sf::Text &p_text) {
+  std::string copy = p_text.getString();
+  p_text.setString("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz");
+
+  size_t CharacterSize = p_text.getCharacterSize();
+  auto Font = p_text.getFont();
+  std::string String = p_text.getString().toAnsiString();
+  bool bold = (p_text.getStyle() & sf::Text::Bold);
+
+  std::size_t max_height = 0;
+  for (size_t x = 0; x < p_text.getString().getSize(); ++x) {
+    sf::Uint32 Character = String.at(x);
+
+    const auto &CurrentGlyph = Font->getGlyph(Character, CharacterSize, bold);
+
+    size_t height = CurrentGlyph.bounds.height;
+    max_height = std::max(max_height, height);
+  }
+
+  // Reset back the text to original.
+  p_text.setString(copy);
+  return max_height;
+}
