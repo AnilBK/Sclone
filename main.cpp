@@ -12,9 +12,6 @@ unsigned int width = 800;
 
 sf::Vector2i mouse_position;
 
-// Externs from globals.hpp
-sf::Font font;
-
 /// @brief The main editor window where everything is drawn.
 sf::RenderWindow window;
 
@@ -31,6 +28,7 @@ float get_fps() {
 #endif
 
 int main() {
+  sf::Font font;
   ERR_CRASH_IF(!font.loadFromFile("OpenSans-Regular.ttf"),
                "Error Loading Font.");
 

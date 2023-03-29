@@ -52,9 +52,6 @@ enum BLOCKS_TAB_NAME {
 };
 
 extern sf::Vector2i mouse_position;
-
-extern sf::Font font;
-
 extern sf::RenderWindow window;
 
 constexpr unsigned int DEFAULT_TEXT_FONT_SIZE = 20;
