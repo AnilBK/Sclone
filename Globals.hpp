@@ -54,7 +54,6 @@ enum BLOCKS_TAB_NAME {
 extern sf::Vector2i mouse_position;
 
 extern sf::Font font;
-extern sf::Text draw_text_label;
 
 extern sf::RenderWindow window;
 

@@ -14,7 +14,6 @@ sf::Vector2i mouse_position;
 
 // Externs from globals.hpp
 sf::Font font;
-sf::Text draw_text_label;
 
 /// @brief The main editor window where everything is drawn.
 sf::RenderWindow window;
@@ -31,17 +30,9 @@ float get_fps() {
 }
 #endif
 
-void init_global_font_and_label() {
+int main() {
   ERR_CRASH_IF(!font.loadFromFile("OpenSans-Regular.ttf"),
                "Error Loading Font.");
-  draw_text_label.setFont(font);
-  draw_text_label.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
-  draw_text_label.setPosition(sf::Vector2f(20, 20));
-  draw_text_label.setFillColor(sf::Color::Black);
-}
-
-int main() {
-  init_global_font_and_label();
 
   height = sf::VideoMode::getDesktopMode().height;
   width = sf::VideoMode::getDesktopMode().width;
