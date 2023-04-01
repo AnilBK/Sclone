@@ -240,6 +240,7 @@ public:
     new_sprite_hbox.add_child(new_sprite_name_input);
     new_sprite_hbox.add_child(add_new_sprite_btn);
     user_added_sprites_list_parent.add_child(new_sprite_hbox);
+    user_added_sprites_list_vbox.padding.y = 10.0F;
     user_added_sprites_list_parent.add_child(user_added_sprites_list_vbox);
     user_added_sprites_list_parent.setPosition({15, 110});
 
