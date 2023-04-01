@@ -201,6 +201,9 @@ void BlockAttachNode::set_position(sf::Vector2f pos) {
 // The rect size with the L-shaped outlines.
 sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
   sf::FloatRect l_shape_rect = vertical_line.getGlobalBounds();
+  auto h_b = horizontal_line.getGlobalBounds();
+  l_shape_rect.height += h_b.height;
+  l_shape_rect.width = h_b.width;
 
   if (draw_bottom_part) {
     sf::FloatRect l_shape_bottom_rect = horizontal_line.getGlobalBounds();

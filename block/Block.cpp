@@ -141,26 +141,6 @@ void Block::process_inside_snap_hints(bool attach_block_requested,
   }
 }
 
-sf::Vector2f Block::base_size() {
-  sf::FloatRect merged_rect(position, STARTING_BLOCK_SIZE);
-
-  for (const auto &child : childrens) {
-    if (child->type == BLOCK_ATTACH_NODE) {
-      return {merged_rect.width, merged_rect.height};
-    }
-
-    sf::FloatRect current_rect(child->_pos, child->rect_size());
-    merged_rect = merge_rects(merged_rect, current_rect);
-  }
-
-  // Margins
-  // Account for the block position decreased during padding.
-  merged_rect.width += padding_left + padding_right;
-  merged_rect.height += padding_up; // + padding_down;
-
-  return {merged_rect.width, merged_rect.height};
-}
-
 sf::FloatRect Block::full_rect() {
   // Top most block's rect.
   sf::FloatRect rect = block_rect.getGlobalBounds();
@@ -207,29 +187,84 @@ void Block::update_children_sizes() {
   }
 }
 
-void Block::resort_children() {
-  update_children_sizes();
-
+void Block::_resort_children_single_liner() {
+  // Most blocks are single lines. For such blocks, we need not perform
+  // all the if-checks and lots of additional code doesn't need to be
+  // performed.
+  // resort_children_multiple() handles this case as well.
   sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+  float max_height = 0.0f;
+
+  for (auto &child : childrens) {
+    child->set_position(pos);
+    auto child_size = child->rect_size();
+    pos.x += child_size.x + spacing;
+    max_height = std::max(max_height, child_size.y);
+  }
+
+  block_rect.setSize({pos.x + padding_right - position.x,
+                      max_height + padding_up + padding_down});
+}
+
+void Block::_resort_children_multiple() {
+  // If there are children with multiple linebreaks, then we have to care about
+  // about alignment of different children. This dirty functions tries to handle
+  // all those edge-cases.
+  sf::Vector2f pos = position + sf::Vector2f(padding_left, padding_up);
+
+  float max_height = 0.0f;
+
+  bool first_line_break_encountered = false;
 
   for (auto &child : childrens) {
     if (child->type == BLOCK_ATTACH_NODE) {
+      if (!first_line_break_encountered) {
+        // First row has completed.
+        // The base size is equal to the size of all the childrens till now.
+        block_rect.setSize({pos.x + padding_right - position.x,
+                            max_height + padding_up + padding_down});
+        // 'padding_up' is already added earlier, so no need to add that again.
+        // 2.0 is outline thickness.
+        pos.y += padding_down + 2.0;
+        first_line_break_encountered = true;
+      }
+
+      // Reset to new line.
       pos.x = position.x;
-      pos.y += STARTING_BLOCK_SIZE.y;
+      pos.y += max_height;
     }
 
     child->set_position(pos);
 
-    pos.x += child->rect_size().x + spacing;
+    auto child_size = child->rect_size();
+
+    pos.x += child_size.x + spacing;
+    max_height = std::max(max_height, child_size.y);
 
     if (child->type == BLOCK_ATTACH_NODE) {
       pos.x = position.x;
-      pos.y += child->rect_size().y;
+      pos.y += child_size.y;
+      // The horizontal line on the bottom the 'BlockAttachNode' is 30px.
+      max_height = 30; // + 2.0F
     }
   }
 
-  // Calculate the values once a frame and cache it.
-  block_rect.setSize(base_size());
+  if (!first_line_break_encountered) {
+    // That means this is a single liner block & we haven't set the base
+    // position yet.
+    block_rect.setSize({pos.x + padding_right - position.x,
+                        max_height + padding_up + padding_down});
+  }
+}
+
+void Block::resort_children() {
+  if (can_block_attach_inside) {
+    update_children_sizes(); // As of now, this is called only for block which
+                             // has a 'BlockAttachNode'.
+    _resort_children_multiple();
+  } else {
+    _resort_children_single_liner();
+  }
 
   auto rect = full_rect();
   block_full_size = {rect.width, rect.height};

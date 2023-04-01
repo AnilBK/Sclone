@@ -203,12 +203,11 @@ public:
       : NODEBaseClass(p_text_str, p_bind_str), attached_block(nullptr),
         draw_bottom_part(p_draw_bottom_part) {
     type = NODE_TYPE::BLOCK_ATTACH_NODE;
-    set_enclosed_rect_size({15, 45.0f});
-
+    set_enclosed_rect_size({15, 30.0f});
     vertical_line.setFillColor(sf::Color::Yellow);
 
     horizontal_line.setFillColor(sf::Color::Yellow);
-    horizontal_line.setSize({240, 45.0f});
+    horizontal_line.setSize({240, 30.0f});
   }
 
   void _update_internal_sizes();
