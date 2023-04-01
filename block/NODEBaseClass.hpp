@@ -169,7 +169,9 @@ public:
 
 class BlockAttachNode : public NODEBaseClass {
 private:
-  sf::Vector2f enclosed_rect_size;
+  /// @brief The full rect that contains all the components of this node like
+  /// the 'attached_block' node.
+  sf::FloatRect actual_full_rect;
 
   /// @brief The long vertical line on the left of the 'L'.
   sf::RectangleShape vertical_line;
@@ -184,9 +186,6 @@ private:
   /// to.
   /// @return Position.
   sf::Vector2f _get_attach_block_position();
-
-  // The rect size with the L-shaped outlines.
-  sf::FloatRect _rect_size_with_outlines();
 
 public:
   Block *attached_block;
@@ -206,19 +205,20 @@ public:
       : NODEBaseClass(p_text_str, p_bind_str), attached_block(nullptr),
         draw_bottom_part(p_draw_bottom_part) {
     type = NODE_TYPE::BLOCK_ATTACH_NODE;
-    set_enclosed_rect_size({15, 30.0f});
-    vertical_line.setFillColor(sf::Color::Yellow);
 
     horizontal_line.setFillColor(sf::Color::Yellow);
     horizontal_line.setSize({240, 30.0f});
+
+    vertical_line.setFillColor(sf::Color::Yellow);
+    vertical_line.setSize({15, 30.0F});
+    update_size();
   }
+
+  void update_size();
 
   sf::FloatRect full_rect();
 
   void _update_internal_sizes();
-
-  // It's size changes depends on the blocks attached to it.
-  void set_enclosed_rect_size(sf::Vector2f p_size);
 
   sf::Vector2f rect_size() override;
 
@@ -227,6 +227,8 @@ public:
   bool can_snap_block_inside();
 
   void set_position(sf::Vector2f pos) override;
+
+  void RenderDebug() override;
 
   void Render() override;
 };

@@ -147,15 +147,36 @@ void BlockAttachNode::_update_internal_sizes() {
   // It is to hint other blocks that they can be snapped to it.
   rec_size.y += 45.0f;
 
-  set_enclosed_rect_size(rec_size);
+  vertical_line.setSize({15, rec_size.y});
+  update_size();
 }
 
-void BlockAttachNode::set_enclosed_rect_size(sf::Vector2f p_size) {
-  enclosed_rect_size = p_size;
-  vertical_line.setSize({15, enclosed_rect_size.y});
+void BlockAttachNode::update_size() {
+  // TODO ?? This can be optimized with some kinds of 'dirty' flag ??
+
+  const auto bottom_line = horizontal_line.getGlobalBounds();
+
+  sf::FloatRect shape_rect = vertical_line.getGlobalBounds();
+  shape_rect.width = bottom_line.width;
+
+  // actual_full_rect = l_shape_rect; <- This gives the size of the rect without
+  // the attached blocks.
+
+  if (draw_bottom_part) {
+    shape_rect.height += bottom_line.height;
+  }
+
+  if (attached_block != nullptr) {
+    shape_rect =
+        MATH_UTILITIES::merge_rects(shape_rect, attached_block->full_rect());
+  }
+
+  actual_full_rect = shape_rect;
 }
 
-sf::Vector2f BlockAttachNode::rect_size() { return enclosed_rect_size; }
+sf::Vector2f BlockAttachNode::rect_size() {
+  return {actual_full_rect.width, actual_full_rect.height};
+}
 
 sf::Vector2f BlockAttachNode::_get_attach_block_position() {
   return _pos + sf::Vector2f{15.0f, 0.0f};
@@ -196,31 +217,19 @@ void BlockAttachNode::set_position(sf::Vector2f pos) {
   vertical_line.setPosition(pos);
   horizontal_line.setPosition(pos +
                               sf::Vector2f(0.0f, vertical_line.getSize().y));
+
+  update_size();
 }
 
-// The rect size with the L-shaped outlines.
-sf::FloatRect BlockAttachNode::_rect_size_with_outlines() {
-  sf::FloatRect l_shape_rect = vertical_line.getGlobalBounds();
-  auto h_b = horizontal_line.getGlobalBounds();
-  l_shape_rect.height += h_b.height;
-  l_shape_rect.width = h_b.width;
+sf::FloatRect BlockAttachNode::full_rect() { return actual_full_rect; }
 
-  if (draw_bottom_part) {
-    sf::FloatRect l_shape_bottom_rect = horizontal_line.getGlobalBounds();
-    l_shape_rect =
-        MATH_UTILITIES::merge_rects(l_shape_rect, l_shape_bottom_rect);
-  }
-
-  return l_shape_rect;
-}
-
-sf::FloatRect BlockAttachNode::full_rect() {
-  sf::FloatRect l_shape_rect = _rect_size_with_outlines();
-  if (attached_block != nullptr) {
-    l_shape_rect =
-        MATH_UTILITIES::merge_rects(l_shape_rect, attached_block->full_rect());
-  }
-  return l_shape_rect;
+void BlockAttachNode::RenderDebug() {
+  auto r = full_rect();
+  sf::RectangleShape rect;
+  rect.setPosition({r.left, r.top});
+  rect.setSize({r.width, r.height});
+  rect.setFillColor(sf::Color(255, 0, 0, 200));
+  window.draw(rect);
 }
 
 void BlockAttachNode::Render() {

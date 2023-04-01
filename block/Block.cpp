@@ -239,6 +239,14 @@ void Block::_resort_children_multiple() {
       pos.x = position.x;
       pos.y += child_size.y;
       // The horizontal line on the bottom the 'BlockAttachNode' is 30px.
+      auto casted = dynamic_cast<BlockAttachNode *>(child.get());
+      if (casted && casted->draw_bottom_part) {
+        // This is to handle a special case, because we want to draw the
+        // remaining children on the bottom of the L shape of the current
+        // 'BlockAttachNode'.
+        pos.y -= 30;
+      }
+
       max_height = 30; // + 2.0F
     }
   }
