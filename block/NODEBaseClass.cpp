@@ -199,7 +199,7 @@ void BlockAttachNode::set_position(sf::Vector2f pos) {
 }
 
 // The rect size with the L-shaped outlines.
-sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
+sf::FloatRect BlockAttachNode::_rect_size_with_outlines() {
   sf::FloatRect l_shape_rect = vertical_line.getGlobalBounds();
   auto h_b = horizontal_line.getGlobalBounds();
   l_shape_rect.height += h_b.height;
@@ -211,6 +211,15 @@ sf::FloatRect BlockAttachNode::rect_size_with_outlines() {
         MATH_UTILITIES::merge_rects(l_shape_rect, l_shape_bottom_rect);
   }
 
+  return l_shape_rect;
+}
+
+sf::FloatRect BlockAttachNode::full_rect() {
+  sf::FloatRect l_shape_rect = _rect_size_with_outlines();
+  if (attached_block != nullptr) {
+    l_shape_rect =
+        MATH_UTILITIES::merge_rects(l_shape_rect, attached_block->full_rect());
+  }
   return l_shape_rect;
 }
 

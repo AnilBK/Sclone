@@ -185,6 +185,9 @@ private:
   /// @return Position.
   sf::Vector2f _get_attach_block_position();
 
+  // The rect size with the L-shaped outlines.
+  sf::FloatRect _rect_size_with_outlines();
+
 public:
   Block *attached_block;
   bool draw_bottom_part = true;
@@ -210,6 +213,8 @@ public:
     horizontal_line.setSize({240, 30.0f});
   }
 
+  sf::FloatRect full_rect();
+
   void _update_internal_sizes();
 
   // It's size changes depends on the blocks attached to it.
@@ -220,9 +225,6 @@ public:
   void _show_snap_for_attachable_block();
 
   bool can_snap_block_inside();
-
-  // The rect size with the L-shaped outlines.
-  sf::FloatRect rect_size_with_outlines();
 
   void set_position(sf::Vector2f pos) override;
 

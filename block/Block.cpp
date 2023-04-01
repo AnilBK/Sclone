@@ -152,13 +152,7 @@ sf::FloatRect Block::full_rect() {
     auto nodes = get_block_attach_nodes(false);
 
     for (auto &node : nodes) {
-      sf::FloatRect l_shape_rect = node->rect_size_with_outlines();
-
-      if (auto attached_block = node->attached_block;
-          attached_block != nullptr) {
-        l_shape_rect = merge_rects(l_shape_rect, attached_block->full_rect());
-      }
-
+      sf::FloatRect l_shape_rect = node->full_rect();
       rect = merge_rects(rect, l_shape_rect);
     }
   }
