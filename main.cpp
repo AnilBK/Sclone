@@ -103,7 +103,5 @@ int main() {
     MainAlert.MainLoop();
   }
 
-  std::cout << "\nProgram Terminated.\n\n";
-
   return 0;
 }

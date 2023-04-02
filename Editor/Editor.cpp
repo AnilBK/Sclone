@@ -464,8 +464,12 @@ void Editor::Render() {
 
 void Editor::spawn_and_bind_editor_blocks() {
 
+  constexpr bool DEBUG_BLOCK_SPAWN_BIND_STATS = false;
+
   auto SPAWN_EDITOR_BLOCK_AND_BIND = [&](const block_generator_fn_ptr &fn_ptr) {
-    std::cout << "Spawn And Bind.\n";
+    if (DEBUG_BLOCK_SPAWN_BIND_STATS) {
+      std::cout << "Spawn And Bind.\n";
+    }
 
     // Create a block with the fn_ptr.
     // The fn_ptr takes a block, and adds all the required children.
@@ -479,8 +483,10 @@ void Editor::spawn_and_bind_editor_blocks() {
     // with the function that generated it in the first place.
     bound_blocks.bind_function(block.function_identifier, fn_ptr);
 
-    std::cout << "Function Identifier: " << block.function_identifier << "\n";
-    std::cout << "[Done] Spawn And Bind.\n";
+    if (DEBUG_BLOCK_SPAWN_BIND_STATS) {
+      std::cout << "Function Identifier: " << block.function_identifier << "\n";
+      std::cout << "[Done] Spawn And Bind.\n";
+    }
   };
   // The advantage of this lambda is we don't need to manually register the
   // functions. In this way, we create a block for the editor and use that
@@ -529,11 +535,13 @@ void Editor::spawn_and_bind_editor_blocks() {
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_vector2f);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_vector2f);
 
-  std::cout << "\n[Done]Creating Editor Blocks:\n\n";
+  if (DEBUG_BLOCK_SPAWN_BIND_STATS) {
+    std::cout << "\n[Done]Creating Editor Blocks:\n\n";
+  }
 }
 
 void Editor::_spawn_block_at_mouse_pos(const Block &block) {
-  std::cout << "User Adding a Block.\n";
+  // std::cout << "User Adding a Block.\n";
 
   block_generator_fn_ptr fn_ptr =
       bound_blocks.get_bound_block_gen_fn(block.function_identifier).value();
@@ -550,7 +558,7 @@ void Editor::_spawn_block_at_mouse_pos(const Block &block) {
   // blocks render below the tab bar. So, this is kinda hack.
   // toggle_tab_bar_folding();
 
-  std::cout << "[Done]User Adding a Block.\n\n";
+  // std::cout << "[Done]User Adding a Block.\n\n";
 }
 
 void Editor::_render_block_spawner_tab() {

@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+constexpr inline bool DEBUG_OBJECT_STATS = false;
+
 class Subject {
 public:
   std::string message;

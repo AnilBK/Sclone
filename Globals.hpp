@@ -55,6 +55,7 @@ extern sf::Vector2i mouse_position;
 extern sf::RenderWindow window;
 
 constexpr unsigned int DEFAULT_TEXT_FONT_SIZE = 20;
+constexpr bool DEBUG_BLOCK_SPAWN_STATS = false;
 
 [[nodiscard]] static inline sf::Vector2f
 get_mouse_position(const sf::RenderWindow &p_window) {
