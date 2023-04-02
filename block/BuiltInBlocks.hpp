@@ -36,7 +36,9 @@ void block_go_to_xy(Block *block_go_to_xy);
 void block_glide_to_xy(Block *block_glide_to_xy);
 void block_glide_point_to_point(Block *block_glide_point_to_point);
 void block_change_x_by(Block *block_change_x_by);
+void block_change_x_by_in(Block *block_change_x_by_in);
 void block_change_y_by(Block *block_change_y_by);
+void block_change_y_by_in(Block *block_change_y_by_in);
 
 // Draw Primitive Blocks.
 void block_say(Block *block_say);

@@ -258,6 +258,8 @@ std::set<std::string> CodeGenerator::get_all_modules_required() {
       {"block_default_character_controller", "CHARACTER_MOVEMENT"},
       {"block_say", "BUBBLE_TEXT"},
       {"block_draw_text", "DRAW_TEXT"},
+      {"block_change_x_by_in", "MOVE_TO_POINT"},
+      {"block_change_y_by_in", "MOVE_TO_POINT"},
       {"block_glide_to_xy", "MOVE_TO_POINT"},
       {"block_glide_point_to_point", "MOVE_POINT_TO_POINT"}};
 

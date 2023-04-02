@@ -8,167 +8,6 @@
 
 sf::RenderWindow window;
 
-sf::Font font;
-
-sf::Text bubble_text;
-void init_bubble_label() {
-  bubble_text.setFont(font);
-  bubble_text.setCharacterSize(26);
-  bubble_text.setFillColor(sf::Color::Black);
-}
-
-void draw_bubble_message(const std::string &message,
-                         const sf::Vector2f bubble_pos) {
-  // .------------.
-  // .            .
-  // .----- ------.
-  //       v
-  //       ! Bubble Position
-
-  bubble_text.setString(message);
-  bubble_text.setFillColor(sf::Color::Black);
-  const auto bubble_text_size = bubble_text.getGlobalBounds().getSize();
-
-  const sf::Vector2f padding{10.0f, 10.0f};
-
-  //////////////////////////////////////////
-  // The background of the speech bubble.//
-  ////////////////////////////////////////
-  sf::Vector2f bg_box_pos = bubble_pos;
-  // For the callout triangle.
-  bg_box_pos -= sf::Vector2f(0.0f, 10.0f);
-  // To make the text same size left and right of the callout triangle.
-  bg_box_pos -= sf::Vector2f(bubble_text_size.x * 0.5f, bubble_text_size.y);
-  // To reach top left of the rect from the bottom, we pass throught vertical
-  // padding twice and horizontal padding once.
-  bg_box_pos -= sf::Vector2f(padding.x, padding.y * 2.0f);
-
-  sf::Vector2f bg_box_size = bubble_text_size;
-  // Add left/right and top/down padding to the container.
-  bg_box_size += sf::Vector2f(padding.x * 2.0f, padding.y * 2.0f);
-
-  sf::RectangleShape callout_rect;
-  callout_rect.setPosition(bg_box_pos);
-  callout_rect.setSize(bg_box_size);
-  callout_rect.setFillColor(sf::Color::Cyan);
-  window.draw(callout_rect);
-
-  //////////////////////////////////////////
-  //        The Actual Message           //
-  ////////////////////////////////////////
-  // Center the text to the rectangle.
-  bubble_text.setOrigin(bubble_text.getGlobalBounds().getSize() / 2.0f +
-                        bubble_text.getLocalBounds().getPosition());
-  bubble_text.setPosition(callout_rect.getPosition() +
-                          (callout_rect.getSize() / 2.0f));
-  window.draw(bubble_text);
-
-  //////////////////////////////////////////
-  //  Speech Callout Triangle tail.      //
-  ////////////////////////////////////////
-  // The point on the bg rect where the triangle starts.
-
-  // The formation of v of the above figure, which is called callout triangle.
-  // tl......tr
-  //    \   \ 
-  //     \  \
-  //       \\
-  //         . b
-
-  // The top left, bottom and top right points that specify the triangle.
-  const sf::Vector2f tri_start_point = bubble_pos - sf::Vector2f(8.0f, 10.0f);
-  const sf::Vector2f tl = tri_start_point;
-  const sf::Vector2f b = bubble_pos;
-  const sf::Vector2f tr = tri_start_point + sf::Vector2f(10.0f, 0.0f);
-
-  sf::ConvexShape callout_triangle;
-  callout_triangle.setPointCount(3);
-  callout_triangle.setPoint(0, tl);
-  callout_triangle.setPoint(1, b);
-  callout_triangle.setPoint(2, tr);
-  callout_triangle.setFillColor(sf::Color::Cyan);
-
-  window.draw(callout_triangle);
-}
-
-class bubble_message {
-private:
-  float timer = 0.0f;
-
-public:
-  sf::Sprite *target_sprite_ptr;
-
-  // A target has 'n' number of messages.
-  // length_msg_pair consists of 'length of the message' and the 'actual
-  // message'.
-  std::vector<std::pair<float, std::string>> length_msg_pair;
-
-  bool can_be_removed() const { return length_msg_pair.empty(); }
-  void Update(float delta_time);
-};
-
-void bubble_message::Update(float delta_time) {
-  if (target_sprite_ptr == nullptr) {
-    return;
-  }
-
-  auto [msg_length, message] = length_msg_pair.at(0);
-
-  const auto bounds = target_sprite_ptr->getGlobalBounds();
-  auto sprite_bubble_pos = bounds.getPosition();
-  sprite_bubble_pos += sf::Vector2f(bounds.width * 0.5f, -10.0f);
-
-  draw_bubble_message(message, sprite_bubble_pos);
-
-  timer += delta_time;
-  if (timer >= msg_length) {
-    timer = 0.0f;
-    // Remove the first message for a given sprite as it was completed.
-    length_msg_pair.erase(length_msg_pair.begin());
-  }
-}
-
-std::vector<bubble_message> bubble_messages;
-
-void add_bubble_message(sf::Sprite *target_sprite_ptr, float length,
-                        const std::string &message) {
-  std::pair<float, std::string> new_msg_pair{length, message};
-
-  // If the 'target sprite' already has a message in the system, then
-  // just append the new message.
-  for (auto &msg : bubble_messages) {
-    if (msg.target_sprite_ptr == target_sprite_ptr) {
-      msg.length_msg_pair.push_back(new_msg_pair);
-      return;
-    }
-  }
-
-  // The 'target sprite' isn't on the system.
-  // So, create an entirely new message.
-  bubble_message new_msg;
-  new_msg.target_sprite_ptr = target_sprite_ptr;
-  new_msg.length_msg_pair.push_back(new_msg_pair);
-  bubble_messages.push_back(new_msg);
-}
-
-void update_bubble_message_system(float delta_time) {
-  if (bubble_messages.empty()) {
-    return;
-  }
-
-  for (auto &bubble_msg : bubble_messages) {
-    bubble_msg.Update(delta_time);
-  }
-
-  // Remove Completed Messages.
-  bubble_messages.erase(std::remove_if(bubble_messages.begin(),
-                                       bubble_messages.end(),
-                                       [](const bubble_message &msg) {
-                                         return msg.can_be_removed();
-                                       }),
-                        bubble_messages.end());
-}
-
 // TODO:Add these Vector2f functions to my custom sfml build.
 float distance_to(sf::Vector2f p1, sf::Vector2f p2) {
   auto x_dt = (p2.x - p1.x);
@@ -192,14 +31,68 @@ bool is_mouse_over(sf::Sprite *sprite) {
   return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
 }
 
-int main() {
+class move_to_point_data {
+private:
+  sf::Vector2f target;
+  sf::Vector2f interpolated_pos;
+  sf::Vector2f unit_vec;
+  float length = 0.0f;
 
-  if (!font.loadFromFile("alaska.ttf")) {
-    std::cout << "Error Loading Font. \n";
-    exit(1);
+  float dt = 1.0f;
+  float time_elapsed = 0.0f;
+
+  sf::Sprite *target_sprite_ptr;
+  bool initialized = false;
+
+public:
+  bool is_valid() const { return time_elapsed <= length; }
+
+  void update(float delta) {
+    if (!initialized) {
+      sf::Vector2f current = target_sprite_ptr->getPosition();
+      interpolated_pos = current;
+      unit_vec = normalized(target - current);
+      dt = distance_to(current, target) / length;
+      initialized = true;
+    }
+
+    time_elapsed += delta;
+    interpolated_pos += (unit_vec * dt * delta);
+
+    if (target_sprite_ptr == nullptr) {
+      std::cout << "nullptr\n";
+      return;
+    }
+    target_sprite_ptr->setPosition(interpolated_pos);
   }
 
-  init_bubble_label();
+  move_to_point_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_target,
+                     float p_length)
+      : target(p_target), length(p_length) {
+    target_sprite_ptr = p_target_sprite_ptr;
+  }
+};
+
+std::vector<move_to_point_data> move_to_point_datas;
+
+void add_move_to_point_operation(sf::Sprite *p_target_sprite_ptr,
+                                 sf::Vector2f p_target, float p_length) {
+  move_to_point_data mv_data(p_target_sprite_ptr, p_target, p_length);
+  move_to_point_datas.push_back(mv_data);
+}
+
+void update_move_to_point_system(float delta_time) {
+  if (move_to_point_datas.empty()) {
+    return;
+  }
+
+  move_to_point_datas.at(0).update(delta_time);
+  if (!move_to_point_datas.at(0).is_valid()) {
+    move_to_point_datas.erase(move_to_point_datas.begin());
+  }
+}
+
+int main() {
 
   unsigned int height = sf::VideoMode::getDesktopMode().height;
   unsigned int width = sf::VideoMode::getDesktopMode().width;
@@ -220,7 +113,18 @@ int main() {
   Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
   Cat.setPosition(200, 384);
 
-  bool Cat__flip_flop = true;
+  sf::Texture Sprite_texture;
+  if (!Sprite_texture.loadFromFile("fish.png")) {
+    std::cerr << "Error while loading texture" << std::endl;
+    return -1;
+  }
+  Sprite_texture.setSmooth(true);
+
+  sf::Sprite Sprite;
+  Sprite.setTexture(Sprite_texture);
+  sf::FloatRect SpriteSize = Sprite.getGlobalBounds();
+  Sprite.setOrigin(SpriteSize.width / 2.0f, SpriteSize.height / 2.0f);
+  Sprite.setPosition(564, 384);
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -237,12 +141,17 @@ int main() {
 
       if (e.type == sf::Event::MouseButtonReleased &&
           e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&Cat)) {
-        if (Cat__flip_flop) {
-          add_bubble_message(&Cat, 1.0f, "Hi");
-        } else {
-          add_bubble_message(&Cat, 1.0f, "Hello");
-        }
-        Cat__flip_flop = !Cat__flip_flop;
+        add_move_to_point_operation(
+            &Cat, Cat.getPosition() + sf::Vector2f(0, 200), 2);
+        add_move_to_point_operation(&Cat,
+                                    Cat.getPosition() + sf::Vector2f(0, 0), 2);
+      }
+      if (e.type == sf::Event::MouseButtonReleased &&
+          e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&Sprite)) {
+        add_move_to_point_operation(
+            &Sprite, Sprite.getPosition() + sf::Vector2f(200, 0), 2);
+        add_move_to_point_operation(
+            &Sprite, Sprite.getPosition() + sf::Vector2f(0, 0), 2);
       }
     }
 
@@ -250,8 +159,9 @@ int main() {
     auto deltaTime = frameClock.restart();
 
     window.draw(Cat);
+    window.draw(Sprite);
 
-    update_bubble_message_system(deltaTime.asSeconds());
+    update_move_to_point_system(deltaTime.asSeconds());
 
     window.display();
   }

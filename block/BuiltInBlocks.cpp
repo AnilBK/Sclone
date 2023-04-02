@@ -151,12 +151,40 @@ void block_change_x_by(Block *block_change_x_by) {
   block_change_x_by->function_identifier = "block_change_x_by";
 }
 
+void block_change_x_by_in(Block *block_change_x_by_in) {
+  block_change_x_by_in->add_node(LabelNode("Change X By"));
+  block_change_x_by_in->add_node(
+      LineInputNode("", "x_offset", InputType::NUMBER));
+  block_change_x_by_in->add_node(LabelNode("For"));
+  block_change_x_by_in->add_node(
+      LineInputNode("", "length", InputType::NUMBER));
+  block_change_x_by_in->add_node(LabelNode("seconds"));
+
+  block_change_x_by_in->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
+  block_change_x_by_in->output_code_callback = code_sprite_change_x_by_in;
+  block_change_x_by_in->function_identifier = "block_change_x_by_in";
+}
+
 void block_change_y_by(Block *block_change_y_by) {
   block_change_y_by->add_node(LabelNode("Change Y By"));
   block_change_y_by->add_node(LineInputNode("", "y_offset", InputType::NUMBER));
   block_change_y_by->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
   block_change_y_by->output_code_callback = code_sprite_change_y_by;
   block_change_y_by->function_identifier = "block_change_y_by";
+}
+
+void block_change_y_by_in(Block *block_change_y_by_in) {
+  block_change_y_by_in->add_node(LabelNode("Change Y By"));
+  block_change_y_by_in->add_node(
+      LineInputNode("", "y_offset", InputType::NUMBER));
+  block_change_y_by_in->add_node(LabelNode("For"));
+  block_change_y_by_in->add_node(
+      LineInputNode("", "length", InputType::NUMBER));
+  block_change_y_by_in->add_node(LabelNode("seconds"));
+
+  block_change_y_by_in->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
+  block_change_y_by_in->output_code_callback = code_sprite_change_y_by_in;
+  block_change_y_by_in->function_identifier = "block_change_y_by_in";
 }
 
 // Draw Primitive Blocks.
