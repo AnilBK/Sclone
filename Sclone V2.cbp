@@ -49,6 +49,8 @@
 		<Unit filename="BuiltInBlocks.hpp" />
 		<Unit filename="CodeGen/CodeGenerator.cpp" />
 		<Unit filename="CodeGen/CodeGenerator.hpp" />
+		<Unit filename="CodeGen/FormatStrings.cpp" />
+		<Unit filename="CodeGen/FormatStrings.hpp" />
 		<Unit filename="CodeGen/OutputCodeCallbacks.hpp" />
 		<Unit filename="Core/Object.cpp" />
 		<Unit filename="Core/Object.hpp" />

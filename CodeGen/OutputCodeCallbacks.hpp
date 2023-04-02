@@ -2,6 +2,7 @@
 #define OUTPUT_CODE_CALL_BACKS_HPP
 
 #include "../block/Block.hpp"
+#include "FormatStrings.hpp"
 #include <string>
 
 // Certain Block generates some special code during code generation.
@@ -100,7 +101,14 @@ std::string code_draw_text(const Block &block) {
   window.draw(text);
   */
 
+  auto string = block.get_bound_value("string").value();
+
   std::string code;
+  if (fStrings::is_fString(string)) {
+    // fStrings have variables, so they are set up in the main loop instead.
+    auto formatted_string_code = fStrings::formatted_string_to_code(string);
+    code += "##SPRITE_NAME##__text.setString(" + formatted_string_code + ");\n";
+  }
   code += "window.draw(##SPRITE_NAME##__text);";
   return code;
 }
@@ -117,7 +125,12 @@ std::string code_draw_text_init(const Block &block) {
   code += "##SPRITE_NAME##__text.setCharacterSize(24);";
   code += "##SPRITE_NAME##__text.setFillColor(sf::Color::Red);";
 
-  code += "##SPRITE_NAME##__text.setString(\"" + string + "\");";
+  // fStrings have variables, so they can't be set up during initialization.
+  // They should be set up in main loop instead.
+  if (!fStrings::is_fString(string)) {
+    code += "##SPRITE_NAME##__text.setString(\"" + string + "\");";
+  }
+
   return code;
 }
 
