@@ -325,13 +325,31 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
   }
 }
 
+void Editor::_handle_sprite_list_inputs(sf::Event event) {
+  new_sprite_hbox.handle_inputs(event);
+
+  if (isMouseOverRect(added_sprite_list_world)) {
+    if (event.type == sf::Event::MouseWheelMoved) {
+      added_sprite_list_view.move(0, -event.mouseWheel.delta * 5);
+    }
+
+    window.setView(added_sprite_list_view);
+    user_added_sprites_list_parent.handle_inputs(event);
+    window.setView(window.getDefaultView());
+  }
+}
+
 void Editor::handle_inputs(sf::Event event) {
   old_mouse_pos = new_mouse_pos;
   new_mouse_pos = get_mouse_position();
 
-  _handle_2D_world_inputs(event);
+  // TODO : Add these checks before handling inputs for different editor
+  // sections.
+  // if (isMouseOverRect(...)) {
 
-  user_added_sprites_list_parent.handle_inputs(event);
+  _handle_2D_world_inputs(event);
+  _handle_sprite_list_inputs(event);
+
   editor_inspector.handle_inputs(event);
   script_editor.handle_inputs(event);
 
@@ -353,10 +371,20 @@ void Editor::handle_inputs(sf::Event event) {
   build_and_run_btn.handle_inputs(event);
 }
 
+void Editor::_render_sprite_list_ui() {
+  new_sprite_hbox.Render();
+
+  window.draw(added_sprite_list_bg);
+
+  window.setView(added_sprite_list_view);
+  user_added_sprites_list_parent.Render();
+  window.setView(window.getDefaultView());
+}
+
 void Editor::_render_ui() {
   // TODO ??? move refreshing to where needed.
   _refresh_layout();
-  user_added_sprites_list_parent.Render();
+  _render_sprite_list_ui();
   editor_inspector.Render();
   build_and_run_btn.Render();
 }

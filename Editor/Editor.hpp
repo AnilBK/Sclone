@@ -73,6 +73,11 @@ private:
   // Add new sprite section.
   UILineInput new_sprite_name_input = UILineInput("Sprite");
   UIButton add_new_sprite_btn = UIButton("+");
+
+  const sf::FloatRect added_sprite_list_world{{20, 110}, {160, 180}};
+  sf::View added_sprite_list_view{added_sprite_list_world};
+  sf::RectangleShape added_sprite_list_bg;
+
   HBoxContainer new_sprite_hbox;
   VBoxContainer user_added_sprites_list_parent;
   VBoxContainer user_added_sprites_list_vbox;
@@ -125,6 +130,9 @@ private:
 
   void _refresh_layout();
 
+  void _render_sprite_list_ui();
+  void _handle_sprite_list_inputs(sf::Event event);
+
   int _selected_sprite_layer();
   void _set_sprite_layer(int new_layer);
   void _increment_sprite_layer();
@@ -138,6 +146,32 @@ private:
   void _handle_2D_world_inputs(sf::Event event);
 
   void _build_and_run();
+
+  void _init_sprite_list_ui() {
+    // Stuffs Related To Add New Sprite Inspector.
+    std::function<void()> add_sprite = [this]() { _create_new_sprite(); };
+    add_new_sprite_btn.clicked_callback = add_sprite;
+    new_sprite_name_input.enter_pressed_callback = add_sprite;
+    new_sprite_name_input.is_flat = false;
+
+    new_sprite_hbox.add_child(new_sprite_name_input);
+    new_sprite_hbox.add_child(add_new_sprite_btn);
+    new_sprite_hbox.setPosition({20, 75});
+
+    added_sprite_list_bg.setPosition(
+        {added_sprite_list_world.left, added_sprite_list_world.top});
+    added_sprite_list_bg.setSize(
+        {added_sprite_list_world.width, added_sprite_list_world.height});
+    added_sprite_list_bg.setFillColor(sf::Color(195, 210, 226));
+
+    added_sprite_list_view.setViewport(
+        {added_sprite_list_world.left / window.getSize().x,
+         added_sprite_list_world.top / window.getSize().y,
+         added_sprite_list_world.width / window.getSize().x,
+         added_sprite_list_world.height / window.getSize().y});
+
+    added_sprite_list_view.move({-20, -15});
+  }
 
 public:
   std::vector<EditorSprite> user_added_sprites;
@@ -231,15 +265,6 @@ public:
     std::function<void()> build_and_run_func = [this]() { _build_and_run(); };
     build_and_run_btn.clicked_callback = build_and_run_func;
 
-    // Stuffs Related To Add New Sprite Inspector.
-    std::function<void()> add_sprite = [this]() { _create_new_sprite(); };
-    add_new_sprite_btn.clicked_callback = add_sprite;
-    new_sprite_name_input.enter_pressed_callback = add_sprite;
-    new_sprite_name_input.is_flat = false;
-
-    new_sprite_hbox.add_child(new_sprite_name_input);
-    new_sprite_hbox.add_child(add_new_sprite_btn);
-    user_added_sprites_list_parent.add_child(new_sprite_hbox);
     user_added_sprites_list_vbox.padding.y = 10.0F;
     user_added_sprites_list_parent.add_child(user_added_sprites_list_vbox);
     user_added_sprites_list_parent.setPosition({15, 110});
@@ -261,6 +286,8 @@ public:
          world.width / window.getSize().x, world.height / window.getSize().y});
 
     view.move({-60.0, -60.0});
+
+    _init_sprite_list_ui();
 
     grid_x_axis_line.setPosition(sf::Vector2f());
     grid_x_axis_line.setSize({static_cast<float>(window.getSize().x), 5});
