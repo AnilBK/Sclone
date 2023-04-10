@@ -31,13 +31,89 @@ bool is_mouse_over(sf::Sprite *sprite) {
   return sprite->getGlobalBounds().contains(sf::Vector2f(mouse_position));
 }
 
-int main() {
+class move_to_point_data {
+private:
+  sf::Vector2f target;
+  sf::Vector2f interpolated_pos;
+  sf::Vector2f unit_vec;
+  float length = 0.0f;
 
-  sf::Font text_font;
-  if (!text_font.loadFromFile("alaska.ttf")) {
-    std::cout << "Error Loading Font. \n";
-    exit(1);
+  float dt = 1.0f;
+  float time_elapsed = 0.0f;
+
+  sf::Sprite *target_sprite_ptr;
+  bool initialized = false;
+
+public:
+  sf::Vector2f offset;
+  bool init_late = false;
+
+  bool is_valid() const { return time_elapsed <= length; }
+
+  void update(float delta) {
+    if (!initialized) {
+      sf::Vector2f current = target_sprite_ptr->getPosition();
+
+      if (init_late) {
+        target = current + offset;
+      }
+
+      interpolated_pos = current;
+      unit_vec = normalized(target - current);
+      dt = distance_to(current, target) / length;
+      initialized = true;
+    }
+
+    time_elapsed += delta;
+    interpolated_pos += (unit_vec * dt * delta);
+
+    if (target_sprite_ptr == nullptr) {
+      std::cout << "nullptr\n";
+      return;
+    }
+    target_sprite_ptr->setPosition(interpolated_pos);
   }
+
+  move_to_point_data(sf::Sprite *p_target_sprite_ptr, sf::Vector2f p_target,
+                     float p_length)
+      : target(p_target), length(p_length) {
+    target_sprite_ptr = p_target_sprite_ptr;
+  }
+
+  move_to_point_data(sf::Sprite *p_target_sprite_ptr, float p_length)
+      : length(p_length) {
+    target_sprite_ptr = p_target_sprite_ptr;
+  }
+};
+
+std::vector<move_to_point_data> move_to_point_datas;
+
+void add_move_to_point_operation(sf::Sprite *p_target_sprite_ptr,
+                                 sf::Vector2f p_target, float p_length) {
+  move_to_point_data mv_data(p_target_sprite_ptr, p_target, p_length);
+  move_to_point_datas.push_back(mv_data);
+}
+
+void add_change_offset_operation(sf::Sprite *p_target_sprite_ptr,
+                                 sf::Vector2f p_offset, float p_length) {
+  move_to_point_data mv_data(p_target_sprite_ptr, p_length);
+  mv_data.init_late = true;
+  mv_data.offset = p_offset;
+  move_to_point_datas.push_back(mv_data);
+}
+
+void update_move_to_point_system(float delta_time) {
+  if (move_to_point_datas.empty()) {
+    return;
+  }
+
+  move_to_point_datas.at(0).update(delta_time);
+  if (!move_to_point_datas.at(0).is_valid()) {
+    move_to_point_datas.erase(move_to_point_datas.begin());
+  }
+}
+
+int main() {
 
   unsigned int height = sf::VideoMode::getDesktopMode().height;
   unsigned int width = sf::VideoMode::getDesktopMode().width;
@@ -58,14 +134,6 @@ int main() {
   Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
   Cat.setPosition(200, 384);
 
-  int _Cat_score = 0;
-  int _Cat_health = 0;
-  sf::Text Cat__text;
-  Cat__text.setPosition({200, 184});
-  Cat__text.setFont(text_font);
-  Cat__text.setCharacterSize(24);
-  Cat__text.setFillColor(sf::Color::Red);
-
   ///////////////////////////////////////
   ///////////////////////////////////////
 
@@ -81,21 +149,24 @@ int main() {
 
       if (e.type == sf::Event::MouseButtonReleased &&
           e.mouseButton.button == sf::Mouse::Left && is_mouse_over(&Cat)) {
-        _Cat_score = 1;
+        add_change_offset_operation(&Cat, sf::Vector2f(0, 100), 2);
+        add_change_offset_operation(&Cat, sf::Vector2f(100, 0), 2);
       }
     }
 
     window.clear(window_clear_color);
     auto deltaTime = frameClock.restart();
 
-    Cat__text.setString("Score" + std::to_string(_Cat_score) + " Health" +
-                        std::to_string(_Cat_health) + "");
-    window.draw(Cat__text);
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-      _Cat_health = 1;
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+      add_change_offset_operation(&Cat, sf::Vector2f(100, 0), 1);
+    }
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+      add_change_offset_operation(&Cat, sf::Vector2f(-100, 0), 1);
     }
 
     window.draw(Cat);
+
+    update_move_to_point_system(deltaTime.asSeconds());
 
     window.display();
   }

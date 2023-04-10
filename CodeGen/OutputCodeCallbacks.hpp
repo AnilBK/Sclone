@@ -153,10 +153,9 @@ std::string code_sprite_change_x_by_in(const Block &block) {
   auto x_offset = block.get_bound_value("x_offset").value();
   auto length = block.get_bound_value("length").value();
 
-  auto target_pos_str = "#POS# + sf::Vector2f(" + x_offset + ", 0)";
-
-  return "add_move_to_point_operation(&##SPRITE_NAME##," + target_pos_str +
-         "," + length + ");";
+  auto offset_str = "sf::Vector2f(" + x_offset + ", 0)";
+  return "add_change_offset_operation(&##SPRITE_NAME##," + offset_str + "," +
+         length + ");";
 }
 
 std::string code_sprite_change_y_by(const Block &block) {
@@ -168,10 +167,9 @@ std::string code_sprite_change_y_by_in(const Block &block) {
   auto y_offset = block.get_bound_value("y_offset").value();
   auto length = block.get_bound_value("length").value();
 
-  auto target_pos_str = "#POS# + sf::Vector2f(0," + y_offset + ")";
-
-  return "add_move_to_point_operation(&##SPRITE_NAME##," + target_pos_str +
-         "," + length + ");";
+  auto offset_str = "sf::Vector2f(0 , " + y_offset + ")";
+  return "add_change_offset_operation(&##SPRITE_NAME##," + offset_str + "," +
+         length + ");";
 }
 
 std::string code_input_key_pressed(const Block &block) {

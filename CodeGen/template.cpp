@@ -284,11 +284,19 @@ private:
   bool initialized = false;
 
 public:
+  sf::Vector2f offset;
+  bool init_late = false;
+
   bool is_valid() const { return time_elapsed <= length; }
 
   void update(float delta) {
     if (!initialized) {
       sf::Vector2f current = target_sprite_ptr->getPosition();
+
+      if (init_late) {
+        target = current + offset;
+      }
+
       interpolated_pos = current;
       unit_vec = normalized(target - current);
       dt = distance_to(current, target) / length;
@@ -310,6 +318,11 @@ public:
       : target(p_target), length(p_length) {
     target_sprite_ptr = p_target_sprite_ptr;
   }
+
+  move_to_point_data(sf::Sprite *p_target_sprite_ptr, float p_length)
+      : length(p_length) {
+    target_sprite_ptr = p_target_sprite_ptr;
+  }
 };
 
 std::vector<move_to_point_data> move_to_point_datas;
@@ -317,6 +330,14 @@ std::vector<move_to_point_data> move_to_point_datas;
 void add_move_to_point_operation(sf::Sprite *p_target_sprite_ptr,
                                  sf::Vector2f p_target, float p_length) {
   move_to_point_data mv_data(p_target_sprite_ptr, p_target, p_length);
+  move_to_point_datas.push_back(mv_data);
+}
+
+void add_change_offset_operation(sf::Sprite *p_target_sprite_ptr,
+                                 sf::Vector2f p_offset, float p_length) {
+  move_to_point_data mv_data(p_target_sprite_ptr, p_length);
+  mv_data.init_late = true;
+  mv_data.offset = p_offset;
   move_to_point_datas.push_back(mv_data);
 }
 
