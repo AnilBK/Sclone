@@ -1,5 +1,6 @@
 #include "Utils.hpp"
 #include <algorithm>
+#include <cmath>
 
 namespace STRING_UTILITIES {
 // https://stackoverflow.com/questions/4643512/replace-substring-with-another-substring-c
@@ -65,7 +66,7 @@ float angle_between_points(sf::Vector2f p_from, sf::Vector2f p_to) {
   return atan2(diff.y, diff.x) * 180.f / 3.1415F;
 }
 
-float str_to_float(const std::string &str, float default_value = 1.0f) {
+float str_to_float(const std::string &str, float default_value) {
   try {
     return static_cast<float>(std::stoi(str));
   } catch (std::invalid_argument const &ex) {
