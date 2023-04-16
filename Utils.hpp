@@ -17,6 +17,9 @@ namespace MATH_UTILITIES {
 
 [[nodiscard]] sf::Vector2f lerp(const sf::Vector2f &start,
                                 const sf::Vector2f &end, float lerpValue);
+
+[[nodiscard]] inline float angle_between_points(sf::Vector2f p_from,
+                                                sf::Vector2f p_to);
 } // namespace MATH_UTILITIES
 
 namespace BLOCK_UTILITIES {

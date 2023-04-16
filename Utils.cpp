@@ -59,6 +59,11 @@ sf::Vector2f lerp(const sf::Vector2f &start, const sf::Vector2f &end,
                   float lerpValue) {
   return (1.0f - lerpValue) * start + lerpValue * end;
 }
+
+float angle_between_points(sf::Vector2f p_from, sf::Vector2f p_to) {
+  auto diff = (p_to - p_from);
+  return atan2(diff.y, diff.x) * 180.f / 3.1415F;
+}
 } // namespace MATH_UTILITIES
 
 namespace BLOCK_UTILITIES {
