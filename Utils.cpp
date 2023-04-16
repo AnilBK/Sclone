@@ -54,6 +54,11 @@ sf::FloatRect merge_rects(sf::FloatRect rect, sf::FloatRect p_rect) {
 
   return sf::FloatRect(merged_rect_position, merged_rect_size);
 }
+
+sf::Vector2f lerp(const sf::Vector2f &start, const sf::Vector2f &end,
+                  float lerpValue) {
+  return (1.0f - lerpValue) * start + lerpValue * end;
+}
 } // namespace MATH_UTILITIES
 
 namespace BLOCK_UTILITIES {

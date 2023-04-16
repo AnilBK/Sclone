@@ -14,7 +14,10 @@ void remove_last_occurence(std::string &s, char ch);
 namespace MATH_UTILITIES {
 [[nodiscard]] sf::FloatRect merge_rects(sf::FloatRect rect,
                                         sf::FloatRect p_rect);
-}
+
+[[nodiscard]] sf::Vector2f lerp(const sf::Vector2f &start,
+                                const sf::Vector2f &end, float lerpValue);
+} // namespace MATH_UTILITIES
 
 namespace BLOCK_UTILITIES {
 bool is_forever_block(const Block &block);
