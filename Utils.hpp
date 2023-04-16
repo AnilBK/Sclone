@@ -20,6 +20,9 @@ namespace MATH_UTILITIES {
 
 [[nodiscard]] inline float angle_between_points(sf::Vector2f p_from,
                                                 sf::Vector2f p_to);
+
+[[nodiscard]] float str_to_float(const std::string &str,
+                                 float default_value = 1.0f);
 } // namespace MATH_UTILITIES
 
 namespace BLOCK_UTILITIES {

@@ -64,6 +64,16 @@ float angle_between_points(sf::Vector2f p_from, sf::Vector2f p_to) {
   auto diff = (p_to - p_from);
   return atan2(diff.y, diff.x) * 180.f / 3.1415F;
 }
+
+float str_to_float(const std::string &str, float default_value = 1.0f) {
+  try {
+    return static_cast<float>(std::stoi(str));
+  } catch (std::invalid_argument const &ex) {
+    return default_value;
+  }
+
+  return default_value;
+}
 } // namespace MATH_UTILITIES
 
 namespace BLOCK_UTILITIES {
