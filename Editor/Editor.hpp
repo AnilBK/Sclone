@@ -69,6 +69,8 @@ private:
   UIButton add_movement_btn = UIButton("Add Movement Script");
   HBoxContainer show_more_hbox;
 
+  sf::Clock frameClock;
+
 private:
   // Add new sprite section.
   UILineInput new_sprite_name_input = UILineInput("Sprite");

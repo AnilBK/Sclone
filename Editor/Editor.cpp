@@ -475,6 +475,9 @@ void Editor::_process_2D_gizmo() {
 
 void Editor::Render() {
   // Setup & Draw 2D World.
+  auto deltaTime = frameClock.restart();
+  auto delta = deltaTime.asSeconds();
+
   window.draw(world2d_border);
   window.setView(view);
   window.draw(grid_x_axis_line);
