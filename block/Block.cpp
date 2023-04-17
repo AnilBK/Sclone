@@ -319,6 +319,18 @@ bool Block::_process_left_click_on_children(sf::Event event) {
   return false;
 }
 
+bool Block::is_interacted() {
+  if (is_mouse_over()) {
+    return true;
+  }
+
+  if (any_node_already_pressed()) {
+    return true;
+  }
+
+  return false;
+}
+
 bool Block::any_node_already_pressed() {
   for (const auto &child : childrens) {
     if (child->pressed) {
@@ -435,6 +447,18 @@ Block::get_bound_value(const std::string &query) const {
   ERR_CRASH_IF(true, unbound_msg_str);
 
   return {};
+}
+
+float Block::get_bound_value_or(const std::string &query,
+                                float default_value) const {
+  for (const auto &child : childrens) {
+    if (child->bind_string == query) {
+      return MATH_UTILITIES::str_to_float(child->get_text(), default_value);
+    }
+  }
+
+  // Not found.
+  return default_value;
 }
 
 std::string Block::get_code() {

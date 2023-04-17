@@ -107,6 +107,11 @@ public:
   bool is_mouse_over();
   bool is_control_block();
 
+  /// @brief This is to indicate if a block is being interacted.
+  /// @return True if mouse is over the given block or any of it's
+  /// children is pressed.
+  bool is_interacted();
+
   void set_block_type(BLOCK_TYPES p_type);
   void attach_block_next(Block *p_next_block);
   void set_position(const sf::Vector2f p_pos);
@@ -132,6 +137,8 @@ public:
   std::string get_code_for_init();
 
   std::optional<std::string> get_bound_value(const std::string &query) const;
+
+  float get_bound_value_or(const std::string &query, float default_value) const;
 };
 
 #endif
