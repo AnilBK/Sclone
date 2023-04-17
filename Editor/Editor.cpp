@@ -487,6 +487,8 @@ void Editor::Render() {
   _process_2D_gizmo();
   window.setView(window.getDefaultView());
 
+  block_visualizer.Update(delta);
+
   // Render UI on top of all.
   _render_ui();
   _render_block_spawner_tab();

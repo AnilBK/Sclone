@@ -12,6 +12,7 @@
 #include "../block/Block.hpp"
 #include "../block/BlockBinder.hpp"
 #include "../block/BuiltInBlocks.hpp"
+#include "BlockVisualizer.hpp"
 #include "ScriptEditor.hpp"
 #include "TransformGizmo2D.hpp"
 #include "Windows/GlobalAlertWindow.hpp"
@@ -30,6 +31,8 @@ public:
   std::string texture;
   sf::Sprite sprite;
 };
+
+class BlockVisualizer;
 
 class Editor {
 
@@ -93,6 +96,8 @@ private:
   UIButton blocks_tab_bar_collapse_btn = UIButton("V");
 
   UIButton build_and_run_btn = UIButton("Play");
+
+  BlockVisualizer block_visualizer = BlockVisualizer(*this);
 
   /// @brief Contains functions that generates different blocks and the strings
   /// that identify that block generator function.
@@ -304,6 +309,8 @@ public:
     world2d_border.setFillColor(sf::Color(153, 195, 180));
     world2d_border.setOutlineColor(sf::Color(71, 71, 71));
     world2d_border.setOutlineThickness(4.0f);
+
+    block_visualizer.init();
   }
 
   void spawn_and_bind_editor_blocks();
@@ -325,6 +332,8 @@ public:
   void toggle_tab_bar_folding();
 
   void _render_block_spawner_tab();
+
+  sf::View &get_world_2d_view() { return view; }
 
   void Render();
 };
