@@ -36,6 +36,7 @@ enum NODE_TYPE {
   BLOCK_ATTACH_NODE,
   LABEL,
   LINE_INPUT_ATTACH_FIELD,
+  PICK_WITH_MOUSE,
   BUTTON,
   DROP_DOWN
 };
@@ -57,6 +58,8 @@ extern sf::RenderWindow window;
 constexpr unsigned int DEFAULT_TEXT_FONT_SIZE = 20;
 constexpr bool DEBUG_BLOCK_SPAWN_STATS = false;
 
+inline sf::View editor_view;
+
 [[nodiscard]] static inline sf::Vector2f
 get_mouse_position(const sf::RenderWindow &p_window) {
   sf::Vector2i m_pos = sf::Mouse::getPosition(p_window);
@@ -74,6 +77,12 @@ template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
 
 [[nodiscard]] static bool isMouseOverRect(const sf::FloatRect rect) {
   return rect.contains(get_mouse_position());
+}
+
+[[nodiscard]] static inline sf::Vector2f get_mouse_position_wrt_2d_editor() {
+  sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
+  sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, editor_view);
+  return worldPos;
 }
 
 /// @brief Check if cached mouse position is inside the given rect.

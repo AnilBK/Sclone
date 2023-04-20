@@ -66,6 +66,9 @@ private:
   /// That size is used to calculate the position of the block attached to it.
   sf::FloatRect block_without_attached_block_size;
 
+  bool has_mouse_pick_node = false;
+  void _update_mouse_pick_nodes();
+
 public:
   Block();
   ~Block();
@@ -100,6 +103,11 @@ public:
       can_block_attach_inside = true;
       block_rect.setFillColor(sf::Color::Yellow);
     }
+
+    if (node_class.type == NODE_TYPE::PICK_WITH_MOUSE) {
+      has_mouse_pick_node = true;
+    }
+
     auto u_block = std::make_shared<T>(node_class);
     childrens.push_back(std::move(u_block));
   }

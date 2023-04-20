@@ -310,6 +310,8 @@ public:
     world2d_border.setOutlineColor(sf::Color(71, 71, 71));
     world2d_border.setOutlineThickness(4.0f);
 
+    editor_view = view;
+
     block_visualizer.init();
   }
 

@@ -348,17 +348,15 @@ void Block::deselect_all_nodes() {
   }
 }
 
-void Block::handle_inputs(sf::Event event) {
-  // For some reason, if we do this check on Render()
-  // then the value resets after we press right click.
-  // Weird.
-  if (dragging) {
-    set_position((sf::Vector2f)mouse_position);
+void Block::_update_mouse_pick_nodes() {
+  if (!has_mouse_pick_node) {
+    return;
   }
 
-  for (auto &child : childrens) {
-    child->handle_inputs(event);
-  }
+  auto editor_mouse_pos =
+      static_cast<sf::Vector2i>(get_mouse_position_wrt_2d_editor());
+  auto m_x_str = std::to_string(editor_mouse_pos.x);
+  auto m_y_str = std::to_string(editor_mouse_pos.y);
 
   for (auto &child : childrens) {
     auto pick_button = dynamic_cast<PickWithMouseNode *>(child.get());
@@ -368,15 +366,36 @@ void Block::handle_inputs(sf::Event event) {
         auto y_index = pick_button->childs_index_for_y;
 
         if (x_index != -1) {
-          childrens[x_index]->set_text(std::to_string(mouse_position.x));
+          childrens[x_index]->set_text(m_x_str);
         }
 
         if (y_index != -1) {
-          childrens[y_index]->set_text(std::to_string(mouse_position.y));
+          childrens[y_index]->set_text(m_y_str);
         }
       }
     }
   }
+}
+
+void Block::handle_inputs(sf::Event event) {
+  auto m_pos = get_mouse_position();
+
+  // Update mouse position cache, as all the child components use the cached
+  // position. Getting the position for every UI Nodes wouldn't be good.
+  mouse_position = static_cast<sf::Vector2i>(m_pos);
+
+  // For some reason, if we do this check on Render()
+  // then the value resets after we press right click.
+  // Weird.
+  if (dragging) {
+    set_position(m_pos);
+  }
+
+  for (auto &child : childrens) {
+    child->handle_inputs(event);
+  }
+
+  _update_mouse_pick_nodes();
 
   if (event.type == sf::Event::MouseButtonPressed) {
     // Left to drag, right to undrag.
