@@ -1,19 +1,76 @@
 #include "ScriptEditor.hpp"
 
+void ScriptEditor::setRect(sf::FloatRect rect) {
+  world = rect;
+  view = sf::View({0, 0, rect.width, rect.height});
+  // sf::View({0, 0, 1200, 800});
+
+  auto w_size = window.getSize();
+
+  view.setViewport({world.left / w_size.x, world.top / w_size.y,
+                    world.width / w_size.x, world.height / w_size.y});
+
+  border.setPosition({world.left, world.top});
+  border.setSize({world.width, world.height});
+  border.setFillColor(sf::Color(153, 195, 180));
+  border.setOutlineColor(sf::Color(71, 71, 71));
+  border.setOutlineThickness(4.0f);
+}
+
+void ScriptEditor::handle_panning(sf::Event event) {
+  old_mouse_pos = new_mouse_pos;
+  new_mouse_pos = get_mouse_position();
+
+  if (event.type == sf::Event::MouseWheelMoved) {
+    view.zoom(1.0f - event.mouseWheel.delta / 10.0f);
+  }
+
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
+    view.move(5.f, 0.f);
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
+    view.move(-5.f, 0.f);
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)) {
+    view.move(0.f, 5.f);
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
+    view.move(0.f, -5.f);
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
+    view.zoom(0.99f);
+  } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
+    view.zoom(1.01f);
+  }
+
+  if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
+    auto delta = old_mouse_pos - new_mouse_pos;
+    view.move(delta);
+  }
+}
+
 void ScriptEditor::handle_inputs(sf::Event event) {
-  if (script == nullptr) {
-    return;
-  }
+  if (isMouseOverRect(world)) {
+    handle_panning(event);
 
-  middle_click = false;
+    window.setView(view);
 
-  for (auto &block : script->blocks) {
-    block.handle_inputs(event);
-  }
+    if (script != nullptr) {
+      middle_click = false;
 
-  if (event.type == sf::Event::MouseButtonPressed &&
-      event.mouseButton.button == sf::Mouse::Middle) {
-    middle_click = true;
+      for (auto &block : script->blocks) {
+        block.handle_inputs(event);
+      }
+
+      if (event.type == sf::Event::MouseButtonPressed &&
+          event.mouseButton.button == sf::Mouse::Middle) {
+        middle_click = true;
+      }
+    }
+
+    window.setView(window.getDefaultView());
+  } else {
+    if (script != nullptr) {
+      for (auto &block : script->blocks) {
+        block.background_inputs(event);
+      }
+    }
   }
 }
 
@@ -132,13 +189,16 @@ void ScriptEditor::Update() {
 }
 
 void ScriptEditor::Render() {
-  if (script == nullptr) {
-    return;
-  }
+  window.draw(border);
 
-  Update();
+  if (script != nullptr) {
+    window.setView(view);
 
-  for (auto &block : script->blocks) {
-    block.Render();
+    Update();
+    for (auto &block : script->blocks) {
+      block.Render();
+    }
+
+    window.setView(window.getDefaultView());
   }
 }

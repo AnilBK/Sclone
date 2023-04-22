@@ -58,7 +58,7 @@ extern sf::RenderWindow window;
 constexpr unsigned int DEFAULT_TEXT_FONT_SIZE = 20;
 constexpr bool DEBUG_BLOCK_SPAWN_STATS = false;
 
-inline sf::View editor_view;
+inline sf::View *editor_view;
 
 [[nodiscard]] static inline sf::Vector2f
 get_mouse_position(const sf::RenderWindow &p_window) {
@@ -81,7 +81,7 @@ template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
 
 [[nodiscard]] static inline sf::Vector2f get_mouse_position_wrt_2d_editor() {
   sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
-  sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, editor_view);
+  sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, *editor_view);
   return worldPos;
 }
 

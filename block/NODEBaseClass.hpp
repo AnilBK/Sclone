@@ -96,7 +96,9 @@ public:
 
   PickWithMouseNode(int p_index_x = -1, int p_index_y = -1)
       : ButtonNode("Pick^", ""), childs_index_for_x(p_index_x),
-        childs_index_for_y(p_index_y) {}
+        childs_index_for_y(p_index_y) {
+    type = NODE_TYPE::PICK_WITH_MOUSE;
+  }
 
   bool is_pressed() { return btn.is_clicked(); }
 

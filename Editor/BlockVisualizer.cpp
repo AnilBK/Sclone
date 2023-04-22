@@ -5,7 +5,9 @@
 #include <cmath>
 #include <string>
 
-void BlockVisualizer::init() { world_2d_view = editor_ref.get_world_2d_view(); }
+void BlockVisualizer::init() {
+  world_2d_view = editor_ref.get_world_2d_view_ptr();
+}
 
 void BlockVisualizer::_draw_arrow_triangle(sf::Vector2f from, sf::Vector2f to,
                                            sf::Color p_color) {
@@ -49,7 +51,7 @@ void BlockVisualizer::draw_debug_block_go_to_xy(const Block &block,
 
   auto pos = sf::Vector2f(x, y);
 
-  window.setView(world_2d_view);
+  window.setView(*world_2d_view);
   // block.is_interacted() checks for mouse inputs in it's own world.
   // so we can't set this up in the update loop.
   //  Therefore, we have to set views and reset views for every debug function.
@@ -68,7 +70,7 @@ void BlockVisualizer::draw_debug_change_y_by(const Block &block, float delta) {
   auto pos = target_sprite_ptr->sprite.getPosition();
   float y = block.get_bound_value_or("y_offset", 50.0F);
 
-  window.setView(world_2d_view);
+  window.setView(*world_2d_view);
 
   _draw_arrow(pos, pos + sf::Vector2f(0, y));
 
@@ -82,7 +84,7 @@ void BlockVisualizer::draw_debug_change_y_by_in(const Block &block,
   float y = block.get_bound_value_or("y_offset", 50.0F);
   float len = block.get_bound_value_or("length", 1.0F);
 
-  window.setView(world_2d_view);
+  window.setView(*world_2d_view);
 
   _draw_arrow(pos, pos + sf::Vector2f(0, y));
 
@@ -121,7 +123,7 @@ void BlockVisualizer::draw_debug_block_glide_to_xy(const Block &block,
 
   sf::Vector2f final_pos{x, y};
 
-  window.setView(world_2d_view);
+  window.setView(*world_2d_view);
 
   _draw_arrow(pos, final_pos);
 
@@ -160,7 +162,7 @@ void BlockVisualizer::draw_debug_glide_point_to_point(const Block &block,
   float y1 = values[3];
   float len = values[4];
 
-  window.setView(world_2d_view);
+  window.setView(*world_2d_view);
 
   sf::Vector2f pos{x, y};
   sf::Vector2f final_pos{x1, y1};
@@ -186,8 +188,25 @@ void BlockVisualizer::draw_debug_glide_point_to_point(const Block &block,
   window.setView(window.getDefaultView());
 }
 
+void BlockVisualizer::DebugBlock(const Block &block, float delta) {
+  auto function_identifier = block.function_identifier;
+  if (function_identifier == "block_change_y_by") {
+    draw_debug_change_y_by(block, delta);
+  } else if (function_identifier == "block_change_y_by_in") {
+    draw_debug_change_y_by_in(block, delta);
+  } else if (function_identifier == "block_glide_to_xy") {
+    draw_debug_block_glide_to_xy(block, delta);
+  } else if (function_identifier == "block_glide_point_to_point") {
+    draw_debug_glide_point_to_point(block, delta);
+  } else if (function_identifier == "block_go_to_xy") {
+    draw_debug_block_go_to_xy(block, delta);
+  }
+}
+
 void BlockVisualizer::Update(float delta) {
-  auto script = editor_ref.script_editor.script;
+  auto &script_editor_ref = editor_ref.script_editor;
+
+  auto script = script_editor_ref.script;
   if (!script) {
     return;
   }
@@ -197,25 +216,25 @@ void BlockVisualizer::Update(float delta) {
     return;
   }
 
+  if (world_2d_view == nullptr) {
+    return;
+  }
+
+  auto script_editor_world = script_editor_ref.get_world();
+  auto script_editor_view = script_editor_ref.get_view();
+
+  bool isMouseOverScriptEditorView = isMouseOverRect(script_editor_world);
+
+  window.setView(script_editor_view);
+
   for (auto &block : script->blocks) {
-    if (block.is_interacted()) {
-      auto function_identifier = block.function_identifier;
-      if (function_identifier == "block_change_y_by") {
-        draw_debug_change_y_by(block, delta);
-        break;
-      } else if (function_identifier == "block_change_y_by_in") {
-        draw_debug_change_y_by_in(block, delta);
-        break;
-      } else if (function_identifier == "block_glide_to_xy") {
-        draw_debug_block_glide_to_xy(block, delta);
-        break;
-      } else if (function_identifier == "block_glide_point_to_point") {
-        draw_debug_glide_point_to_point(block, delta);
-        break;
-      } else if (function_identifier == "block_go_to_xy") {
-        draw_debug_block_go_to_xy(block, delta);
-        break;
-      }
+    bool is_mouse_over = isMouseOverScriptEditorView && block.is_mouse_over();
+
+    if (is_mouse_over || block.any_node_already_pressed()) {
+      DebugBlock(block, delta);
+      window.setView(script_editor_view);
     }
   }
+
+  window.setView(window.getDefaultView());
 }

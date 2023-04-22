@@ -90,8 +90,8 @@ private:
   TransformGizmo2D gizmo_2D;
 
   // The editor spawn blocks section.
-  sf::Vector2f tab_pos = sf::Vector2f(800, 0);
-  sf::Vector2f tab_size = sf::Vector2f(400, 700);
+  sf::Vector2f tab_pos = sf::Vector2f(700, 0);
+  sf::Vector2f tab_size = sf::Vector2f(400, 300);
   TabBar built_in_blocks_tab_bar = TabBar(tab_pos, tab_size);
   UIButton blocks_tab_bar_collapse_btn = UIButton("V");
 
@@ -190,7 +190,7 @@ public:
     spawn_and_bind_editor_blocks();
 
     auto win_size = (sf::Vector2f)window.getSize();
-    tab_size = win_size - tab_pos;
+    tab_size.x = win_size.x - tab_pos.x;
 
     built_in_blocks_tab_bar.set_pos(tab_pos);
     built_in_blocks_tab_bar.set_size(tab_size);
@@ -310,8 +310,18 @@ public:
     world2d_border.setOutlineColor(sf::Color(71, 71, 71));
     world2d_border.setOutlineThickness(4.0f);
 
-    editor_view = view;
+    // World 2D and Script Editor fills the whole screen.
+    auto script_editor_pos = sf::Vector2f(
+        world.left + world.width + world2d_border.getOutlineThickness(),
+        world.top);
 
+    auto script_editor_size =
+        sf::Vector2f(window.getSize().x - script_editor_pos.x, world.height);
+
+    script_editor.setRect({script_editor_pos, script_editor_size});
+
+    // Set up global references to editor views.
+    editor_view = get_world_2d_view_ptr();
     block_visualizer.init();
   }
 
@@ -335,7 +345,7 @@ public:
 
   void _render_block_spawner_tab();
 
-  sf::View &get_world_2d_view() { return view; }
+  sf::View *get_world_2d_view_ptr() { return &view; }
 
   void Render();
 };

@@ -50,7 +50,6 @@ private:
   /// @return Returns true if any of the children performed 'press' action.
   bool _process_left_click_on_children(sf::Event event);
 
-  bool any_node_already_pressed();
   void deselect_all_nodes();
 
   /// @brief Get 'BlockAttachNodes' which has blocks attached to them.
@@ -120,6 +119,8 @@ public:
   /// children is pressed.
   bool is_interacted();
 
+  bool any_node_already_pressed();
+
   void set_block_type(BLOCK_TYPES p_type);
   void attach_block_next(Block *p_next_block);
   void set_position(const sf::Vector2f p_pos);
@@ -139,6 +140,11 @@ public:
   void update_children_sizes();
 
   void handle_inputs(sf::Event event);
+
+  /// @brief For some inputs that need to run in the background, even if the
+  /// mouse isn't over the script editor or a block isn't highlighted.
+  void background_inputs(sf::Event event);
+
   void Render();
 
   std::string get_code();

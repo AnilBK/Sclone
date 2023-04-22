@@ -14,7 +14,7 @@ class BlockVisualizer {
 private:
   Editor &editor_ref;
 
-  sf::View world_2d_view;
+  sf::View *world_2d_view;
   EditorSprite *target_sprite_ptr;
 
   void _draw_arrow_triangle(sf::Vector2f from, sf::Vector2f to,
@@ -27,9 +27,12 @@ private:
   void draw_debug_block_glide_to_xy(const Block &block, float delta);
   void draw_debug_glide_point_to_point(const Block &block, float delta);
 
+  void DebugBlock(const Block &block, float delta);
+
 public:
   BlockVisualizer(Editor &p_editor)
-      : editor_ref(p_editor), target_sprite_ptr(nullptr) {}
+      : editor_ref(p_editor), world_2d_view(nullptr),
+        target_sprite_ptr(nullptr) {}
 
   void init();
 

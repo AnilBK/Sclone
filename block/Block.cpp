@@ -348,6 +348,20 @@ void Block::deselect_all_nodes() {
   }
 }
 
+void Block::background_inputs(sf::Event event) {
+  _update_mouse_pick_nodes();
+
+  if (event.type == sf::Event::MouseButtonPressed) {
+    if (event.mouseButton.button == sf::Mouse::Right) {
+      deselect_all_nodes();
+
+      if (dragging) {
+        dragging = false;
+      }
+    }
+  }
+}
+
 void Block::_update_mouse_pick_nodes() {
   if (!has_mouse_pick_node) {
     return;

@@ -492,6 +492,7 @@ void Editor::Render() {
   // Render UI on top of all.
   _render_ui();
   _render_block_spawner_tab();
+
   script_editor.Render();
 }
 
@@ -576,12 +577,20 @@ void Editor::spawn_and_bind_editor_blocks() {
 void Editor::_spawn_block_at_mouse_pos(const Block &block) {
   // std::cout << "User Adding a Block.\n";
 
+  // Set mouse position to the middle of the script editor & spawn new blocks
+  // there.
+  auto script_editor_world = script_editor.get_world();
+  auto block_spawn_location = sf::Vector2f(
+      script_editor_world.left + (script_editor_world.width / 2.0F),
+      script_editor_world.top + (script_editor_world.height / 2.0F));
+  sf::Mouse::setPosition(static_cast<sf::Vector2i>(block_spawn_location));
+
   block_generator_fn_ptr fn_ptr =
       bound_blocks.get_bound_block_gen_fn(block.function_identifier).value();
 
   Block new_block;
   fn_ptr(&new_block);
-  new_block.set_position((sf::Vector2f)mouse_position);
+  new_block.set_position(block_spawn_location);
   new_block.dragging = true;
   // blocks.push_back(new_block);
   add_block_to_script(new_block);
@@ -604,6 +613,10 @@ void Editor::_render_block_spawner_tab() {
 
   sf::FloatRect tab_world = built_in_blocks_tab_bar.get_tab_body_size();
 
+  bool mouse_over_tab_body = tab_world.contains(get_mouse_position());
+  bool tab_body_clicked =
+      mouse_over_tab_body && sf::Mouse::isButtonPressed(sf::Mouse::Left);
+
   sf::View tab_view({0, 0, tab_world.width, tab_world.height});
   tab_view.setViewport({tab_world.left / window.getSize().x,
                         tab_world.top / window.getSize().y,
@@ -613,14 +626,13 @@ void Editor::_render_block_spawner_tab() {
   window.setView(tab_view);
 
   sf::Vector2f draw_position = sf::Vector2f(
-      50, 50 + built_in_blocks_tab_bar.get_current_tab_body_scroll() * 20.0f);
+      50, 10 + built_in_blocks_tab_bar.get_current_tab_body_scroll() * 30.0f);
 
   auto currently_selected_tab =
       built_in_blocks_tab_bar.get_currently_selected_tab();
 
   bool is_any_block_being_dragged = script_editor.is_any_block_dragging();
-  bool can_spawn_editor_block = !is_any_block_being_dragged &&
-                                sf::Mouse::isButtonPressed(sf::Mouse::Left);
+  bool can_spawn_editor_block = !is_any_block_being_dragged && tab_body_clicked;
 
   // These are editor blocks which are for spawning new blocks.
   for (auto &block : editor_blocks) {
@@ -646,6 +658,10 @@ void Editor::_render_block_spawner_tab() {
 
     float height_of_cur_block = block.block_full_size.y;
     draw_position.y += height_of_cur_block + 20;
+
+    if (draw_position.y > tab_world.top + tab_world.height) {
+      break;
+    }
   }
 
   window.setView(window.getDefaultView());
