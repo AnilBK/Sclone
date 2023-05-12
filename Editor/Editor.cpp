@@ -330,7 +330,15 @@ void Editor::_handle_sprite_list_inputs(sf::Event event) {
 
   if (isMouseOverRect(added_sprite_list_world)) {
     if (event.type == sf::Event::MouseWheelMoved) {
-      added_sprite_list_view.move(0, -event.mouseWheel.delta * 5);
+      auto pos = user_added_sprites_list_parent.getPosition();
+      auto size = user_added_sprites_list_parent.rect_size();
+      bool content_overflowing =
+          pos.y + size.y >
+          added_sprite_list_world.top + added_sprite_list_world.height;
+
+      if (content_overflowing) {
+        added_sprite_list_view.move(0, -event.mouseWheel.delta * 5);
+      }
     }
 
     window.setView(added_sprite_list_view);
