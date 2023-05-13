@@ -338,6 +338,24 @@ void Editor::_handle_sprite_list_inputs(sf::Event event) {
 
       if (content_overflowing) {
         added_sprite_list_view.move(0, -event.mouseWheel.delta * 5);
+
+        constexpr int OFFSET = 15;
+        sf::FloatRect view_rect = {added_sprite_list_view.getCenter(),
+                                   added_sprite_list_view.getSize()};
+
+        bool first_item_went_below_the_bottom =
+            (view_rect.top + view_rect.height / 2.0) < pos.y + OFFSET + 25;
+
+        bool last_item_went_above_the_top =
+            (view_rect.top - view_rect.height / 2.0) >
+            pos.y + size.y - OFFSET * 2 - 10 - 25;
+        // 10 padding of the inner child. 25 because that's probably
+        // size of a button.
+
+        if (first_item_went_below_the_bottom || last_item_went_above_the_top) {
+          // Revert back the scroll.
+          added_sprite_list_view.move(0, +event.mouseWheel.delta * 5);
+        }
       }
     }
 
