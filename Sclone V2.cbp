@@ -13,13 +13,13 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="C:/SFML-2.5.1/include" />
+					<Add directory="C:/SFML-2.6.0/include" />
 				</Compiler>
 				<Linker>
 					<Add library="sfml-graphics-d" />
 					<Add library="sfml-window-d" />
 					<Add library="sfml-system-d" />
-					<Add directory="C:/SFML-2.5.1/lib" />
+					<Add directory="C:/SFML-2.6.0/lib" />
 				</Linker>
 			</Target>
 			<Target title="Release">
@@ -41,10 +41,10 @@
 		<Compiler>
 			<Add option="-Wall" />
 			<Add option="-DSFML_STATIC" />
-			<Add directory="C:/SFML-2.5.1/include" />
+			<Add directory="C:/SFML-2.6.0/include" />
 		</Compiler>
 		<Linker>
-			<Add directory="C:/SFML-2.5.1/lib" />
+			<Add directory="C:/SFML-2.6.0/lib" />
 		</Linker>
 		<Unit filename="BuiltInBlocks.hpp" />
 		<Unit filename="CodeGen/CodeGenerator.cpp" />
