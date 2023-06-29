@@ -90,8 +90,8 @@ template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
 /// @return True if mouse is over.
 [[nodiscard]] static inline bool
 isCachedMousePosOverRect(const sf::FloatRect rect) {
-  sf::Vector2f position{rect.left, rect.top};
-  sf::Vector2f size{rect.width, rect.height};
+  sf::Vector2f position = rect.getPosition();
+  sf::Vector2f size = rect.getSize();
 
   return (mouse_position.x >= position.x &&
           mouse_position.x <= position.x + size.x) &&

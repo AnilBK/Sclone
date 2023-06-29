@@ -6,12 +6,12 @@ void UISprite::setPosition(sf::Vector2f pos) { sprite.setPosition(pos); }
 
 sf::Vector2f UISprite::rect_size() {
   auto bounds = sprite.getGlobalBounds();
-  return {bounds.width, bounds.height};
+  return bounds.getSize();
 }
 
 void UISprite::RenderDebug() {
   auto bounds = sprite.getGlobalBounds();
-  sf::Vector2f pos = {bounds.left, bounds.top};
+  sf::Vector2f pos = bounds.getPosition();
 
   sf::RectangleShape debug_shape;
   debug_shape.setPosition(pos);

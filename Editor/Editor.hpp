@@ -165,10 +165,8 @@ private:
     new_sprite_hbox.add_child(add_new_sprite_btn);
     new_sprite_hbox.setPosition({20, 75});
 
-    added_sprite_list_bg.setPosition(
-        {added_sprite_list_world.left, added_sprite_list_world.top});
-    added_sprite_list_bg.setSize(
-        {added_sprite_list_world.width, added_sprite_list_world.height});
+    added_sprite_list_bg.setPosition(added_sprite_list_world.getPosition());
+    added_sprite_list_bg.setSize(added_sprite_list_world.getSize());
     added_sprite_list_bg.setFillColor(sf::Color(195, 210, 226));
 
     added_sprite_list_view.setViewport(
@@ -304,8 +302,8 @@ public:
     grid_y_axis_line.setSize({5, static_cast<float>(window.getSize().y)});
     grid_y_axis_line.setFillColor(sf::Color::Green);
 
-    world2d_border.setPosition({world.left, world.top});
-    world2d_border.setSize({world.width, world.height});
+    world2d_border.setPosition(world.getPosition());
+    world2d_border.setSize(world.getSize());
     world2d_border.setFillColor(sf::Color(153, 195, 180));
     world2d_border.setOutlineColor(sf::Color(71, 71, 71));
     world2d_border.setOutlineThickness(4.0f);

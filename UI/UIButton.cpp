@@ -19,8 +19,9 @@ void UIButton::fit_to_size(sf::Vector2f new_size) {
 
 void UIButton::RenderDebug() {
   sf::RectangleShape debug_shape;
-  // debug_shape.setPosition(text.getGlobalBounds().left,
-  //   text.getGlobalBounds().top);
+
+  // debug_shape.setPosition(text.getGlobalBounds().getPosition());
+
   debug_shape.setPosition(getPosition());
   debug_shape.setSize(rect_size());
   debug_shape.setFillColor(sf::Color::Green);

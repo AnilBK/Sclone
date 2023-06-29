@@ -140,7 +140,7 @@ void BlockAttachNode::_update_internal_sizes() {
   attached_block->update_children_sizes();
 
   auto attached_rect = attached_block->full_rect();
-  sf::Vector2f rec_size{attached_rect.width, attached_rect.height};
+  sf::Vector2f rec_size = attached_rect.getSize();
 
   // Add additional 45 units of space inside the l-shape, so we see some space
   // there.
@@ -174,9 +174,7 @@ void BlockAttachNode::update_size() {
   actual_full_rect = shape_rect;
 }
 
-sf::Vector2f BlockAttachNode::rect_size() {
-  return {actual_full_rect.width, actual_full_rect.height};
-}
+sf::Vector2f BlockAttachNode::rect_size() { return actual_full_rect.getSize(); }
 
 sf::Vector2f BlockAttachNode::_get_attach_block_position() {
   return _pos + sf::Vector2f{15.0f, 0.0f};
@@ -194,7 +192,7 @@ sf::FloatRect BlockAttachNode::_attachable_block_snap_hint_rect() {
 void BlockAttachNode::_show_snap_for_attachable_block() {
   const auto r = _attachable_block_snap_hint_rect();
   // r is _attachable_block_snap_hint_rect.
-  auto r_pos = sf::Vector2f(r.left, r.top);
+  auto r_pos = r.getPosition();
   auto r_size = sf::Vector2f(r.width + 45, r.height);
 
   sf::RectangleShape block_snap_hint;
@@ -226,8 +224,8 @@ sf::FloatRect BlockAttachNode::full_rect() { return actual_full_rect; }
 void BlockAttachNode::RenderDebug() {
   auto r = full_rect();
   sf::RectangleShape rect;
-  rect.setPosition({r.left, r.top});
-  rect.setSize({r.width, r.height});
+  rect.setPosition(r.getPosition());
+  rect.setSize(r.getSize());
   rect.setFillColor(sf::Color(255, 0, 0, 200));
   window.draw(rect);
 }

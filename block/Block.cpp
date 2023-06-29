@@ -34,7 +34,7 @@ void Block::set_position(const sf::Vector2f p_pos) {
 
   if (next_block != nullptr) {
     auto snap_rect = _next_block_snap_rect();
-    sf::Vector2f next_block_snap_position(snap_rect.left, snap_rect.top);
+    sf::Vector2f next_block_snap_position(snap_rect.getPosition());
 
     next_block->set_position(next_block_snap_position);
   }
@@ -80,8 +80,8 @@ sf::FloatRect Block::_next_block_snap_rect() {
 
 void Block::show_previous_block_snap_hint() {
   auto r = _previous_block_snap_rect();
-  auto r_pos = sf::Vector2f(r.left, r.top);
-  auto r_size = sf::Vector2f(r.width, r.height);
+  auto r_pos = r.getPosition();
+  auto r_size = r.getSize();
 
   sf::RectangleShape previous_block_snap_hint;
   previous_block_snap_hint.setPosition(r_pos);
@@ -92,8 +92,8 @@ void Block::show_previous_block_snap_hint() {
 
 void Block::show_next_block_snap_hint() {
   auto r = _next_block_snap_rect();
-  auto r_pos = sf::Vector2f(r.left, r.top);
-  auto r_size = sf::Vector2f(r.width, r.height);
+  auto r_pos = r.getPosition();
+  auto r_size = r.getSize();
 
   sf::RectangleShape next_block_snap_hint;
   next_block_snap_hint.setPosition(r_pos);
@@ -273,12 +273,12 @@ void Block::resort_children() {
   }
 
   auto rect = full_rect();
-  block_full_size = {rect.width, rect.height};
+  block_full_size = rect.getSize();
 }
 
 void Block::render_full_rect() {
   auto rect = full_rect();
-  sf::Vector2f size = {rect.width, rect.height};
+  sf::Vector2f size = rect.getSize();
 
   sf::RectangleShape debug_block_rect_full;
   debug_block_rect_full.setPosition(position);

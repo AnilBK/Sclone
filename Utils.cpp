@@ -38,11 +38,11 @@ void remove_last_occurence(std::string &s, char ch) {
 
 namespace MATH_UTILITIES {
 sf::FloatRect merge_rects(sf::FloatRect rect, sf::FloatRect p_rect) {
-  auto rect_pos = sf::Vector2f(rect.left, rect.top);
-  auto rect_size = sf::Vector2f(rect.width, rect.height);
+  auto rect_pos = rect.getPosition();
+  auto rect_size = rect.getSize();
 
-  auto p_rect_pos = sf::Vector2f(p_rect.left, p_rect.top);
-  auto p_rect_size = sf::Vector2f(p_rect.width, p_rect.height);
+  auto p_rect_pos = p_rect.getPosition();
+  auto p_rect_size = p_rect.getSize();
 
   sf::Vector2f merged_rect_position = {std::min(p_rect_pos.x, rect_pos.x),
                                        std::min(p_rect_pos.y, rect_pos.y)};

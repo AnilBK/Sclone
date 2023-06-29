@@ -25,9 +25,7 @@ void GlobalAlertWindow::PopupWithMessage(const std::string &message) {
   // TODO ??? UI Containers all Render to default window, so change them to be
   // window independent.
 
-  auto message_label_size =
-      sf::Vector2f(message_label.getGlobalBounds().width,
-                   message_label.getGlobalBounds().height);
+  auto message_label_size = message_label.getGlobalBounds().getSize();
 
   ok_btn.setPosition(sf::Vector2f(20, message_label.getPosition().y +
                                           message_label_size.y + 20));

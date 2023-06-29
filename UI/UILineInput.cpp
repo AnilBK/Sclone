@@ -22,8 +22,9 @@ std::string UILineInput::get_text_no_prefix() { return input_text; }
 
 void UILineInput::RenderDebug() {
   sf::RectangleShape debug_shape;
-  // debug_shape.setPosition(text.getGlobalBounds().left,
-  //   text.getGlobalBounds().top);
+
+  // debug_shape.setPosition(text.getGlobalBounds().getPosition());
+
   debug_shape.setPosition(getPosition());
   debug_shape.setSize(rect_size());
   debug_shape.setFillColor(sf::Color::Green);

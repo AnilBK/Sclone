@@ -10,8 +10,8 @@ void ScriptEditor::setRect(sf::FloatRect rect) {
   view.setViewport({world.left / w_size.x, world.top / w_size.y,
                     world.width / w_size.x, world.height / w_size.y});
 
-  border.setPosition({world.left, world.top});
-  border.setSize({world.width, world.height});
+  border.setPosition(world.getPosition());
+  border.setSize(world.getSize());
   border.setFillColor(sf::Color(153, 195, 180));
   border.setOutlineColor(sf::Color(71, 71, 71));
   border.setOutlineThickness(4.0f);

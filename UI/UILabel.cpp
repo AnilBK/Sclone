@@ -7,12 +7,12 @@ void UILabel::setPosition(sf::Vector2f pos) {
 
 sf::Vector2f UILabel::get_actual_text_position() {
   const auto bounds = get_rectangle().getGlobalBounds();
-  return {bounds.left, bounds.top};
+  return bounds.getPosition();
 }
 
 sf::Vector2f UILabel::get_actual_text_size() {
   const auto bounds = get_rectangle().getGlobalBounds();
-  return {bounds.width, bounds.height};
+  return bounds.getSize();
 }
 
 sf::Vector2f UILabel::getPosition() { return text.getPosition(); }
@@ -26,7 +26,7 @@ std::string UILabel::get_text() { return text.getString(); }
 
 sf::Vector2f UILabel::rect_size() {
   sf::FloatRect textBounds = text.getGlobalBounds();
-  return sf::Vector2f(textBounds.width, textBounds.height);
+  return textBounds.getSize();
 }
 
 void UILabel::update_internal() {
@@ -35,8 +35,8 @@ void UILabel::update_internal() {
   // We cache that in the outline rectangle, so we can access it from outside.
   sf::FloatRect textBounds = text.getGlobalBounds();
   outline.setOrigin(text.getOrigin());
-  outline.setPosition({textBounds.left, textBounds.top});
-  outline.setSize(sf::Vector2f(textBounds.width, textBounds.height));
+  outline.setPosition(textBounds.getPosition());
+  outline.setSize(textBounds.getSize());
 }
 
 UILabel::UILabel(const std::string &str, const sf::Vector2f pos) {

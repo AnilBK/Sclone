@@ -454,8 +454,8 @@ void Editor::_render_bounding_box_over_selected_sprite() {
   const auto bounds = target_sprite->getGlobalBounds();
 
   sf::RectangleShape box;
-  box.setPosition({bounds.left, bounds.top});
-  box.setSize({bounds.width, bounds.height});
+  box.setPosition(bounds.getPosition());
+  box.setSize(bounds.getSize());
   box.setFillColor(sf::Color::Transparent);
   box.setOutlineThickness(2.0f);
   box.setOutlineColor(sf::Color::Black);
