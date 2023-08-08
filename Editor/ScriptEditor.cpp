@@ -54,8 +54,36 @@ void ScriptEditor::handle_inputs(sf::Event event) {
     if (script != nullptr) {
       right_click = false;
 
+      static bool lock_click = false;
+      bool left_clicked = false;
+
+      if (event.type == sf::Event::MouseButtonPressed) {
+        if (event.mouseButton.button == sf::Mouse::Left && !lock_click) {
+          left_clicked = true;
+        }
+      }
+
+      // Mouse button Released now.
+      if (event.type == sf::Event::MouseButtonReleased) {
+        if (event.mouseButton.button == sf::Mouse::Left) {
+          lock_click = false;
+          // Unlock when the button has been released.
+        }
+      }
+
+      bool left_click_consumed = false;
+
       for (auto &block : script->blocks) {
         block.handle_inputs(event);
+
+        // Send left click signal to every blocks.
+        // If any of the blocks accepts the left click then the left click is
+        // consumed, and that left click isn't to be accepted by any other
+        // block.
+
+        if (!left_click_consumed && left_clicked) {
+          left_click_consumed = block.left_clicked(event);
+        }
       }
 
       if (event.type == sf::Event::MouseButtonPressed &&

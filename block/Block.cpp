@@ -391,6 +391,33 @@ void Block::_update_mouse_pick_nodes() {
   }
 }
 
+bool Block::left_clicked(sf::Event event) {
+  // Already dragging, so undrag it.
+  if (dragging) {
+    deselect_all_nodes();
+    dragging = false;
+    // Left click was consumed.
+    return true;
+  }
+
+  // Not already dragging and mouse isn't over.
+  if (!is_mouse_over()) {
+    return false;
+  }
+
+  // Is mouse over and one of the children is clicked.
+  if (_process_left_click_on_children(event)) {
+    return true;
+  } else {
+    // It's children weren't clicked.
+    // Select/Drag the parent block instead.
+    dragging = true;
+    return true;
+  }
+
+  return false;
+}
+
 void Block::handle_inputs(sf::Event event) {
   auto m_pos = get_mouse_position();
 
@@ -410,35 +437,6 @@ void Block::handle_inputs(sf::Event event) {
   }
 
   _update_mouse_pick_nodes();
-
-  if (event.type == sf::Event::MouseButtonPressed) {
-    // Left to drag, right to undrag.
-    // We may use left to undrag as well, but those clicks occur so
-    // fast, mostly it causes toggle on/off/on.. conditions.
-    if (event.mouseButton.button == sf::Mouse::Left) {
-      if (any_node_already_pressed()) {
-        deselect_all_nodes();
-      }
-
-      if (_process_left_click_on_children(event)) {
-        return;
-      }
-
-      // No any internal blocks were clicked.
-      if (!dragging && is_mouse_over()) {
-        dragging = true;
-      }
-
-    } else if (event.mouseButton.button == sf::Mouse::Right) {
-      // TODO: All clicks outside a block should invalidate pressed state of
-      // any NODE.
-      deselect_all_nodes();
-
-      if (dragging) {
-        dragging = false;
-      }
-    }
-  }
 }
 
 std::vector<BlockAttachNode *>

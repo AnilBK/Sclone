@@ -114,6 +114,11 @@ public:
   bool is_mouse_over();
   bool is_control_block();
 
+  /// @brief Accepts mouse click event to process it.
+  /// @param event The left click event passed to the block.
+  /// @return True if the mouse click was accepted by the block.
+  bool left_clicked(sf::Event event);
+
   /// @brief This is to indicate if a block is being interacted.
   /// @return True if mouse is over the given block or any of it's
   /// children is pressed.
