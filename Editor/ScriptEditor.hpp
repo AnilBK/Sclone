@@ -6,7 +6,7 @@
 
 class ScriptEditor {
 private:
-  bool middle_click = false;
+  bool right_click = false;
 
   sf::View view;
   sf::FloatRect world;

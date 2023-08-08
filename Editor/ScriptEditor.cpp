@@ -52,15 +52,15 @@ void ScriptEditor::handle_inputs(sf::Event event) {
     window.setView(view);
 
     if (script != nullptr) {
-      middle_click = false;
+      right_click = false;
 
       for (auto &block : script->blocks) {
         block.handle_inputs(event);
       }
 
       if (event.type == sf::Event::MouseButtonPressed &&
-          event.mouseButton.button == sf::Mouse::Middle) {
-        middle_click = true;
+          event.mouseButton.button == sf::Mouse::Right) {
+        right_click = true;
       }
     }
 
@@ -152,7 +152,7 @@ void ScriptEditor::Update() {
       continue;
     }
 
-    bool attach_block_requested = middle_click;
+    bool attach_block_requested = right_click;
 
     if (block.can_mouse_snap_to_top()) {
       if (attach_block_requested) {
