@@ -4,10 +4,17 @@
 #include "../block/Block.hpp"
 #include "Script.hpp"
 
+enum class SNAP_DIRECTION { TOP, BOTTOM, INSIDE, NONE };
+
+struct SNAP_HINT_INFO {
+  bool can_snap;
+  SNAP_DIRECTION snap_direction;
+  Block *block_to_snap_to;
+  BlockAttachNode *attach_block_inside_node;
+};
+
 class ScriptEditor {
 private:
-  bool right_click = false;
-
   sf::View view;
   sf::FloatRect world;
   sf::RectangleShape border;
@@ -18,7 +25,9 @@ private:
 
   Block *get_block_it_is_attached_to(Block *block_to_test);
   Block *get_currently_dragging_block();
-  void Update();
+
+  SNAP_HINT_INFO get_block_to_snap_on(Block *current_dragging_block_ref);
+  void ShowSnapHints();
 
 public:
   Script *script = nullptr;

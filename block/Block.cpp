@@ -18,7 +18,13 @@ void Block::set_block_type(BLOCK_TYPES p_type) {
 
 void Block::attach_block_next(Block *p_next_block) {
   ERR_CRASH_IF(p_next_block == this, "Children is same as parent.");
+
+  if (p_next_block->is_attached_to_anything) {
+    return;
+  }
+
   next_block = p_next_block;
+  next_block->is_attached_to_anything = true;
   // Set same position again, so it's child's position can be updated too.
   set_position(position);
 }
@@ -121,27 +127,30 @@ bool Block::can_mouse_snap_to_bottom() {
   return isMouseOverRect(_next_block_snap_rect());
 }
 
-void Block::process_inside_snap_hints(bool attach_block_requested,
-                                      Block *current_dragging_block_ref) {
+std::optional<BlockAttachNode *> Block::get_node_to_attach_block_inside() {
   auto nodes = get_block_attach_nodes(false);
   for (auto &node : nodes) {
-    if (!node->can_snap_block_inside()) {
-      continue;
-    }
-
-    node->_show_snap_for_attachable_block();
-
-    if (attach_block_requested) {
+    if (node->can_snap_block_inside()) {
       // TODO :: Check if the snap place is already occupied.
-      // TODO :: current dragging block ref should be pushed back where the
-      // snap hint is showing.
-      node->attached_block = current_dragging_block_ref;
-      node->attached_block->dragging = false;
-      current_dragging_block_ref->dragging = false;
-
-      set_position(position); // Refresh for the newly added block.
-      return;
+      return node;
     }
+  }
+
+  return {};
+}
+
+void Block::show_possible_snap_hints() {
+  if (can_mouse_snap_to_top()) {
+    show_previous_block_snap_hint();
+  }
+
+  if (can_mouse_snap_to_bottom()) {
+    show_next_block_snap_hint();
+  }
+
+  auto attach_block_inside_node = get_node_to_attach_block_inside();
+  if (attach_block_inside_node.has_value()) {
+    attach_block_inside_node.value()->_show_snap_for_attachable_block();
   }
 }
 

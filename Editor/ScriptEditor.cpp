@@ -52,8 +52,6 @@ void ScriptEditor::handle_inputs(sf::Event event) {
     window.setView(view);
 
     if (script != nullptr) {
-      right_click = false;
-
       static bool lock_click = false;
       bool left_clicked = false;
 
@@ -76,6 +74,48 @@ void ScriptEditor::handle_inputs(sf::Event event) {
       for (auto &block : script->blocks) {
         block.handle_inputs(event);
 
+        if (left_clicked) {
+          if (block.dragging && !block.is_attached_to_anything) {
+            // 'block.is_attached_to_anything' check makes sure, only the top of
+            // the dragged block is checked for snap hinting. With this the
+            // blocks attached to the currently dragged block aren't checked for
+            // snap hinting.
+
+            SNAP_HINT_INFO snap_data = get_block_to_snap_on(&block);
+            if (snap_data.can_snap) {
+              Block *block_to_snap_to = snap_data.block_to_snap_to;
+
+              if (snap_data.snap_direction == SNAP_DIRECTION::TOP) {
+                Block *parent = get_block_it_is_attached_to(block_to_snap_to);
+                if (parent != nullptr) {
+                  // It is already attached to some block.
+                  // So CurrentlyDraggedBlock will be attached to that parent.
+                  block.is_attached_to_anything = false;
+                  parent->attach_block_next(&block);
+                }
+
+                // And that parent's previously attached block will be
+                // attached to currently dragged block. Meaning we insert the
+                // currently dragged block between them two.
+                block.dragging = false;
+                block_to_snap_to->is_attached_to_anything = false;
+                block.attach_block_next(block_to_snap_to);
+                left_click_consumed = true;
+              } else if (snap_data.snap_direction == SNAP_DIRECTION::BOTTOM) {
+                block.dragging = false;
+                block_to_snap_to->attach_block_next(&block);
+                left_click_consumed = true;
+              } else if (snap_data.snap_direction == SNAP_DIRECTION::INSIDE) {
+                block.dragging = false;
+                BlockAttachNode *target = snap_data.attach_block_inside_node;
+                target->attached_block = &block;
+                target->attached_block->dragging = false;
+                left_click_consumed = true;
+              }
+            }
+          }
+        }
+
         // Send left click signal to every blocks.
         // If any of the blocks accepts the left click then the left click is
         // consumed, and that left click isn't to be accepted by any other
@@ -84,11 +124,6 @@ void ScriptEditor::handle_inputs(sf::Event event) {
         if (!left_click_consumed && left_clicked) {
           left_click_consumed = block.left_clicked(event);
         }
-      }
-
-      if (event.type == sf::Event::MouseButtonPressed &&
-          event.mouseButton.button == sf::Mouse::Right) {
-        right_click = true;
       }
     }
 
@@ -158,7 +193,52 @@ void ScriptEditor::reset_dragged_block() {
   }
 }
 
-void ScriptEditor::Update() {
+SNAP_HINT_INFO
+ScriptEditor::get_block_to_snap_on(Block *current_dragging_block_ref) {
+  SNAP_HINT_INFO snap_data;
+  snap_data.can_snap = false;
+  snap_data.snap_direction = SNAP_DIRECTION::NONE;
+  snap_data.block_to_snap_to = nullptr;
+  snap_data.attach_block_inside_node = nullptr;
+
+  for (auto &block : script->blocks) {
+    // Can't snap to itself.
+    if (current_dragging_block_ref == &block) {
+      continue;
+    }
+
+    // Control Blocks don't attach to anything.
+    if (current_dragging_block_ref->is_control_block()) {
+      continue;
+    }
+
+    if (block.can_mouse_snap_to_top()) {
+      snap_data.can_snap = true;
+      snap_data.snap_direction = SNAP_DIRECTION::TOP;
+      snap_data.block_to_snap_to = &block;
+      break;
+    }
+
+    if (block.can_mouse_snap_to_bottom()) {
+      snap_data.can_snap = true;
+      snap_data.snap_direction = SNAP_DIRECTION::BOTTOM;
+      snap_data.block_to_snap_to = &block;
+      break;
+    }
+
+    auto get_node_to_snap_inside = block.get_node_to_attach_block_inside();
+    if (get_node_to_snap_inside.has_value()) {
+      snap_data.can_snap = true;
+      snap_data.snap_direction = SNAP_DIRECTION::INSIDE;
+      snap_data.attach_block_inside_node = get_node_to_snap_inside.value();
+      break;
+    }
+  }
+
+  return snap_data;
+}
+
+void ScriptEditor::ShowSnapHints() {
   if (script == nullptr) {
     return;
   }
@@ -180,39 +260,7 @@ void ScriptEditor::Update() {
       continue;
     }
 
-    bool attach_block_requested = right_click;
-
-    if (block.can_mouse_snap_to_top()) {
-      if (attach_block_requested) {
-        Block *parent = get_block_it_is_attached_to(&block);
-        if (parent != nullptr) {
-          // It is already attached to some block.
-          // So CurrentlyDraggedBlock will be attached to that parent.
-          parent->attach_block_next(current_dragging_block_ref);
-        }
-        // And that parent's previously attached block('block') will be
-        // attached to currently dragged block. Meaning we insert the
-        // currently dragged block between them two.
-        current_dragging_block_ref->dragging = false;
-        current_dragging_block_ref->attach_block_next(&block);
-        continue;
-      } else {
-        block.show_previous_block_snap_hint();
-      }
-    }
-
-    if (block.can_mouse_snap_to_bottom()) {
-      if (attach_block_requested) {
-        current_dragging_block_ref->dragging = false;
-        block.attach_block_next(current_dragging_block_ref);
-        continue;
-      } else {
-        block.show_next_block_snap_hint();
-      }
-    }
-
-    block.process_inside_snap_hints(attach_block_requested,
-                                    current_dragging_block_ref);
+    block.show_possible_snap_hints();
   }
 }
 
@@ -222,7 +270,8 @@ void ScriptEditor::Render() {
   if (script != nullptr) {
     window.setView(view);
 
-    Update();
+    ShowSnapHints();
+
     for (auto &block : script->blocks) {
       block.Render();
     }

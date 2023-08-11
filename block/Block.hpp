@@ -85,6 +85,8 @@ public:
 
   std::vector<std::shared_ptr<NODEBaseClass>> childrens;
 
+  bool is_attached_to_anything = false;
+
   Block *next_block = nullptr;
 
   /// @brief Use this block identifier to spawn new blocks of this type.
@@ -135,8 +137,10 @@ public:
 
   void show_previous_block_snap_hint();
   void show_next_block_snap_hint();
-  void process_inside_snap_hints(bool attach_block_requested,
-                                 Block *current_dragging_block_ref);
+
+  void show_possible_snap_hints();
+
+  std::optional<BlockAttachNode *> get_node_to_attach_block_inside();
 
   /// @brief The rect that encloses this whole block.
   /// @return The enclosing rect.
