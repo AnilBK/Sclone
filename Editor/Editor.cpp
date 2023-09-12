@@ -519,6 +519,10 @@ void Editor::Render() {
   _render_ui();
   _render_block_spawner_tab();
 
+  if (gizmo_2D.is_gizmo_selected()) {
+    escape_sprite_dragging_label.Render();
+  }
+
   script_editor.Render();
 }
 

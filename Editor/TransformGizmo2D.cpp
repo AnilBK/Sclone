@@ -1,6 +1,6 @@
 #include "TransformGizmo2D.hpp"
 
-bool TransformGizmo2D::_is_gizmo_selected() {
+bool TransformGizmo2D::is_gizmo_selected() {
   return current_gizmo_state != GIZMO_SELECT_STATE::NONE;
 }
 
@@ -9,7 +9,7 @@ void TransformGizmo2D::setTargetSprite(sf::Sprite *target_spr) {
 }
 
 void TransformGizmo2D::_undrag_gizmos() {
-  if (_is_gizmo_selected()) {
+  if (is_gizmo_selected()) {
     current_gizmo_state = GIZMO_SELECT_STATE::NONE;
     setCursor(sf::Cursor::Arrow);
   }
@@ -51,7 +51,7 @@ void TransformGizmo2D::_draw_gizmo_axes() {
 }
 
 void TransformGizmo2D::_draw_gizmo() {
-  if (_is_gizmo_selected()) {
+  if (is_gizmo_selected()) {
     return;
   }
 
@@ -125,7 +125,7 @@ void TransformGizmo2D::_draw_gizmo() {
     current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
   }
 
-  if (_is_gizmo_selected()) {
+  if (is_gizmo_selected()) {
     setCursor(sf::Cursor::SizeAll);
   }
 }
@@ -135,7 +135,7 @@ void TransformGizmo2D::Render() {
   _draw_gizmo_axes();
 
   // Reset the gizmo selection.
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
+  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
     _undrag_gizmos();
   }
 }

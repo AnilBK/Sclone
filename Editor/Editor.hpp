@@ -88,6 +88,8 @@ private:
   VBoxContainer user_added_sprites_list_vbox;
 
   TransformGizmo2D gizmo_2D;
+  UILabel escape_sprite_dragging_label =
+      UILabel("Enter Esc to stop dragging sprite.");
 
   // The editor spawn blocks section.
   sf::Vector2f tab_pos = sf::Vector2f(700, 0);
@@ -307,6 +309,9 @@ public:
     world2d_border.setFillColor(sf::Color(153, 195, 180));
     world2d_border.setOutlineColor(sf::Color(71, 71, 71));
     world2d_border.setOutlineThickness(4.0f);
+
+    escape_sprite_dragging_label.setPosition(world.getPosition() +
+                                             sf::Vector2f(10, 5));
 
     // World 2D and Script Editor fills the whole screen.
     auto script_editor_pos = sf::Vector2f(

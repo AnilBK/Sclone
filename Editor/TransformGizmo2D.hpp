@@ -11,11 +11,11 @@ private:
   sf::Sprite *target_sprite = nullptr;
   GIZMO_SELECT_STATE current_gizmo_state = GIZMO_SELECT_STATE::NONE;
 
-  bool _is_gizmo_selected();
   void _draw_gizmo_axes();
   void _draw_gizmo();
 
 public:
+  bool is_gizmo_selected();
   void _undrag_gizmos();
   void setTargetSprite(sf::Sprite *target_spr);
   void Render();
