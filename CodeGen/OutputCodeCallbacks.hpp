@@ -394,4 +394,10 @@ std::string code_create_vector2f(const Block &block) {
          vector2f_value_x + "," + vector2f_value_y + "};";
 }
 
+std::string code_normalize_vector2f(const Block &block) {
+  auto vector2f_name = block.get_bound_value("variable_name").value();
+  return "_##SPRITE_NAME##_" + vector2f_name +
+         " = normalized(_##SPRITE_NAME##_" + vector2f_name + ");";
+}
+
 #endif // OUTPUT_CODE_CALL_BACKS_HPP

@@ -598,6 +598,7 @@ void Editor::spawn_and_bind_editor_blocks() {
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_string);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_vector2f);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_vector2f);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_normalize_vector2f);
 
   if (DEBUG_BLOCK_SPAWN_BIND_STATS) {
     std::cout << "\n[Done]Creating Editor Blocks:\n\n";

@@ -375,4 +375,12 @@ void block_set_vector2f(Block *block_set_vector2f) {
   block_set_vector2f->function_identifier = "block_set_vector2f";
 }
 
+void block_normalize_vector2f(Block *block_normalize_vector2f) {
+  block_normalize_vector2f->add_node(LabelNode("Normalize Vector2f"));
+  block_normalize_vector2f->add_node(LineInputNode("", "variable_name"));
+  block_normalize_vector2f->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_normalize_vector2f->output_code_callback = code_normalize_vector2f;
+  block_normalize_vector2f->function_identifier = "block_normalize_vector2f";
+}
+
 } // namespace BUILT_IN_BLOCKS
