@@ -64,8 +64,8 @@ int main() {
     window.clear(window_clear_color);
     auto deltaTime = frameClock.restart();
 
-    sf::Vector2f _Cat_velocity{20, 30};
-    _Cat_velocity = normalized(_Cat_velocity);
+    sf::Vector2f _Cat_velocity{10, 10};
+    _Cat_velocity.x -= 10;
 
     window.draw(Cat);
 

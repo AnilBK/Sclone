@@ -556,7 +556,7 @@ void Editor::spawn_and_bind_editor_blocks() {
   // functions. In this way, we create a block for the editor and use that
   // oppurtunity to register it as well.
 
-  editor_blocks.reserve(25);
+  editor_blocks.reserve(35);
 
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_program_started);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_sprite_clicked);
@@ -599,6 +599,7 @@ void Editor::spawn_and_bind_editor_blocks() {
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_create_vector2f);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_set_vector2f);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_normalize_vector2f);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_update_vector2f);
 
   if (DEBUG_BLOCK_SPAWN_BIND_STATS) {
     std::cout << "\n[Done]Creating Editor Blocks:\n\n";

@@ -58,6 +58,7 @@ void block_set_string(Block *block_set_string);
 void block_create_vector2f(Block *block_create_vector2f);
 void block_set_vector2f(Block *block_set_vector2f);
 void block_normalize_vector2f(Block *block_normalize_vector2f);
+void block_update_vector2f(Block *block_update_vector2f);
 
 } // namespace BUILT_IN_BLOCKS
 

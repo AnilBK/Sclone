@@ -383,4 +383,18 @@ void block_normalize_vector2f(Block *block_normalize_vector2f) {
   block_normalize_vector2f->function_identifier = "block_normalize_vector2f";
 }
 
+void block_update_vector2f(Block *block_update_vector2f) {
+  block_update_vector2f->add_node(LabelNode("Update Vector2f"));
+  block_update_vector2f->add_node(LineInputNode("", "variable_name"));
+  block_update_vector2f->add_node(LabelNode("."));
+  block_update_vector2f->add_node(DropDownNode("", "member", {"x", "y"}));
+  block_update_vector2f->add_node(
+      DropDownNode("", "operation", {"+", "-", "*", "/"}));
+  block_update_vector2f->add_node(LabelNode("="));
+  block_update_vector2f->add_node(LineInputNode("", "value"));
+  block_update_vector2f->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_VARIABLES;
+  block_update_vector2f->output_code_callback = code_update_vector2f;
+  block_update_vector2f->function_identifier = "block_update_vector2f";
+}
+
 } // namespace BUILT_IN_BLOCKS

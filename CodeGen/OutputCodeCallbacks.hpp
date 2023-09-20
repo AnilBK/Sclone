@@ -400,4 +400,15 @@ std::string code_normalize_vector2f(const Block &block) {
          " = normalized(_##SPRITE_NAME##_" + vector2f_name + ");";
 }
 
+std::string code_update_vector2f(const Block &block) {
+  auto vector2f_name = block.get_bound_value("variable_name").value();
+  auto member = block.get_bound_value("member").value();
+  auto operation = block.get_bound_value("operation").value();
+  auto value = block.get_bound_value("value").value();
+
+  // vector.x += 10;
+  return "_##SPRITE_NAME##_" + vector2f_name + "." + member + " " + operation +
+         "= " + value + ";";
+}
+
 #endif // OUTPUT_CODE_CALL_BACKS_HPP
