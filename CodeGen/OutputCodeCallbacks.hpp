@@ -40,6 +40,11 @@ std::string code_sprite_glide_to_xy(const Block &block) {
          "," + length + ");";
 }
 
+std::string code_sprite_move_by_vector2(const Block &block) {
+  auto offset = block.get_bound_value("offset").value();
+  return "##SPRITE_NAME##.move(_##SPRITE_NAME##_" + offset + ");";
+}
+
 std::string code_sprite_glide_point_to_point(const Block &block) {
   auto x_pos = block.get_bound_value("x").value();
   auto y_pos = block.get_bound_value("y").value();

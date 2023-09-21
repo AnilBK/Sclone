@@ -33,6 +33,7 @@ void block_alternate_between(Block *block_alternate_between);
 // Motion Blocks
 void block_default_character_controller(Block *block_def_char_con);
 void block_go_to_xy(Block *block_go_to_xy);
+void block_move_by_vector2(Block *block_move_by_vector2);
 void block_glide_to_xy(Block *block_glide_to_xy);
 void block_glide_point_to_point(Block *block_glide_point_to_point);
 void block_change_x_by(Block *block_change_x_by);

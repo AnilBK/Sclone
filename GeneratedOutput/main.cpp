@@ -62,10 +62,16 @@ int main() {
     }
 
     window.clear(window_clear_color);
-    auto deltaTime = frameClock.restart();
 
-    sf::Vector2f _Cat_velocity{10, 10};
-    _Cat_velocity.x -= 10;
+    auto deltaTime = frameClock.restart();
+    auto delta = deltaTime.asSeconds();
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+      sf::Vector2f _Cat_vel{10, 20};
+      _Cat_vel.x *= delta;
+      _Cat_vel.y *= delta;
+      Cat.move(_Cat_vel);
+    }
 
     window.draw(Cat);
 

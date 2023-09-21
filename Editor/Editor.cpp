@@ -576,6 +576,7 @@ void Editor::spawn_and_bind_editor_blocks() {
       BUILT_IN_BLOCKS::block_default_character_controller);
 
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_go_to_xy);
+  SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_move_by_vector2);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_x_by);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_x_by_in);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_change_y_by);

@@ -100,6 +100,14 @@ void block_go_to_xy(Block *block_go_to_xy) {
   block_go_to_xy->function_identifier = "block_go_to_xy";
 }
 
+void block_move_by_vector2(Block *block_move_by_vector2) {
+  block_move_by_vector2->add_node(LabelNode("Move by Vector2"));
+  block_move_by_vector2->add_node(LineInputNode("", "offset"));
+  block_move_by_vector2->TabItBelongsToName = BLOCKS_TAB_NAME::TAB_MOTION;
+  block_move_by_vector2->output_code_callback = code_sprite_move_by_vector2;
+  block_move_by_vector2->function_identifier = "block_move_by_vector2";
+}
+
 void block_glide_to_xy(Block *block_glide_to_xy) {
   block_glide_to_xy->add_node(LabelNode("Glide to"));
   block_glide_to_xy->add_node(LabelNode("X"));
