@@ -425,22 +425,24 @@ int main() {
     }
 
     window.clear(window_clear_color);
+
     auto deltaTime = frameClock.restart();
+    auto delta = deltaTime.asSeconds();
 
     //###MAINLOOP_CODE###
 
     //###RENDER_CODE###
 
     // MODULE : "BUBBLE_TEXT" //
-    update_bubble_message_system(deltaTime.asSeconds());
+    update_bubble_message_system(delta);
     // MODULE_END //
 
     // MODULE : "MOVE_POINT_TO_POINT" //
-    update_move_p2p_system(deltaTime.asSeconds());
+    update_move_p2p_system(delta);
     // MODULE_END //
 
     // MODULE : "MOVE_TO_POINT" //
-    update_move_to_point_system(deltaTime.asSeconds());
+    update_move_to_point_system(delta);
     // MODULE_END //
 
     window.display();
