@@ -160,9 +160,10 @@ void Editor::_update_sprite_name() {
 }
 
 void Editor::select_sprite_by_id(int id) {
-  for (const auto &sprite : user_added_sprites) {
+  for (auto &sprite : user_added_sprites) {
     if (sprite.id == id) {
       currently_selected_sprite_id = id;
+      Cache.selected_sprite_ptr = &sprite;
       sprite_name.set_text(sprite.name);
       sprite_pos.set_text(_position_to_string(sprite.position));
       sprite_texture_name.set_text(sprite.texture);
@@ -266,7 +267,7 @@ Script *Editor::selected_script_ptr() {
   return nullptr;
 }
 
-EditorSprite *Editor::selected_sprite_ptr() {
+EditorSprite *Editor::_selected_sprite_ptr() {
   if (currently_selected_sprite_id == -1) {
     return nullptr;
   }
@@ -425,6 +426,9 @@ void Editor::_render_ui() {
 }
 
 void Editor::update_sorted_sprites_cache() {
+  // Adding new sprite invalidates this ptr, so refetch it as well.
+  Cache.selected_sprite_ptr = _selected_sprite_ptr();
+
   Cache.sprites_sorted_by_layers.clear();
   Cache.sprites_sorted_by_layers = get_sprites_sorted_by_layers();
 

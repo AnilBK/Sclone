@@ -185,6 +185,8 @@ public:
   std::vector<std::shared_ptr<Script>> scripts;
 
   struct cache {
+    EditorSprite *selected_sprite_ptr = nullptr;
+
     // Sprites sorted by layers (for rendering).
     std::vector<const EditorSprite *> sprites_sorted_by_layers;
     // Sprites reversely sorted by layers (for picking up inputs).
@@ -344,8 +346,12 @@ public:
   void add_block_to_script(Block b);
 
   Script *selected_script_ptr();
-  EditorSprite *selected_sprite_ptr();
   Script *get_script_attached_to_editor_sprite(EditorSprite *sprite);
+
+  // Returns the selected sprite ptr.
+  EditorSprite *_selected_sprite_ptr();
+  // Get the cached pointer to the selected sprite.
+  EditorSprite *selected_sprite_ptr() { return Cache.selected_sprite_ptr; }
 
   std::vector<const EditorSprite *> get_sprites_sorted_by_layers() const;
 
