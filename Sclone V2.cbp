@@ -92,6 +92,7 @@
 		<Unit filename="block/NODEBaseClass.cpp" />
 		<Unit filename="block/NODEBaseClass.hpp" />
 		<Unit filename="main.cpp" />
+		<Unit filename="thirdparty/RoundedRectangleShape.cpp" />
 		<Extensions>
 			<lib_finder disable_auto="1" />
 		</Extensions>
