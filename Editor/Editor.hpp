@@ -343,6 +343,7 @@ public:
   void _render_ui();
   void _render_sprites();
   void _process_2D_gizmo();
+  void _pick_sprite();
 
   void toggle_tab_bar_folding();
 

@@ -1,4 +1,5 @@
 #include "Editor.hpp"
+#include <algorithm>
 #include <cstdlib>
 
 int Editor::_selected_sprite_layer() {
@@ -322,6 +323,10 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
       auto delta = old_mouse_pos - new_mouse_pos;
       view.move(delta);
     }
+
+    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+      _pick_sprite();
+    }
   }
 }
 
@@ -497,6 +502,23 @@ void Editor::_process_2D_gizmo() {
   // Setting the position again assuming the position was changed by the
   // gizmo.
   target_object->position = new_pos;
+}
+
+void Editor::_pick_sprite() {
+  auto sorted_sprites = get_sprites_sorted_by_layers();
+  // Top most sprites need to pick up the inputs first, so we reverse the list.
+  std::reverse(sorted_sprites.begin(), sorted_sprites.end());
+
+  window.setView(view);
+
+  for (auto &sprite : sorted_sprites) {
+    if (isMouseOverSprite(sprite->sprite)) {
+      select_sprite_by_id(sprite->id);
+      break;
+    }
+  }
+
+  window.setView(window.getDefaultView());
 }
 
 void Editor::Render() {
