@@ -541,8 +541,8 @@ void Editor::Render() {
   window.setView(view);
   window.draw(grid_x_axis_line);
   window.draw(grid_y_axis_line);
-  _render_bounding_box_over_selected_sprite();
   _render_sprites();
+  _render_bounding_box_over_selected_sprite();
   _process_2D_gizmo();
   window.setView(window.getDefaultView());
 
