@@ -17,6 +17,9 @@ void Editor::_set_sprite_layer(int new_layer) {
   }
 
   selected_sprite->layer = new_layer;
+
+  // Sprites layers have changed, so we need to update the cache as well.
+  update_sorted_sprites_cache();
 }
 
 void Editor::_increment_sprite_layer() {
@@ -235,6 +238,7 @@ void Editor::add_new_sprite(const std::string &p_name) {
   e_spr.sprite = spr;
 
   user_added_sprites.push_back(e_spr);
+  update_sorted_sprites_cache();
 
   std::shared_ptr<Script> script(new Script());
   script.get()->attached_to_sprite_id = new_working_id;
@@ -420,6 +424,18 @@ void Editor::_render_ui() {
   build_and_run_btn.Render();
 }
 
+void Editor::update_sorted_sprites_cache() {
+  Cache.sprites_sorted_by_layers.clear();
+  Cache.sprites_sorted_by_layers = get_sprites_sorted_by_layers();
+
+  Cache.sprites_sorted_by_layers_reverse.clear();
+  Cache.sprites_sorted_by_layers_reverse = Cache.sprites_sorted_by_layers;
+
+  // Top most sprites need to pick up the inputs first, so we reverse the list.
+  std::reverse(Cache.sprites_sorted_by_layers_reverse.begin(),
+               Cache.sprites_sorted_by_layers_reverse.end());
+}
+
 std::vector<const EditorSprite *> Editor::get_sprites_sorted_by_layers() const {
   std::vector<int> layers;
   layers.reserve(user_added_sprites.size());
@@ -476,8 +492,7 @@ void Editor::_render_sprites() {
   */
 
   // Drawing Sprites Sorted by their layers.
-  auto sorted_sprites = get_sprites_sorted_by_layers();
-  for (auto &sprite : sorted_sprites) {
+  for (auto &sprite : Cache.sprites_sorted_by_layers) {
     window.draw(sprite->sprite);
   }
 }
@@ -505,13 +520,9 @@ void Editor::_process_2D_gizmo() {
 }
 
 void Editor::_pick_sprite() {
-  auto sorted_sprites = get_sprites_sorted_by_layers();
-  // Top most sprites need to pick up the inputs first, so we reverse the list.
-  std::reverse(sorted_sprites.begin(), sorted_sprites.end());
-
   window.setView(view);
 
-  for (auto &sprite : sorted_sprites) {
+  for (auto &sprite : Cache.sprites_sorted_by_layers_reverse) {
     if (isMouseOverSprite(sprite->sprite)) {
       select_sprite_by_id(sprite->id);
       break;

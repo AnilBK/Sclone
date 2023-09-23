@@ -184,6 +184,17 @@ public:
   std::vector<EditorSprite> user_added_sprites;
   std::vector<std::shared_ptr<Script>> scripts;
 
+  struct cache {
+    // Sprites sorted by layers (for rendering).
+    std::vector<const EditorSprite *> sprites_sorted_by_layers;
+    // Sprites reversely sorted by layers (for picking up inputs).
+    // We may not need this additional reverse cache, we may just iterate the
+    // 'sprites_sorted_by_layers' vector in reverse.
+    std::vector<const EditorSprite *> sprites_sorted_by_layers_reverse;
+  } Cache;
+
+  void update_sorted_sprites_cache();
+
   ScriptEditor script_editor;
 
   void _initialize_built_in_blocks_tab_bar() {
