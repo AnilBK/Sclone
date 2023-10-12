@@ -37,6 +37,10 @@ void remove_last_occurence(std::string &s, char ch) {
 } // namespace STRING_UTILITIES
 
 namespace MATH_UTILITIES {
+sf::Vector2f round(const sf::Vector2f p_vec) {
+  return sf::Vector2f{std::round(p_vec.x), std::round(p_vec.y)};
+}
+
 sf::FloatRect merge_rects(sf::FloatRect rect, sf::FloatRect p_rect) {
   auto rect_pos = rect.getPosition();
   auto rect_size = rect.getSize();

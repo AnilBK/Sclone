@@ -12,6 +12,8 @@ void remove_last_occurence(std::string &s, char ch);
 } // namespace STRING_UTILITIES
 
 namespace MATH_UTILITIES {
+[[nodiscard]] sf::Vector2f round(const sf::Vector2f p_vec);
+
 [[nodiscard]] sf::FloatRect merge_rects(sf::FloatRect rect,
                                         sf::FloatRect p_rect);
 
