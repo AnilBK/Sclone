@@ -1,6 +1,7 @@
 #include "Editor/Editor.hpp"
 #include "Editor/Windows/GlobalAlertWindow.hpp"
 #include "Globals.hpp"
+#include "UI/Button.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 
@@ -31,6 +32,8 @@ int main() {
   sf::Font font;
   ERR_CRASH_IF(!font.loadFromFile("OpenSans-Regular.ttf"),
                "Error Loading Font.");
+
+  button_font = font;
 
   height = sf::VideoMode::getDesktopMode().height;
   width = sf::VideoMode::getDesktopMode().width;

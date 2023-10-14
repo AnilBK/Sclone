@@ -150,7 +150,7 @@ void Editor::_update_sprite_name() {
   // Update the text in the UIButton that toggles this sprite, as well.
   for (const auto &[btn_ref, sprite_id] : btn_id_pairs) {
     if (sprite_id == selected_sprite->id) {
-      btn_ref.get()->text.set_text(selected_sprite->name);
+      btn_ref.get()->set_text(selected_sprite->name);
       break; // There's no reason two buttons are assigned to a single sprite.
     }
   }
@@ -185,7 +185,7 @@ void Editor::_highlight_btn_in_list(const int id) {
   // The selected button only looks like button, all other buttons are 'flat',
   // meaning they just look like a label.
   for (const auto &[btn_ref, target_sprite_id] : btn_id_pairs) {
-    btn_ref.get()->is_flat = (target_sprite_id != id);
+    btn_ref.get()->set_pressed(target_sprite_id != id);
   }
 }
 
@@ -201,8 +201,8 @@ void Editor::add_new_sprite(const std::string &p_name) {
 
   int new_working_id = _total_sprites_added;
 
-  std::shared_ptr<UIButton> btn(new UIButton(p_name));
-  btn.get()->is_flat = true;
+  std::shared_ptr<Button> btn(new Button(p_name));
+  btn.get()->set_pressed(true);
 
   btn.get()->clicked_callback = [new_working_id, this]() {
     select_sprite_by_id(new_working_id);

@@ -3,6 +3,7 @@
 
 #include "../CodeGen/CodeGenerator.hpp"
 #include "../Globals.hpp"
+#include "../UI/Button.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/TabBar.hpp"
 #include "../UI/UIButton.hpp"
@@ -109,7 +110,7 @@ private:
   /// in the editor.
   std::vector<Block> editor_blocks;
 
-  using BtnIDPair = std::pair<std::shared_ptr<UIButton>, int>;
+  using BtnIDPair = std::pair<std::shared_ptr<Button>, int>;
   /// @brief We store an UIButton. This is the button that is shown left on the
   /// list of sprites. We also save an ID of the sprite associated with this
   /// UIButton.
