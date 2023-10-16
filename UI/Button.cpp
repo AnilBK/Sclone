@@ -33,11 +33,11 @@ void Button::set_pressed(bool p_pressed) {
   pressed = p_pressed;
 
   if (pressed) {
-    rectangle.setFillColor(sf::Color(150, 144, 80));
-    text.setFillColor(sf::Color::Black);
-  } else {
     rectangle.setFillColor(sf::Color(230, 244, 255));
     text.setFillColor(sf::Color(0, 136, 204));
+  } else {
+    rectangle.setFillColor(sf::Color(150, 144, 80));
+    text.setFillColor(sf::Color::Black);
   }
 }
 
@@ -65,7 +65,7 @@ Button::Button(const std::string &btn_text, sf::Vector2f pos) {
 }
 
 void Button::Render() {
-  if (!pressed) {
+  if (pressed) {
     window.draw(rectangle);
   }
 

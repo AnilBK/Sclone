@@ -147,12 +147,11 @@ void Editor::_update_sprite_name() {
                              "Sprite name shouldn't contain spaces.")
 
   selected_sprite->name = sprite_name.get_text();
-  // Update the text in the UIButton that toggles this sprite, as well.
-  for (const auto &[btn_ref, sprite_id] : btn_id_pairs) {
-    if (sprite_id == selected_sprite->id) {
-      btn_ref.get()->set_text(selected_sprite->name);
-      break; // There's no reason two buttons are assigned to a single sprite.
-    }
+
+  // Update the text in the UITreeView item that toggles this sprite, as well.
+  auto index = _get_index_of_btn_related_to_editor_sprite(selected_sprite->id);
+  if (index) {
+    sprite_list_ui_tree.update_item_name(index.value(), selected_sprite->name);
   }
 
   sprite_name.line_input_active = false;
@@ -181,11 +180,35 @@ void Editor::select_sprite_by_id(int id) {
   }
 }
 
+std::optional<int>
+Editor::_get_index_of_btn_related_to_editor_sprite(int p_sprite_id) {
+  // Find the id of UITree item that matches the provided sprite id.
+  int idx = -1;
+  for (const auto &[item_id, sprite_id] : tree_item_sprite_index_pairs) {
+    if (sprite_id == p_sprite_id) {
+      idx = item_id;
+      break;
+    }
+  }
+
+  if (idx == -1) {
+    return {};
+  }
+
+  // Find the actual index in the vector that contains the given list item.
+  auto id = sprite_list_ui_tree.index_of_item_with_id(idx);
+  if (id.has_value()) {
+    return id.value();
+  }
+
+  // Should never happen :(.
+  return {};
+}
+
 void Editor::_highlight_btn_in_list(const int id) {
-  // The selected button only looks like button, all other buttons are 'flat',
-  // meaning they just look like a label.
-  for (const auto &[btn_ref, target_sprite_id] : btn_id_pairs) {
-    btn_ref.get()->set_pressed(target_sprite_id != id);
+  auto index = _get_index_of_btn_related_to_editor_sprite(id);
+  if (index) {
+    sprite_list_ui_tree.select_item_by_index(index.value());
   }
 }
 
@@ -201,20 +224,16 @@ void Editor::add_new_sprite(const std::string &p_name) {
 
   int new_working_id = _total_sprites_added;
 
-  std::shared_ptr<Button> btn(new Button(p_name));
-  btn.get()->set_pressed(true);
-
-  btn.get()->clicked_callback = [new_working_id, this]() {
+  auto select_sprite_func = [new_working_id, this]() {
     select_sprite_by_id(new_working_id);
   };
 
-  BtnIDPair pair;
-  pair.first = std::move(btn);
-  pair.second = new_working_id;
+  auto list_item_id = sprite_list_ui_tree.add_item(p_name, select_sprite_func);
 
-  btn_id_pairs.push_back(pair);
-
-  user_added_sprites_list_vbox.add_child(*pair.first);
+  ListItemSpritePair pair;
+  pair.list_item_id = list_item_id;
+  pair.sprite_id = new_working_id;
+  tree_item_sprite_index_pairs.push_back(pair);
 
   EditorSprite e_spr;
   e_spr.id = new_working_id;
@@ -252,10 +271,7 @@ void Editor::add_new_sprite(const std::string &p_name) {
 ////////////////////////////////////////////////////
 ////////////////////////////////////////////////////
 
-void Editor::_refresh_layout() {
-  user_added_sprites_list_parent.reposition_children();
-  editor_inspector.reposition_children();
-}
+void Editor::_refresh_layout() { editor_inspector.reposition_children(); }
 
 Script *Editor::selected_script_ptr() {
   for (auto &script : scripts) {
@@ -337,42 +353,7 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
 
 void Editor::_handle_sprite_list_inputs(sf::Event event) {
   new_sprite_hbox.handle_inputs(event);
-
-  if (isMouseOverRect(added_sprite_list_world)) {
-    if (event.type == sf::Event::MouseWheelMoved) {
-      auto pos = user_added_sprites_list_parent.getPosition();
-      auto size = user_added_sprites_list_parent.rect_size();
-      bool content_overflowing =
-          pos.y + size.y >
-          added_sprite_list_world.top + added_sprite_list_world.height;
-
-      if (content_overflowing) {
-        added_sprite_list_view.move(0, -event.mouseWheel.delta * 5);
-
-        constexpr int OFFSET = 15;
-        sf::FloatRect view_rect = {added_sprite_list_view.getCenter(),
-                                   added_sprite_list_view.getSize()};
-
-        bool first_item_went_below_the_bottom =
-            (view_rect.top + view_rect.height / 2.0) < pos.y + OFFSET + 25;
-
-        bool last_item_went_above_the_top =
-            (view_rect.top - view_rect.height / 2.0) >
-            pos.y + size.y - OFFSET * 2 - 10 - 25;
-        // 10 padding of the inner child. 25 because that's probably
-        // size of a button.
-
-        if (first_item_went_below_the_bottom || last_item_went_above_the_top) {
-          // Revert back the scroll.
-          added_sprite_list_view.move(0, +event.mouseWheel.delta * 5);
-        }
-      }
-    }
-
-    window.setView(added_sprite_list_view);
-    user_added_sprites_list_parent.handle_inputs(event);
-    window.setView(window.getDefaultView());
-  }
+  sprite_list_ui_tree.handle_inputs(event);
 }
 
 void Editor::handle_inputs(sf::Event event) {
@@ -409,12 +390,7 @@ void Editor::handle_inputs(sf::Event event) {
 
 void Editor::_render_sprite_list_ui() {
   new_sprite_hbox.Render();
-
-  window.draw(added_sprite_list_bg);
-
-  window.setView(added_sprite_list_view);
-  user_added_sprites_list_parent.Render();
-  window.setView(window.getDefaultView());
+  sprite_list_ui_tree.Render();
 }
 
 void Editor::_render_ui() {

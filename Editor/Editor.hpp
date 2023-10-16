@@ -3,13 +3,13 @@
 
 #include "../CodeGen/CodeGenerator.hpp"
 #include "../Globals.hpp"
-#include "../UI/Button.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/TabBar.hpp"
 #include "../UI/UIButton.hpp"
 #include "../UI/UILabel.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../UI/UISprite.hpp"
+#include "../UI/UITreeView.h"
 #include "../block/Block.hpp"
 #include "../block/BlockBinder.hpp"
 #include "../block/BuiltInBlocks.hpp"
@@ -80,13 +80,7 @@ private:
   UILineInput new_sprite_name_input = UILineInput("Sprite");
   UIButton add_new_sprite_btn = UIButton("+");
 
-  const sf::FloatRect added_sprite_list_world{{20, 110}, {160, 180}};
-  sf::View added_sprite_list_view{added_sprite_list_world};
-  sf::RectangleShape added_sprite_list_bg;
-
   HBoxContainer new_sprite_hbox;
-  VBoxContainer user_added_sprites_list_parent;
-  VBoxContainer user_added_sprites_list_vbox;
 
   TransformGizmo2D gizmo_2D;
   UILabel escape_sprite_dragging_label =
@@ -110,11 +104,21 @@ private:
   /// in the editor.
   std::vector<Block> editor_blocks;
 
-  using BtnIDPair = std::pair<std::shared_ptr<Button>, int>;
-  /// @brief We store an UIButton. This is the button that is shown left on the
-  /// list of sprites. We also save an ID of the sprite associated with this
-  /// UIButton.
-  std::vector<BtnIDPair> btn_id_pairs;
+  struct ListItemSpritePair {
+    int list_item_id;
+    int sprite_id;
+  };
+
+  /// @brief We store pairs of (index assigned to the TreeView
+  /// item,sprite_id). In this way we know, which sprite_id is associated with
+  /// the TreeView item.
+  std::vector<ListItemSpritePair> tree_item_sprite_index_pairs;
+
+  UITreeView sprite_list_ui_tree =
+      UITreeView(sf::Vector2f(20, 110), sf::Vector2f(160, 180));
+
+  std::optional<int>
+  _get_index_of_btn_related_to_editor_sprite(int p_sprite_id);
 
   std::vector<std::shared_ptr<sf::Texture>> textures;
 
@@ -168,17 +172,10 @@ private:
     new_sprite_hbox.add_child(add_new_sprite_btn);
     new_sprite_hbox.setPosition({20, 75});
 
-    added_sprite_list_bg.setPosition(added_sprite_list_world.getPosition());
-    added_sprite_list_bg.setSize(added_sprite_list_world.getSize());
-    added_sprite_list_bg.setFillColor(sf::Color(195, 210, 226));
-
-    added_sprite_list_view.setViewport(
-        {added_sprite_list_world.left / window.getSize().x,
-         added_sprite_list_world.top / window.getSize().y,
-         added_sprite_list_world.width / window.getSize().x,
-         added_sprite_list_world.height / window.getSize().y});
-
-    added_sprite_list_view.move({-20, -15});
+    // Call init_ui late, because we need window size that hasn't been
+    // initialized or sth.. I forgot why i did this earlier.
+    //  TODO ?? Figure out.
+    sprite_list_ui_tree.init_ui();
   }
 
 public:
@@ -285,10 +282,6 @@ public:
     build_and_run_btn.setPosition(sf::Vector2f(600, 0));
     std::function<void()> build_and_run_func = [this]() { _build_and_run(); };
     build_and_run_btn.clicked_callback = build_and_run_func;
-
-    user_added_sprites_list_vbox.padding.y = 10.0F;
-    user_added_sprites_list_parent.add_child(user_added_sprites_list_vbox);
-    user_added_sprites_list_parent.setPosition({15, 110});
 
     // add_new_sprite("StarFish");
     add_new_sprite("Cat");
