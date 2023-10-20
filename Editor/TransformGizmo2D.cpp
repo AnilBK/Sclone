@@ -1,4 +1,5 @@
 #include "TransformGizmo2D.hpp"
+#include <cmath>
 
 bool TransformGizmo2D::is_gizmo_selected() {
   return current_gizmo_state != GIZMO_SELECT_STATE::NONE;
@@ -44,6 +45,18 @@ void TransformGizmo2D::_draw_gizmo_axes() {
   case GIZMO_SELECT_STATE::CENTER:
     target_sprite->setPosition(get_mouse_position());
     break;
+
+  case GIZMO_SELECT_STATE::SCALE: {
+    sf::Vector2f distance = get_mouse_position() - target_sprite->getPosition();
+    auto texture_size = target_sprite->getTexture()->getSize();
+
+    float x_scale_factor =
+        fabs(distance.x) / static_cast<float>(texture_size.x);
+    float y_scale_factor =
+        fabs(distance.y) / static_cast<float>(texture_size.y);
+
+    target_sprite->setScale(x_scale_factor * 2, y_scale_factor * 2);
+  } break;
 
   case GIZMO_SELECT_STATE::NONE:
     break;
@@ -110,6 +123,23 @@ void TransformGizmo2D::_draw_gizmo() {
   window.draw(c);
 
   //////////////////////////////////////////////////////////////////////
+  //                      The box at the bottom right.                //
+  //////////////////////////////////////////////////////////////////////
+  // Dragging it will scale the sprite.
+  sf::RectangleShape br;
+  br.setSize(gizmo_pick_size);
+  br.setPosition(line_start +
+                 (target_sprite->getGlobalBounds().getSize() * 0.5F) -
+                 (gizmo_pick_size * 0.5f));
+  br.setFillColor(sf::Color::Blue);
+  if (isMouseOverSprite(br) ||
+      current_gizmo_state == GIZMO_SELECT_STATE::SCALE) {
+    br.setOutlineThickness(2.0f);
+    br.setOutlineColor(sf::Color::Black);
+  }
+  window.draw(br);
+
+  //////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////
 
   bool select_gizmo_requested = sf::Mouse::isButtonPressed(sf::Mouse::Left);
@@ -123,10 +153,16 @@ void TransformGizmo2D::_draw_gizmo() {
     current_gizmo_state = GIZMO_SELECT_STATE::Y;
   } else if (isMouseOverSprite(c)) {
     current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
+  } else if (isMouseOverSprite(br)) {
+    current_gizmo_state = GIZMO_SELECT_STATE::SCALE;
   }
 
   if (is_gizmo_selected()) {
-    setCursor(sf::Cursor::SizeAll);
+    if (current_gizmo_state == GIZMO_SELECT_STATE::SCALE) {
+      setCursor(sf::Cursor::SizeTopLeftBottomRight);
+    } else {
+      setCursor(sf::Cursor::SizeAll);
+    }
   }
 }
 

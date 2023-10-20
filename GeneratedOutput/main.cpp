@@ -45,7 +45,8 @@ int main() {
   Cat.setTexture(Cat_texture);
   sf::FloatRect CatSize = Cat.getGlobalBounds();
   Cat.setOrigin(CatSize.width / 2.0f, CatSize.height / 2.0f);
-  Cat.setPosition(200, 384);
+  Cat.setPosition(471, 420);
+  Cat.setScale(4.882460, 3.446712);
 
   ///////////////////////////////////////
   ///////////////////////////////////////
@@ -65,13 +66,6 @@ int main() {
 
     auto deltaTime = frameClock.restart();
     auto delta = deltaTime.asSeconds();
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-      sf::Vector2f _Cat_vel{10, 20};
-      _Cat_vel.x *= delta;
-      _Cat_vel.y *= delta;
-      Cat.move(_Cat_vel);
-    }
 
     window.draw(Cat);
 

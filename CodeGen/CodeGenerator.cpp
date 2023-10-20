@@ -12,6 +12,7 @@ std::string CodeGenerator::_construct_sprite_code(const EditorSprite &spr) {
   auto sprite_name = spr.name;
   auto sprite_pos = spr.position;
   auto sprite_texture_file = spr.texture;
+  auto sprite_scale = spr.sprite.getScale();
 
   std::string spr_cons_code =
       "sf::Texture ##SPRITE_NAME##_texture;\n"
@@ -30,7 +31,9 @@ std::string CodeGenerator::_construct_sprite_code(const EditorSprite &spr) {
       "##SPRITE_NAME##Size.height / 2.0f);\n"
       "##SPRITE_NAME##.setPosition(" +
       std::to_string(static_cast<int>(sprite_pos.x)) + "," +
-      std::to_string(static_cast<int>(sprite_pos.y)) + ");\n";
+      std::to_string(static_cast<int>(sprite_pos.y)) + ");\n" +
+      "##SPRITE_NAME##.setScale(" + std::to_string(sprite_scale.x) + "," +
+      std::to_string(sprite_scale.y) + ");\n";
 
   _substitute_sprite_name(spr_cons_code, sprite_name);
   return spr_cons_code;

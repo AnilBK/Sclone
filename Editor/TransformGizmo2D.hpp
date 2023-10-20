@@ -4,7 +4,7 @@
 #include "../Globals.hpp"
 #include <SFML/Graphics.hpp>
 
-enum class GIZMO_SELECT_STATE { X, Y, CENTER, NONE };
+enum class GIZMO_SELECT_STATE { X, Y, CENTER, SCALE, NONE };
 
 class TransformGizmo2D {
 private:
