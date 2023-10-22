@@ -477,6 +477,22 @@ void Editor::_render_sprites() {
   }
 }
 
+void Editor::_on_sprites_translation_update() {
+  auto *target_object = selected_sprite_ptr();
+  if (target_object == nullptr) {
+    return;
+  }
+
+  auto target_sprite = &target_object->sprite;
+
+  auto new_pos = target_sprite->getPosition();
+  sprite_pos.set_text(_position_to_string(new_pos));
+
+  // Setting the position again as the position was changed by the
+  // gizmo.
+  target_object->position = new_pos;
+}
+
 void Editor::_process_2D_gizmo() {
   auto *target_object = selected_sprite_ptr();
   if (target_object == nullptr) {
@@ -490,13 +506,6 @@ void Editor::_process_2D_gizmo() {
   // resize. So we update every frame.
   // TODO : Find Better way.
   gizmo_2D.Render();
-
-  auto new_pos = target_sprite->getPosition();
-  sprite_pos.set_text(_position_to_string(new_pos));
-
-  // Setting the position again assuming the position was changed by the
-  // gizmo.
-  target_object->position = new_pos;
 }
 
 void Editor::_pick_sprite() {

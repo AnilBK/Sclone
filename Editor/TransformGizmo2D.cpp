@@ -16,7 +16,7 @@ void TransformGizmo2D::_undrag_gizmos() {
   }
 }
 
-void TransformGizmo2D::_draw_gizmo_axes() {
+void TransformGizmo2D::_update_gizmo() {
   switch (current_gizmo_state) {
   case GIZMO_SELECT_STATE::X: {
     const sf::Color x_line_color = sf::Color::Red;
@@ -28,6 +28,11 @@ void TransformGizmo2D::_draw_gizmo_axes() {
     draw_line({left_most_x, y_pos}, {win_width, y_pos}, x_line_color);
 
     target_sprite->setPosition(get_mouse_position().x - 100.0f, y_pos);
+
+    if (translation_updated_callbacks) {
+      translation_updated_callbacks();
+    }
+
   } break;
 
   case GIZMO_SELECT_STATE::Y: {
@@ -40,11 +45,19 @@ void TransformGizmo2D::_draw_gizmo_axes() {
     draw_line({x_pos, top_most_y}, {x_pos, win_height}, y_line_color);
 
     target_sprite->setPosition(x_pos, get_mouse_position().y + 100.0f);
+
+    if (translation_updated_callbacks) {
+      translation_updated_callbacks();
+    }
   } break;
 
-  case GIZMO_SELECT_STATE::CENTER:
+  case GIZMO_SELECT_STATE::CENTER: {
     target_sprite->setPosition(get_mouse_position());
-    break;
+
+    if (translation_updated_callbacks) {
+      translation_updated_callbacks();
+    }
+  } break;
 
   case GIZMO_SELECT_STATE::SCALE: {
     sf::Vector2f distance = get_mouse_position() - target_sprite->getPosition();
@@ -168,7 +181,7 @@ void TransformGizmo2D::_draw_gizmo() {
 
 void TransformGizmo2D::Render() {
   _draw_gizmo();
-  _draw_gizmo_axes();
+  _update_gizmo();
 
   // Reset the gizmo selection.
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {

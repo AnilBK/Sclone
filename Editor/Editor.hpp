@@ -161,6 +161,8 @@ private:
 
   void _build_and_run();
 
+  void _on_sprites_translation_update();
+
   void _init_sprite_list_ui() {
     // Stuffs Related To Add New Sprite Inspector.
     std::function<void()> add_sprite = [this]() { _create_new_sprite(); };
@@ -288,6 +290,11 @@ public:
 
     select_sprite_by_id(0);
     // gizmo_2D.setTargetSprite(&sprites.at(0));
+
+    std::function<void()> translation_func = [this]() {
+      _on_sprites_translation_update();
+    };
+    gizmo_2D.translation_updated_callbacks = translation_func;
 
     script_editor.script = selected_script_ptr();
 
