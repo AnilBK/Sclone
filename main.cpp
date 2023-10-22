@@ -1,6 +1,8 @@
 #include "Editor/Editor.hpp"
 #include "Editor/Windows/GlobalAlertWindow.hpp"
 #include "Globals.hpp"
+#include "Nodes/Node.hpp"
+#include "Nodes/SpriteNode.hpp"
 #include "UI/Button.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
@@ -64,6 +66,15 @@ int main() {
   GlobalAlertWindow MainAlert;
   Editor editor;
 
+  Node base;
+  base.setPosition(300.0f, 300.0f);
+
+  SpriteNode *circle = new SpriteNode();
+  SpriteNode *circle2 = new SpriteNode();
+  circle->addChild(circle2);
+
+  base.addChild(circle);
+
   while (window.isOpen()) {
 
     sf::Event event;
@@ -83,7 +94,10 @@ int main() {
 
     window.clear(window_clear_color);
 
-    editor.Render();
+    // editor.Render();
+    base.setPosition(get_mouse_position());
+    circle2->rotate(0.1f);
+    window.draw(base);
 
 #ifdef SHOW_FPS
     show_fps_btn.setString("FPS: " +
@@ -103,6 +117,9 @@ int main() {
     // window. We can just draw a rect with label as well.
     MainAlert.MainLoop();
   }
+
+  delete circle;
+  delete circle2;
 
   return 0;
 }
