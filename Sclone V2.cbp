@@ -66,8 +66,12 @@
 		<Unit filename="Editor/Windows/GlobalAlertWindow.cpp" />
 		<Unit filename="Editor/Windows/GlobalAlertWindow.hpp" />
 		<Unit filename="Globals.hpp" />
+		<Unit filename="Nodes/CircleShapeNode.cpp" />
+		<Unit filename="Nodes/CircleShapeNode.hpp" />
 		<Unit filename="Nodes/Node.cpp" />
 		<Unit filename="Nodes/Node.hpp" />
+		<Unit filename="Nodes/RectangleShapeNode.cpp" />
+		<Unit filename="Nodes/RectangleShapeNode.hpp" />
 		<Unit filename="Nodes/SpriteNode.cpp" />
 		<Unit filename="Nodes/SpriteNode.hpp" />
 		<Unit filename="UI/Button.cpp" />
