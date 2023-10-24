@@ -48,7 +48,7 @@ int main() {
   show_fps_btn.setString("FPS:");
   show_fps_btn.setFont(font);
   show_fps_btn.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
-  show_fps_btn.setPosition(sf::Vector2f(5, 40));
+  show_fps_btn.setPosition(sf::Vector2f(140, 5));
   show_fps_btn.setFillColor(sf::Color::Black);
 #endif
 
@@ -65,15 +65,6 @@ int main() {
 
   GlobalAlertWindow MainAlert;
   Editor editor;
-
-  Node base;
-  base.setPosition(300.0f, 300.0f);
-
-  SpriteNode *circle = new SpriteNode();
-  SpriteNode *circle2 = new SpriteNode();
-  circle->addChild(circle2);
-
-  base.addChild(circle);
 
   while (window.isOpen()) {
 
@@ -94,10 +85,7 @@ int main() {
 
     window.clear(window_clear_color);
 
-    // editor.Render();
-    base.setPosition(get_mouse_position());
-    circle2->rotate(0.1f);
-    window.draw(base);
+    editor.Render();
 
 #ifdef SHOW_FPS
     show_fps_btn.setString("FPS: " +
@@ -117,9 +105,6 @@ int main() {
     // window. We can just draw a rect with label as well.
     MainAlert.MainLoop();
   }
-
-  delete circle;
-  delete circle2;
 
   return 0;
 }

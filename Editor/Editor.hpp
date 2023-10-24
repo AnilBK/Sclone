@@ -3,6 +3,7 @@
 
 #include "../CodeGen/CodeGenerator.hpp"
 #include "../Globals.hpp"
+#include "../Nodes/Node.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/TabBar.hpp"
 #include "../UI/UIButton.hpp"
@@ -54,6 +55,9 @@ private:
   HBoxContainer third_line;
   HBoxContainer fourth_line;
   VBoxContainer editor_inspector;
+
+  UIDropDown add_node_type_drop_down =
+      UIDropDown({"Sprite", "CircleShape", "RectangleShape"});
 
   // 'More' button:
   //    to add more functionalities to a sprite.
@@ -149,7 +153,8 @@ private:
 
   void _build_and_run();
 
-  void _on_sprites_translation_update();
+  void _on_sprites_translation_update(bool update_translation,
+                                      bool update_scale);
 
   void _init_sprite_list_ui() {
     // Stuffs Related To Add New Sprite Inspector.
@@ -269,6 +274,8 @@ public:
     editor_inspector.add_child(show_more_hbox);
     editor_inspector.setPosition({250, 10});
 
+    add_node_type_drop_down.setPosition({20, 40});
+
     build_and_run_btn.setPosition(sf::Vector2f(600, 0));
     std::function<void()> build_and_run_func = [this]() { _build_and_run(); };
     build_and_run_btn.clicked_callback = build_and_run_func;
@@ -279,9 +286,10 @@ public:
     select_sprite_by_id(0);
     // gizmo_2D.setTargetSprite(&sprites.at(0));
 
-    std::function<void()> translation_func = [this]() {
-      _on_sprites_translation_update();
-    };
+    std::function<void(bool, bool)> translation_func =
+        [this](bool update_translation, bool update_scale) {
+          _on_sprites_translation_update(update_translation, update_scale);
+        };
     gizmo_2D.translation_updated_callbacks = translation_func;
 
     script_editor.script = selected_script_ptr();

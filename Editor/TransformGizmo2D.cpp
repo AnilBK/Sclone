@@ -5,8 +5,9 @@ bool TransformGizmo2D::is_gizmo_selected() {
   return current_gizmo_state != GIZMO_SELECT_STATE::NONE;
 }
 
-void TransformGizmo2D::setTargetSprite(sf::Sprite *target_spr) {
-  target_sprite = target_spr;
+void TransformGizmo2D::setTargetEditorSprite(
+    EditorSprite *p_target_editor_sprite) {
+  target_editor_sprite = p_target_editor_sprite;
 }
 
 void TransformGizmo2D::_undrag_gizmos() {
@@ -17,6 +18,8 @@ void TransformGizmo2D::_undrag_gizmos() {
 }
 
 void TransformGizmo2D::_update_gizmo() {
+  auto *target_sprite = &target_editor_sprite->sprite;
+
   switch (current_gizmo_state) {
   case GIZMO_SELECT_STATE::X: {
     const sf::Color x_line_color = sf::Color::Red;
@@ -30,7 +33,9 @@ void TransformGizmo2D::_update_gizmo() {
     target_sprite->setPosition(get_mouse_position().x - 100.0f, y_pos);
 
     if (translation_updated_callbacks) {
-      translation_updated_callbacks();
+      // update translation = true.
+      // update scale = false.
+      translation_updated_callbacks(true, false);
     }
 
   } break;
@@ -47,7 +52,7 @@ void TransformGizmo2D::_update_gizmo() {
     target_sprite->setPosition(x_pos, get_mouse_position().y + 100.0f);
 
     if (translation_updated_callbacks) {
-      translation_updated_callbacks();
+      translation_updated_callbacks(true, false);
     }
   } break;
 
@@ -55,7 +60,7 @@ void TransformGizmo2D::_update_gizmo() {
     target_sprite->setPosition(get_mouse_position());
 
     if (translation_updated_callbacks) {
-      translation_updated_callbacks();
+      translation_updated_callbacks(true, false);
     }
   } break;
 
@@ -69,6 +74,12 @@ void TransformGizmo2D::_update_gizmo() {
         fabs(distance.y) / static_cast<float>(texture_size.y);
 
     target_sprite->setScale(x_scale_factor * 2, y_scale_factor * 2);
+
+    if (translation_updated_callbacks) {
+      // update translation = false.
+      // update scale = true.
+      translation_updated_callbacks(false, true);
+    }
   } break;
 
   case GIZMO_SELECT_STATE::NONE:
@@ -80,6 +91,8 @@ void TransformGizmo2D::_draw_gizmo() {
   if (is_gizmo_selected()) {
     return;
   }
+
+  auto *target_sprite = &target_editor_sprite->sprite;
 
   auto line_start = target_sprite->getPosition();
 

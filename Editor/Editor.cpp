@@ -1,6 +1,10 @@
 #include "Editor.hpp"
+#include "../Nodes/CircleShapeNode.hpp"
+#include "../Nodes/RectangleShapeNode.hpp"
+#include "../Nodes/SpriteNode.hpp"
 #include <algorithm>
 #include <cstdlib>
+#include <memory>
 
 int Editor::_selected_sprite_layer() {
   int layer_value = std::stoi(sprite_layer_value_input.text.get_text());
@@ -257,6 +261,32 @@ void Editor::add_new_sprite(const std::string &p_name) {
   spr.setPosition(e_spr.position);
   e_spr.sprite = spr;
 
+  std::shared_ptr<Node> n_node;
+
+  const auto selection = add_node_type_drop_down.get_text();
+  if (selection == "Sprite") {
+    n_node = std::make_shared<SpriteNode>(spr);
+  } else if (selection == "CircleShape") {
+    // Smallest circle that fits in a rectangle.
+    float rad = std::min(textureSize.width, textureSize.height) / 2.0f;
+
+    sf::CircleShape shape;
+    shape.setPosition(spr.getPosition());
+    shape.setFillColor(sf::Color::Yellow);
+    shape.setRadius(rad);
+    n_node = std::make_shared<CircleShapeNode>(shape);
+  } else if (selection == "RectangleShape") {
+    sf::RectangleShape shape;
+    shape.setPosition(spr.getPosition());
+    shape.setSize(sf::Vector2f(175, 100));
+    shape.setFillColor(sf::Color::Yellow);
+    n_node = std::make_shared<RectangleShapeNode>(shape);
+  } else {
+    n_node = std::make_shared<SpriteNode>(spr);
+  }
+
+  e_spr.node = std::move(n_node);
+
   user_added_sprites.push_back(e_spr);
   update_sorted_sprites_cache();
 
@@ -386,6 +416,7 @@ void Editor::handle_inputs(sf::Event event) {
   built_in_blocks_tab_bar.handle_inputs(event);
   blocks_tab_bar_collapse_btn.handle_inputs(event);
   build_and_run_btn.handle_inputs(event);
+  add_node_type_drop_down.handle_inputs(event);
 }
 
 void Editor::_render_sprite_list_ui() {
@@ -399,6 +430,7 @@ void Editor::_render_ui() {
   _render_sprite_list_ui();
   editor_inspector.Render();
   build_and_run_btn.Render();
+  add_node_type_drop_down.Render();
 }
 
 void Editor::update_sorted_sprites_cache() {
@@ -474,10 +506,12 @@ void Editor::_render_sprites() {
   // Drawing Sprites Sorted by their layers.
   for (auto &sprite : Cache.sprites_sorted_by_layers) {
     window.draw(sprite->sprite);
+    window.draw(*sprite->node.get());
   }
 }
 
-void Editor::_on_sprites_translation_update() {
+void Editor::_on_sprites_translation_update(bool update_translation,
+                                            bool update_scale) {
   auto *target_object = selected_sprite_ptr();
   if (target_object == nullptr) {
     return;
@@ -485,12 +519,30 @@ void Editor::_on_sprites_translation_update() {
 
   auto target_sprite = &target_object->sprite;
 
-  auto new_pos = target_sprite->getPosition();
-  sprite_pos.set_text(_position_to_string(new_pos));
+  if (update_translation) {
+    auto new_pos = target_sprite->getPosition();
+    sprite_pos.set_text(_position_to_string(new_pos));
 
-  // Setting the position again as the position was changed by the
-  // gizmo.
-  target_object->position = new_pos;
+    // Setting the position again as the position was changed by the
+    // gizmo.
+    target_object->position = new_pos;
+
+    target_object->node.get()->setPosition(new_pos);
+  }
+
+  if (update_scale) {
+    // TODO ?? Custom Gizmos to change stuffs like circle's radius.
+
+#define OBJECT_IS(T) auto casted = dynamic_cast<T *>(target_object->node.get())
+    if (OBJECT_IS(SpriteNode)) {
+      casted->get_shape().setScale(target_sprite->getScale());
+    } else if (OBJECT_IS(CircleShapeNode)) {
+      casted->get_shape().setScale(target_sprite->getScale());
+    } else if (OBJECT_IS(RectangleShapeNode)) {
+      casted->get_shape().setScale(target_sprite->getScale());
+    }
+#undef OBJECT_IS
+  }
 }
 
 void Editor::_process_2D_gizmo() {
@@ -499,12 +551,7 @@ void Editor::_process_2D_gizmo() {
     return;
   }
 
-  auto target_sprite = &target_object->sprite;
-
-  gizmo_2D.setTargetSprite(target_sprite);
-  // Since that's a vector, the pointer to first element changes on vector
-  // resize. So we update every frame.
-  // TODO : Find Better way.
+  gizmo_2D.setTargetEditorSprite(target_object);
   gizmo_2D.Render();
 }
 
