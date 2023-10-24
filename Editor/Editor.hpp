@@ -14,24 +14,12 @@
 #include "../block/BlockBinder.hpp"
 #include "../block/BuiltInBlocks.hpp"
 #include "BlockVisualizer.hpp"
+#include "EditorSprite.hpp"
 #include "ScriptEditor.hpp"
 #include "TransformGizmo2D.hpp"
 #include "Windows/GlobalAlertWindow.hpp"
 #include <memory>
 #include <vector>
-
-// Individual Sprites Added by the User.
-class EditorSprite {
-public:
-  int id = -1; //-1 means Invalid.
-  int layer = 0;
-  std::string name;
-  sf::Vector2f position;
-  bool visibility;
-  bool add_movement_script = false;
-  std::string texture;
-  sf::Sprite sprite;
-};
 
 class BlockVisualizer;
 
