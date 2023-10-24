@@ -58,6 +58,7 @@
 		<Unit filename="Editor/BlockVisualizer.hpp" />
 		<Unit filename="Editor/Editor.cpp" />
 		<Unit filename="Editor/Editor.hpp" />
+		<Unit filename="Editor/EditorSprite.hpp" />
 		<Unit filename="Editor/Script.hpp" />
 		<Unit filename="Editor/ScriptEditor.cpp" />
 		<Unit filename="Editor/ScriptEditor.hpp" />
