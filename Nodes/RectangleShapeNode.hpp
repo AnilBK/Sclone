@@ -6,10 +6,12 @@
 
 class RectangleShapeNode : public Node {
 public:
-  RectangleShapeNode(sf::Vector2f pos = sf::Vector2f());
+  RectangleShapeNode(sf::RectangleShape p_rect_shape);
 
   void onDraw(sf::RenderTarget &target,
               const sf::Transform &transform) const override;
+
+  sf::RectangleShape &get_shape() { return m_shape; }
 
 private:
   sf::RectangleShape m_shape;

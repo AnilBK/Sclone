@@ -1,12 +1,14 @@
 #include "CircleShapeNode.hpp"
 
-CircleShapeNode::CircleShapeNode(sf::Vector2f pos) {
-  m_shape = sf::CircleShape(300.f);
-  m_shape.setPosition(sf::Vector2f());
-  m_shape.setFillColor(sf::Color::Green);
-  m_shape.setRadius(30.0f);
+CircleShapeNode::CircleShapeNode(sf::CircleShape p_circle_shape) {
+  const auto circle_pos = p_circle_shape.getPosition();
 
-  setPosition(pos);
+  m_shape = p_circle_shape;
+  m_shape.setPosition(sf::Vector2f());
+  m_shape.setOrigin(m_shape.getGlobalBounds().getSize().x / 2.0f,
+                    m_shape.getGlobalBounds().getSize().y / 2.0f);
+
+  setPosition(circle_pos);
 }
 
 void CircleShapeNode::onDraw(sf::RenderTarget &target,

@@ -6,10 +6,12 @@
 
 class CircleShapeNode : public Node {
 public:
-  CircleShapeNode(sf::Vector2f pos = sf::Vector2f());
+  CircleShapeNode(sf::CircleShape p_circle_shape);
 
   void onDraw(sf::RenderTarget &target,
               const sf::Transform &transform) const override;
+
+  sf::CircleShape &get_shape() { return m_shape; }
 
 private:
   sf::CircleShape m_shape;

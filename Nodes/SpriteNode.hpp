@@ -6,13 +6,15 @@
 
 class SpriteNode : public Node {
 public:
-  SpriteNode(sf::Vector2f pos = sf::Vector2f());
+  SpriteNode(sf::Sprite p_sprite);
 
   void onDraw(sf::RenderTarget &target,
               const sf::Transform &transform) const override;
 
+  sf::Sprite &get_shape() { return m_shape; }
+
 private:
-  sf::CircleShape m_shape;
+  sf::Sprite m_shape;
 };
 
 #endif // SPRITENODE_HPP

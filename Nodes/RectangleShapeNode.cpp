@@ -1,11 +1,13 @@
 #include "RectangleShapeNode.hpp"
 
-RectangleShapeNode::RectangleShapeNode(sf::Vector2f pos) {
-  m_shape.setPosition(sf::Vector2f());
-  m_shape.setFillColor(sf::Color::Black);
-  m_shape.setSize({200, 200});
+RectangleShapeNode::RectangleShapeNode(sf::RectangleShape p_rect_shape) {
+  const auto rect_pos = p_rect_shape.getPosition();
 
-  setPosition(pos);
+  m_shape = p_rect_shape;
+  m_shape.setPosition(sf::Vector2f());
+  m_shape.setOrigin(m_shape.getSize().x / 2.0f, m_shape.getSize().y / 2.0f);
+
+  setPosition(rect_pos);
 }
 
 void RectangleShapeNode::onDraw(sf::RenderTarget &target,

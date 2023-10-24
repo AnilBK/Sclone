@@ -1,12 +1,13 @@
 #include "SpriteNode.hpp"
 
-SpriteNode::SpriteNode(sf::Vector2f pos) {
-  m_shape = sf::CircleShape(300.f);
-  m_shape.setPosition(sf::Vector2f());
-  m_shape.setFillColor(sf::Color::Green);
-  m_shape.setRadius(30.0f);
+SpriteNode::SpriteNode(sf::Sprite p_sprite) {
+  const auto sprite_pos = p_sprite.getPosition();
 
-  setPosition(pos);
+  m_shape = p_sprite;
+  // Set the position of the parent node to the position of the sprite provided.
+  // But set the inner sprites position to (0,0).
+  m_shape.setPosition(sf::Vector2f());
+  setPosition(sprite_pos);
 }
 
 void SpriteNode::onDraw(sf::RenderTarget &target,
