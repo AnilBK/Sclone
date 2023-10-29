@@ -259,34 +259,31 @@ void Editor::add_new_sprite(const std::string &p_name) {
     return;
   }
 
-  sf::Sprite spr;
-  spr.setTexture(*texture_ref.value());
-  sf::FloatRect textureSize = spr.getGlobalBounds();
-  spr.setOrigin(textureSize.width / 2.0f, textureSize.height / 2.0f);
-  spr.setPosition(e_spr.position);
-  // e_spr.sprite = spr;
-
   std::shared_ptr<Node> n_node;
 
   const auto selection = add_node_type_drop_down.get_text();
-  if (selection == "Sprite") {
-    n_node = std::make_shared<SpriteNode>(spr);
-  } else if (selection == "CircleShape") {
-    // Smallest circle that fits in a rectangle.
-    float rad = std::min(textureSize.width, textureSize.height) / 2.0f;
 
+  if (selection == "CircleShape") {
     sf::CircleShape shape;
-    shape.setPosition(spr.getPosition());
+    shape.setPosition(e_spr.position);
     shape.setFillColor(sf::Color::Yellow);
-    shape.setRadius(rad);
+    shape.setRadius(100.0F);
+
     n_node = std::make_shared<CircleShapeNode>(shape);
   } else if (selection == "RectangleShape") {
     sf::RectangleShape shape;
-    shape.setPosition(spr.getPosition());
-    shape.setSize(sf::Vector2f(175, 100));
+    shape.setPosition(e_spr.position);
+    shape.setSize(sf::Vector2f(225, 150));
     shape.setFillColor(sf::Color::Yellow);
+
     n_node = std::make_shared<RectangleShapeNode>(shape);
-  } else {
+  } else if (selection == "Sprite" || true) {
+    sf::Sprite spr;
+    spr.setTexture(*texture_ref.value());
+    sf::FloatRect textureSize = spr.getGlobalBounds();
+    spr.setOrigin(textureSize.width / 2.0f, textureSize.height / 2.0f);
+    spr.setPosition(e_spr.position);
+
     n_node = std::make_shared<SpriteNode>(spr);
   }
 
