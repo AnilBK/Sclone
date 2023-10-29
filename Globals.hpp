@@ -75,6 +75,11 @@ template <class sprite_type> bool isMouseOverSprite(sprite_type sprite) {
   return sprite.getGlobalBounds().contains(get_mouse_position());
 }
 
+template <class sprite_type> bool isMouseOverSprite(sprite_type *sprite) {
+  // NOTE : nullptr cases are to be checked by the callers.
+  return sprite->getGlobalBounds().contains(get_mouse_position());
+}
+
 [[nodiscard]] static bool isMouseOverRect(const sf::FloatRect rect) {
   return rect.contains(get_mouse_position());
 }
