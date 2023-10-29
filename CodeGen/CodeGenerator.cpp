@@ -1,4 +1,5 @@
 #include "CodeGenerator.hpp"
+#include "../Nodes/SpriteNode.hpp"
 #include "../Utils.hpp"
 
 using namespace STRING_UTILITIES;
@@ -12,30 +13,39 @@ std::string CodeGenerator::_construct_sprite_code(const EditorSprite &spr) {
   auto sprite_name = spr.name;
   auto sprite_pos = spr.position;
   auto sprite_texture_file = spr.texture;
-  auto sprite_scale = spr.sprite.getScale();
 
-  std::string spr_cons_code =
-      "sf::Texture ##SPRITE_NAME##_texture;\n"
-      "if (!##SPRITE_NAME##_texture.loadFromFile(\"" +
-      sprite_texture_file +
-      "\")) {\n"
-      " std::cerr << \"Error while loading texture\" << std::endl;\n"
-      " return -1;\n"
-      "}\n"
-      "##SPRITE_NAME##_texture.setSmooth(true);\n\n"
-      "sf::Sprite ##SPRITE_NAME##;\n"
-      "##SPRITE_NAME##.setTexture(##SPRITE_NAME##_texture);\n"
-      "sf::FloatRect ##SPRITE_NAME##Size = "
-      "##SPRITE_NAME##.getGlobalBounds();\n"
-      "##SPRITE_NAME##.setOrigin(##SPRITE_NAME##Size.width / 2.0f, "
-      "##SPRITE_NAME##Size.height / 2.0f);\n"
-      "##SPRITE_NAME##.setPosition(" +
-      std::to_string(static_cast<int>(sprite_pos.x)) + "," +
-      std::to_string(static_cast<int>(sprite_pos.y)) + ");\n" +
-      "##SPRITE_NAME##.setScale(" + std::to_string(sprite_scale.x) + "," +
-      std::to_string(sprite_scale.y) + ");\n";
+  std::string spr_cons_code = "";
 
-  _substitute_sprite_name(spr_cons_code, sprite_name);
+#define OBJECT_IS(T) auto casted = dynamic_cast<T *>(spr.get_node())
+  if (OBJECT_IS(SpriteNode)) {
+
+    auto sprite_scale = casted->get_shape().getScale();
+
+    spr_cons_code =
+        "sf::Texture ##SPRITE_NAME##_texture;\n"
+        "if (!##SPRITE_NAME##_texture.loadFromFile(\"" +
+        sprite_texture_file +
+        "\")) {\n"
+        " std::cerr << \"Error while loading texture\" << std::endl;\n"
+        " return -1;\n"
+        "}\n"
+        "##SPRITE_NAME##_texture.setSmooth(true);\n\n"
+        "sf::Sprite ##SPRITE_NAME##;\n"
+        "##SPRITE_NAME##.setTexture(##SPRITE_NAME##_texture);\n"
+        "sf::FloatRect ##SPRITE_NAME##Size = "
+        "##SPRITE_NAME##.getGlobalBounds();\n"
+        "##SPRITE_NAME##.setOrigin(##SPRITE_NAME##Size.width / 2.0f, "
+        "##SPRITE_NAME##Size.height / 2.0f);\n"
+        "##SPRITE_NAME##.setPosition(" +
+        std::to_string(static_cast<int>(sprite_pos.x)) + "," +
+        std::to_string(static_cast<int>(sprite_pos.y)) + ");\n" +
+        "##SPRITE_NAME##.setScale(" + std::to_string(sprite_scale.x) + "," +
+        std::to_string(sprite_scale.y) + ");\n";
+
+    _substitute_sprite_name(spr_cons_code, sprite_name);
+  }
+#undef OBJECT_IS
+
   return spr_cons_code;
 }
 

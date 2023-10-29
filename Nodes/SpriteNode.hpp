@@ -11,6 +11,8 @@ public:
   void onDraw(sf::RenderTarget &target,
               const sf::Transform &transform) const override;
 
+  sf::FloatRect get_global_bounds() override;
+
   sf::Sprite &get_shape() { return m_shape; }
 
 private:

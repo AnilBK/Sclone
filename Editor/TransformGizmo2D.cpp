@@ -1,4 +1,5 @@
 #include "TransformGizmo2D.hpp"
+#include "../Nodes/SpriteNode.hpp"
 #include <cmath>
 
 bool TransformGizmo2D::is_gizmo_selected() {
@@ -18,7 +19,7 @@ void TransformGizmo2D::_undrag_gizmos() {
 }
 
 void TransformGizmo2D::_update_gizmo() {
-  auto *target_sprite = &target_editor_sprite->sprite;
+  auto target_sprite = target_editor_sprite->get_node();
 
   switch (current_gizmo_state) {
   case GIZMO_SELECT_STATE::X: {
@@ -65,6 +66,7 @@ void TransformGizmo2D::_update_gizmo() {
   } break;
 
   case GIZMO_SELECT_STATE::SCALE: {
+    /*
     sf::Vector2f distance = get_mouse_position() - target_sprite->getPosition();
     auto texture_size = target_sprite->getTexture()->getSize();
 
@@ -80,6 +82,7 @@ void TransformGizmo2D::_update_gizmo() {
       // update scale = true.
       translation_updated_callbacks(false, true);
     }
+    */
   } break;
 
   case GIZMO_SELECT_STATE::NONE:
@@ -92,7 +95,7 @@ void TransformGizmo2D::_draw_gizmo() {
     return;
   }
 
-  auto *target_sprite = &target_editor_sprite->sprite;
+  auto target_sprite = target_editor_sprite->get_node();
 
   auto line_start = target_sprite->getPosition();
 

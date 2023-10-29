@@ -17,6 +17,8 @@ private:
   sf::View *world_2d_view;
   EditorSprite *target_sprite_ptr;
 
+  sf::Vector2f _get_sprite_position();
+
   void _draw_arrow_triangle(sf::Vector2f from, sf::Vector2f to,
                             sf::Color p_color = sf::Color(0, 200, 0));
   void _draw_arrow(sf::Vector2f from, sf::Vector2f to);

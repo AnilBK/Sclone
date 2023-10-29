@@ -11,6 +11,10 @@ CircleShapeNode::CircleShapeNode(sf::CircleShape p_circle_shape) {
   setPosition(circle_pos);
 }
 
+sf::FloatRect CircleShapeNode::get_global_bounds() {
+  return m_shape.getGlobalBounds();
+}
+
 void CircleShapeNode::onDraw(sf::RenderTarget &target,
                              const sf::Transform &transform) const {
   const sf::Transform combined = transform;

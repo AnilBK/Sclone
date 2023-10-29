@@ -9,6 +9,10 @@ void BlockVisualizer::init() {
   world_2d_view = editor_ref.get_world_2d_view_ptr();
 }
 
+sf::Vector2f BlockVisualizer::_get_sprite_position() {
+  return target_sprite_ptr->get_node()->getPosition();
+}
+
 void BlockVisualizer::_draw_arrow_triangle(sf::Vector2f from, sf::Vector2f to,
                                            sf::Color p_color) {
   float angle = MATH_UTILITIES::angle_between_points(from, to);
@@ -67,7 +71,7 @@ void BlockVisualizer::draw_debug_block_go_to_xy(const Block &block,
 }
 
 void BlockVisualizer::draw_debug_change_y_by(const Block &block, float delta) {
-  auto pos = target_sprite_ptr->sprite.getPosition();
+  auto pos = _get_sprite_position();
   float y = block.get_bound_value_or("y_offset", 50.0F);
 
   window.setView(*world_2d_view);
@@ -79,7 +83,7 @@ void BlockVisualizer::draw_debug_change_y_by(const Block &block, float delta) {
 
 void BlockVisualizer::draw_debug_change_y_by_in(const Block &block,
                                                 float delta) {
-  auto pos = target_sprite_ptr->sprite.getPosition();
+  auto pos = _get_sprite_position();
 
   float y = block.get_bound_value_or("y_offset", 50.0F);
   float len = block.get_bound_value_or("length", 1.0F);
@@ -109,7 +113,7 @@ void BlockVisualizer::draw_debug_change_y_by_in(const Block &block,
 
 void BlockVisualizer::draw_debug_block_glide_to_xy(const Block &block,
                                                    float delta) {
-  auto pos = target_sprite_ptr->sprite.getPosition();
+  auto pos = _get_sprite_position();
 
   const std::array<std::string, 3> queries = {"x", "y", "length"};
   const std::array<float, 3> values = {

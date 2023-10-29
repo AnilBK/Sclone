@@ -10,6 +10,10 @@ SpriteNode::SpriteNode(sf::Sprite p_sprite) {
   setPosition(sprite_pos);
 }
 
+sf::FloatRect SpriteNode::get_global_bounds() {
+  return m_shape.getGlobalBounds();
+}
+
 void SpriteNode::onDraw(sf::RenderTarget &target,
                         const sf::Transform &transform) const {
   const sf::Transform combined = transform;

@@ -127,16 +127,21 @@ void Editor::_update_sprite_texure() {
   }
 
   selected_sprite->texture = sprite_texture_name.get_text();
-  selected_sprite->sprite.setTexture(*texture_ref.value());
 
-  auto texture_size =
-      (sf::Vector2f)selected_sprite->sprite.getTexture()->getSize();
-  auto sprite_bounds = sf::IntRect(0, 0, texture_size.x, texture_size.y);
+#define OBJECT_IS(T)                                                           \
+  auto casted = dynamic_cast<T *>(selected_sprite->node.get())
+  if (OBJECT_IS(SpriteNode)) {
+    auto sprite_ref = casted->get_shape();
+    sprite_ref.setTexture(*texture_ref.value());
 
-  selected_sprite->sprite.setScale(sf::Vector2f(1.0f, 1.0f));
-  selected_sprite->sprite.setTextureRect(sprite_bounds);
-  selected_sprite->sprite.setOrigin(texture_size.x / 2.0f,
-                                    texture_size.y / 2.0f);
+    auto texture_size = (sf::Vector2f)sprite_ref.getTexture()->getSize();
+    auto sprite_bounds = sf::IntRect(0, 0, texture_size.x, texture_size.y);
+
+    sprite_ref.setScale(sf::Vector2f(1.0f, 1.0f));
+    sprite_ref.setTextureRect(sprite_bounds);
+    sprite_ref.setOrigin(texture_size.x / 2.0f, texture_size.y / 2.0f);
+  }
+#undef OBJECT_IS
 
   sprite_texture_name.line_input_active = false;
 }
@@ -259,7 +264,7 @@ void Editor::add_new_sprite(const std::string &p_name) {
   sf::FloatRect textureSize = spr.getGlobalBounds();
   spr.setOrigin(textureSize.width / 2.0f, textureSize.height / 2.0f);
   spr.setPosition(e_spr.position);
-  e_spr.sprite = spr;
+  // e_spr.sprite = spr;
 
   std::shared_ptr<Node> n_node;
 
@@ -483,7 +488,7 @@ void Editor::_render_bounding_box_over_selected_sprite() {
     return;
   }
 
-  auto target_sprite = &target_object->sprite;
+  auto target_sprite = target_object->get_node();
   const auto bounds = target_sprite->getGlobalBounds();
 
   sf::RectangleShape box;
@@ -505,8 +510,7 @@ void Editor::_render_sprites() {
 
   // Drawing Sprites Sorted by their layers.
   for (auto &sprite : Cache.sprites_sorted_by_layers) {
-    window.draw(sprite->sprite);
-    window.draw(*sprite->node.get());
+    window.draw(*sprite->get_node());
   }
 }
 
@@ -517,8 +521,7 @@ void Editor::_on_sprites_translation_update(bool update_translation,
     return;
   }
 
-  auto target_sprite = &target_object->sprite;
-
+  auto target_sprite = target_object->get_node();
   if (update_translation) {
     auto new_pos = target_sprite->getPosition();
     sprite_pos.set_text(_position_to_string(new_pos));
@@ -559,7 +562,7 @@ void Editor::_pick_sprite() {
   window.setView(view);
 
   for (auto &sprite : Cache.sprites_sorted_by_layers_reverse) {
-    if (isMouseOverSprite(sprite->sprite)) {
+    if (isMouseOverSprite(sprite->get_node())) {
       select_sprite_by_id(sprite->id);
       break;
     }

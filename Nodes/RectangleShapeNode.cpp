@@ -10,6 +10,10 @@ RectangleShapeNode::RectangleShapeNode(sf::RectangleShape p_rect_shape) {
   setPosition(rect_pos);
 }
 
+sf::FloatRect RectangleShapeNode::get_global_bounds() {
+  return m_shape.getGlobalBounds();
+}
+
 void RectangleShapeNode::onDraw(sf::RenderTarget &target,
                                 const sf::Transform &transform) const {
   const sf::Transform combined = transform;

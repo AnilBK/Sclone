@@ -16,8 +16,11 @@ public:
   bool visibility;
   bool add_movement_script = false;
   std::string texture;
-  sf::Sprite sprite;
   std::shared_ptr<Node> node;
+
+  Node *get_node() const { return node.get(); }
+
+  Node *get_node() { return node.get(); }
 };
 
 #endif // EDITOR_SPRITE_HPP

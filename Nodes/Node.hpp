@@ -8,6 +8,10 @@ class Node : public sf::Drawable, public sf::Transformable {
 public:
   void addChild(Node *n);
 
+  virtual sf::FloatRect getGlobalBounds();
+
+  virtual sf::FloatRect get_global_bounds();
+
   virtual void onDraw(sf::RenderTarget &target,
                       const sf::Transform &transform) const {}
 
