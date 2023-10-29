@@ -720,10 +720,11 @@ void Editor::_render_block_spawner_tab() {
       mouse_over_tab_body && sf::Mouse::isButtonPressed(sf::Mouse::Left);
 
   sf::View tab_view({0, 0, tab_world.width, tab_world.height});
-  tab_view.setViewport({tab_world.left / window.getSize().x,
-                        tab_world.top / window.getSize().y,
-                        tab_world.width / window.getSize().x,
-                        tab_world.height / window.getSize().y});
+  auto win_size = window.getSize();
+
+  tab_view.setViewport({tab_world.left / win_size.x, tab_world.top / win_size.y,
+                        tab_world.width / win_size.x,
+                        tab_world.height / win_size.y});
 
   window.setView(tab_view);
 

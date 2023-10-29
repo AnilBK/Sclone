@@ -13,10 +13,10 @@ UITreeView::UITreeView(sf::Vector2f p_pos, sf::Vector2f p_size)
 }
 
 void UITreeView::init_ui() {
-  list_view.setViewport({list_world.left / window.getSize().x,
-                         list_world.top / window.getSize().y,
-                         list_world.width / window.getSize().x,
-                         list_world.height / window.getSize().y});
+  const auto win_size = static_cast<sf::Vector2f>(window.getSize());
+  list_view.setViewport(
+      {list_world.left / win_size.x, list_world.top / win_size.y,
+       list_world.width / win_size.x, list_world.height / win_size.y});
 
   list_view.move({-20, -15});
 }

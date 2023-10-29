@@ -298,20 +298,21 @@ public:
     world = sf::FloatRect(sf::Vector2f(0, 305), sf::Vector2f(700, 455));
     view = sf::View({0, 0, 1200, 800});
 
-    view.setViewport(
-        {world.left / window.getSize().x, world.top / window.getSize().y,
-         world.width / window.getSize().x, world.height / window.getSize().y});
+    auto win_size = window.getSize();
+
+    view.setViewport({world.left / win_size.x, world.top / win_size.y,
+                      world.width / win_size.x, world.height / win_size.y});
 
     view.move({-60.0, -60.0});
 
     _init_sprite_list_ui();
 
     grid_x_axis_line.setPosition(sf::Vector2f());
-    grid_x_axis_line.setSize({static_cast<float>(window.getSize().x), 5});
+    grid_x_axis_line.setSize({static_cast<float>(win_size.x), 5});
     grid_x_axis_line.setFillColor(sf::Color::Red);
 
     grid_y_axis_line.setPosition(sf::Vector2f());
-    grid_y_axis_line.setSize({5, static_cast<float>(window.getSize().y)});
+    grid_y_axis_line.setSize({5, static_cast<float>(win_size.y)});
     grid_y_axis_line.setFillColor(sf::Color::Green);
 
     world2d_border.setPosition(world.getPosition());
@@ -329,7 +330,7 @@ public:
         world.top);
 
     auto script_editor_size =
-        sf::Vector2f(window.getSize().x - script_editor_pos.x, world.height);
+        sf::Vector2f(win_size.x - script_editor_pos.x, world.height);
 
     script_editor.setRect({script_editor_pos, script_editor_size});
 
