@@ -66,23 +66,24 @@ void TransformGizmo2D::_update_gizmo() {
   } break;
 
   case GIZMO_SELECT_STATE::SCALE: {
-    /*
-    sf::Vector2f distance = get_mouse_position() - target_sprite->getPosition();
-    auto texture_size = target_sprite->getTexture()->getSize();
+    auto sprite = dynamic_cast<SpriteNode *>(target_sprite);
+    if (sprite) {
+      sf::Vector2f distance = get_mouse_position() - sprite->getPosition();
+      auto texture_size = sprite->get_shape().getTexture()->getSize();
 
-    float x_scale_factor =
-        fabs(distance.x) / static_cast<float>(texture_size.x);
-    float y_scale_factor =
-        fabs(distance.y) / static_cast<float>(texture_size.y);
+      float x_scale_factor =
+          fabs(distance.x) / static_cast<float>(texture_size.x);
+      float y_scale_factor =
+          fabs(distance.y) / static_cast<float>(texture_size.y);
 
-    target_sprite->setScale(x_scale_factor * 2, y_scale_factor * 2);
+      sprite->get_shape().setScale(x_scale_factor * 2, y_scale_factor * 2);
 
-    if (translation_updated_callbacks) {
-      // update translation = false.
-      // update scale = true.
-      translation_updated_callbacks(false, true);
+      if (translation_updated_callbacks) {
+        // update translation = false.
+        // update scale = true.
+        // translation_updated_callbacks(false, true);
+      }
     }
-    */
   } break;
 
   case GIZMO_SELECT_STATE::NONE:
