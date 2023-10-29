@@ -1,5 +1,7 @@
 #include "TransformGizmo2D.hpp"
+#include "../Nodes/CircleShapeNode.hpp"
 #include "../Nodes/SpriteNode.hpp"
+#include "../Utils.hpp"
 #include <cmath>
 
 bool TransformGizmo2D::is_gizmo_selected() {
@@ -66,22 +68,42 @@ void TransformGizmo2D::_update_gizmo() {
   } break;
 
   case GIZMO_SELECT_STATE::SCALE: {
-    auto sprite = dynamic_cast<SpriteNode *>(target_sprite);
-    if (sprite) {
-      sf::Vector2f distance = get_mouse_position() - sprite->getPosition();
-      auto texture_size = sprite->get_shape().getTexture()->getSize();
+    {
+      auto sprite = dynamic_cast<SpriteNode *>(target_sprite);
+      if (sprite) {
+        sf::Vector2f distance = get_mouse_position() - sprite->getPosition();
+        auto texture_size = sprite->get_shape().getTexture()->getSize();
 
-      float x_scale_factor =
-          fabs(distance.x) / static_cast<float>(texture_size.x);
-      float y_scale_factor =
-          fabs(distance.y) / static_cast<float>(texture_size.y);
+        float x_scale_factor =
+            fabs(distance.x) / static_cast<float>(texture_size.x);
+        float y_scale_factor =
+            fabs(distance.y) / static_cast<float>(texture_size.y);
 
-      sprite->get_shape().setScale(x_scale_factor * 2, y_scale_factor * 2);
+        sprite->get_shape().setScale(x_scale_factor * 2, y_scale_factor * 2);
 
-      if (translation_updated_callbacks) {
-        // update translation = false.
-        // update scale = true.
-        // translation_updated_callbacks(false, true);
+        if (translation_updated_callbacks) {
+          // update translation = false.
+          // update scale = true.
+          // translation_updated_callbacks(false, true);
+        }
+      }
+    }
+
+    {
+      auto sprite = dynamic_cast<CircleShapeNode *>(target_sprite);
+      if (sprite) {
+        auto rad = MATH_UTILITIES::distance_between(get_mouse_position(),
+                                                    sprite->getPosition());
+        sprite->get_shape().setRadius(rad);
+        auto circle_bounds = sprite->get_shape().getGlobalBounds().getSize();
+        sprite->get_shape().setOrigin(circle_bounds.x / 2.0f,
+                                      circle_bounds.y / 2.0f);
+
+        if (translation_updated_callbacks) {
+          // update translation = false.
+          // update scale = true.
+          // translation_updated_callbacks(false, true);
+        }
       }
     }
   } break;
