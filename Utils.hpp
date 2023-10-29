@@ -17,6 +17,8 @@ namespace MATH_UTILITIES {
 [[nodiscard]] sf::FloatRect merge_rects(sf::FloatRect rect,
                                         sf::FloatRect p_rect);
 
+[[nodiscard]] float distance_between(sf::Vector2f p1, sf::Vector2f p2);
+
 [[nodiscard]] sf::Vector2f lerp(const sf::Vector2f &start,
                                 const sf::Vector2f &end, float lerpValue);
 

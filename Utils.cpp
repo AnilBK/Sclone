@@ -60,6 +60,13 @@ sf::FloatRect merge_rects(sf::FloatRect rect, sf::FloatRect p_rect) {
   return sf::FloatRect(merged_rect_position, merged_rect_size);
 }
 
+float distance_between(sf::Vector2f p1, sf::Vector2f p2) {
+  auto x_dt = (p2.x - p1.x);
+  auto y_dt = (p2.y - p1.y);
+
+  return sqrt((x_dt * x_dt) + (y_dt * y_dt));
+}
+
 sf::Vector2f lerp(const sf::Vector2f &start, const sf::Vector2f &end,
                   float lerpValue) {
   return (1.0f - lerpValue) * start + lerpValue * end;
