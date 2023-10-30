@@ -16,6 +16,11 @@ void TransformGizmo2D::setTargetEditorSprite(
 
 void TransformGizmo2D::_undrag_gizmos() {
   if (is_gizmo_selected()) {
+
+    if (radius_gizmo.is_selected()) {
+      radius_gizmo.DeselectGizmo();
+    }
+
     current_gizmo_state = GIZMO_SELECT_STATE::NONE;
     setCursor(sf::Cursor::Arrow);
   }
@@ -109,6 +114,11 @@ void TransformGizmo2D::_update_gizmo() {
 
   case GIZMO_SELECT_STATE::NONE:
     break;
+
+  case GIZMO_SELECT_STATE::CUSTOM: {
+    radius_gizmo.Update();
+    break;
+  }
   }
 }
 
@@ -188,6 +198,8 @@ void TransformGizmo2D::_draw_gizmo() {
   }
   window.draw(br);
 
+  radius_gizmo.Render();
+
   //////////////////////////////////////////////////////////////////////
   //////////////////////////////////////////////////////////////////////
 
@@ -204,6 +216,9 @@ void TransformGizmo2D::_draw_gizmo() {
     current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
   } else if (isMouseOverSprite(br)) {
     current_gizmo_state = GIZMO_SELECT_STATE::SCALE;
+  } else if (radius_gizmo.can_be_selected()) {
+    current_gizmo_state = GIZMO_SELECT_STATE::CUSTOM;
+    radius_gizmo.SelectGizmo();
   }
 
   if (is_gizmo_selected()) {

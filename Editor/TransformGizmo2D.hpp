@@ -4,10 +4,11 @@
 #include "../Globals.hpp"
 #include "../Nodes/Node.hpp"
 #include "EditorSprite.hpp"
+#include "RadiusGizmoPlugin.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
 
-enum class GIZMO_SELECT_STATE { X, Y, CENTER, SCALE, NONE };
+enum class GIZMO_SELECT_STATE { X, Y, CENTER, SCALE, CUSTOM, NONE };
 
 class TransformGizmo2D {
 private:
@@ -18,6 +19,8 @@ private:
 
   void _update_gizmo();
   void _draw_gizmo();
+
+  RadiusGizmoPlugin radius_gizmo = RadiusGizmoPlugin(*this);
 
 public:
   Node *get_target_node() { return target_node; }
