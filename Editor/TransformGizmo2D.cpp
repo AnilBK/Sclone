@@ -11,6 +11,7 @@ bool TransformGizmo2D::is_gizmo_selected() {
 void TransformGizmo2D::setTargetEditorSprite(
     EditorSprite *p_target_editor_sprite) {
   target_editor_sprite = p_target_editor_sprite;
+  target_node = target_editor_sprite->get_node();
 }
 
 void TransformGizmo2D::_undrag_gizmos() {
@@ -21,19 +22,17 @@ void TransformGizmo2D::_undrag_gizmos() {
 }
 
 void TransformGizmo2D::_update_gizmo() {
-  auto target_sprite = target_editor_sprite->get_node();
-
   switch (current_gizmo_state) {
   case GIZMO_SELECT_STATE::X: {
     const sf::Color x_line_color = sf::Color::Red;
 
-    auto y_pos = target_sprite->getPosition().y;
+    auto y_pos = target_node->getPosition().y;
     float win_width = window.getView().getSize().x;
     auto left_most_x = window.getView().getCenter().x - win_width / 2;
 
     draw_line({left_most_x, y_pos}, {win_width, y_pos}, x_line_color);
 
-    target_sprite->setPosition(get_mouse_position().x - 100.0f, y_pos);
+    target_node->setPosition(get_mouse_position().x - 100.0f, y_pos);
 
     if (translation_updated_callbacks) {
       // update translation = true.
@@ -46,13 +45,13 @@ void TransformGizmo2D::_update_gizmo() {
   case GIZMO_SELECT_STATE::Y: {
     const sf::Color y_line_color = sf::Color::Green;
 
-    auto x_pos = target_sprite->getPosition().x;
+    auto x_pos = target_node->getPosition().x;
     float win_height = window.getView().getSize().y;
     auto top_most_y = window.getView().getCenter().y - win_height / 2;
 
     draw_line({x_pos, top_most_y}, {x_pos, win_height}, y_line_color);
 
-    target_sprite->setPosition(x_pos, get_mouse_position().y + 100.0f);
+    target_node->setPosition(x_pos, get_mouse_position().y + 100.0f);
 
     if (translation_updated_callbacks) {
       translation_updated_callbacks(true, false);
@@ -60,7 +59,7 @@ void TransformGizmo2D::_update_gizmo() {
   } break;
 
   case GIZMO_SELECT_STATE::CENTER: {
-    target_sprite->setPosition(get_mouse_position());
+    target_node->setPosition(get_mouse_position());
 
     if (translation_updated_callbacks) {
       translation_updated_callbacks(true, false);
@@ -69,7 +68,7 @@ void TransformGizmo2D::_update_gizmo() {
 
   case GIZMO_SELECT_STATE::SCALE: {
     {
-      auto sprite = dynamic_cast<SpriteNode *>(target_sprite);
+      auto sprite = dynamic_cast<SpriteNode *>(target_node);
       if (sprite) {
         sf::Vector2f distance = get_mouse_position() - sprite->getPosition();
         auto texture_size = sprite->get_shape().getTexture()->getSize();
@@ -90,7 +89,7 @@ void TransformGizmo2D::_update_gizmo() {
     }
 
     {
-      auto sprite = dynamic_cast<CircleShapeNode *>(target_sprite);
+      auto sprite = dynamic_cast<CircleShapeNode *>(target_node);
       if (sprite) {
         auto rad = MATH_UTILITIES::distance_between(get_mouse_position(),
                                                     sprite->getPosition());
@@ -118,9 +117,7 @@ void TransformGizmo2D::_draw_gizmo() {
     return;
   }
 
-  auto target_sprite = target_editor_sprite->get_node();
-
-  auto line_start = target_sprite->getPosition();
+  auto line_start = target_node->getPosition();
 
   //////////////////////////////////////////////////////////////////////
   //                      The X-Line.                                 //
@@ -181,7 +178,7 @@ void TransformGizmo2D::_draw_gizmo() {
   sf::RectangleShape br;
   br.setSize(gizmo_pick_size);
   br.setPosition(line_start +
-                 (target_sprite->getGlobalBounds().getSize() * 0.5F) -
+                 (target_node->getGlobalBounds().getSize() * 0.5F) -
                  (gizmo_pick_size * 0.5f));
   br.setFillColor(sf::Color::Blue);
   if (isMouseOverSprite(br) ||
