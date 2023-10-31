@@ -84,6 +84,16 @@ private:
   TabBar built_in_blocks_tab_bar = TabBar(tab_pos, tab_size);
   UIButton blocks_tab_bar_collapse_btn = UIButton("V");
 
+  // The information and properties tab.
+  TabBar info_tab = TabBar(sf::Vector2f(250, 0), sf::Vector2f(300, 300));
+  // The various properties bounded to a node are displayed here.
+  VBoxContainer info_container;
+
+  // When properties are fetched, we need to display them in UI items. Those
+  // created UI items are stored here and the reference to those UI items are
+  // pushed to 'info_container'.
+  std::vector<std::shared_ptr<UIBaseClass>> property_ui_items;
+
   UIButton build_and_run_btn = UIButton("Play");
 
   BlockVisualizer block_visualizer = BlockVisualizer(*this);
@@ -220,6 +230,10 @@ public:
 
     _initialize_built_in_blocks_tab_bar();
 
+    info_tab.add_tab("Info");
+    info_tab.add_tab("Properties");
+    info_tab.select_tab(0);
+
     // Stuffs Related To Sprite Inspector.
     sprite_texture_name.enter_pressed_callback = [&]() {
       _update_sprite_texure();
@@ -272,7 +286,9 @@ public:
     editor_inspector.add_child(third_line);
     editor_inspector.add_child(fourth_line);
     editor_inspector.add_child(show_more_hbox);
-    editor_inspector.setPosition({250, 10});
+    editor_inspector.setPosition({265, 40});
+
+    info_container.setPosition(sf::Vector2f(265, 40));
 
     add_node_type_drop_down.setPosition({20, 40});
 

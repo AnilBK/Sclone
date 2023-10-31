@@ -399,7 +399,15 @@ void Editor::handle_inputs(sf::Event event) {
   _handle_2D_world_inputs(event);
   _handle_sprite_list_inputs(event);
 
-  editor_inspector.handle_inputs(event);
+  info_tab.handle_inputs(event);
+
+  auto selected_info_tab = info_tab.get_currently_selected_tab();
+  if (selected_info_tab == 0) {
+    editor_inspector.handle_inputs(event);
+  } else if (selected_info_tab == 1) {
+    info_container.handle_inputs(event);
+  }
+
   script_editor.handle_inputs(event);
 
   if (event.type == sf::Event::KeyReleased) {
@@ -430,7 +438,16 @@ void Editor::_render_ui() {
   // TODO ??? move refreshing to where needed.
   _refresh_layout();
   _render_sprite_list_ui();
-  editor_inspector.Render();
+  info_tab.Render();
+
+  auto selected_info_tab = info_tab.get_currently_selected_tab();
+  if (selected_info_tab == 0) {
+    editor_inspector.Render();
+  } else if (selected_info_tab == 1) {
+
+    info_container.Render();
+  }
+
   build_and_run_btn.Render();
   add_node_type_drop_down.Render();
 }
