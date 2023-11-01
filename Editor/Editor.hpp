@@ -16,6 +16,7 @@
 #include "../block/BuiltInBlocks.hpp"
 #include "BlockVisualizer.hpp"
 #include "EditorSprite.hpp"
+#include "PropertiesListUI.hpp"
 #include "ScriptEditor.hpp"
 #include "TransformGizmo2D.hpp"
 #include "Windows/GlobalAlertWindow.hpp"
@@ -86,13 +87,8 @@ private:
 
   // The information and properties tab.
   TabBar info_tab = TabBar(sf::Vector2f(250, 0), sf::Vector2f(300, 300));
-  // The various properties bounded to a node are displayed here.
-  VBoxContainer info_container;
 
-  // When properties are fetched, we need to display them in UI items. Those
-  // created UI items are stored here and the reference to those UI items are
-  // pushed to 'info_container'.
-  std::vector<std::shared_ptr<UIBaseClass>> property_ui_items;
+  PropertiesListUI properties_list_ui = PropertiesListUI(sf::Vector2f(265, 40));
 
   UIButton build_and_run_btn = UIButton("Play");
 
@@ -287,8 +283,6 @@ public:
     editor_inspector.add_child(fourth_line);
     editor_inspector.add_child(show_more_hbox);
     editor_inspector.setPosition({265, 40});
-
-    info_container.setPosition(sf::Vector2f(265, 40));
 
     add_node_type_drop_down.setPosition({20, 40});
 

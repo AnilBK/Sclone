@@ -3,6 +3,9 @@
 
 #include "Node.hpp"
 #include <SFML/Graphics.hpp>
+#include <functional>
+#include <memory>
+#include <string>
 
 class CircleShapeNode : public Node {
 public:
@@ -14,6 +17,23 @@ public:
   sf::FloatRect get_global_bounds() override;
 
   sf::CircleShape &get_shape() { return m_shape; }
+
+  //////////////////////////////////////////////////////////////////////
+  //                      Bindings Related Code.                      //
+  //////////////////////////////////////////////////////////////////////
+  using fn_type = std::function<float(CircleShapeNode &circle)>;
+
+  struct Property {
+    std::string property_name;
+    fn_type fn;
+  };
+
+  // Important : Always delete them.
+  // Deletion is Handled by '_global_binder'.
+  inline static std::vector<Property> *bounded_properties =
+      new std::vector<Property>();
+
+  static void bind();
 
 private:
   sf::CircleShape m_shape;

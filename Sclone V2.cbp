@@ -52,6 +52,7 @@
 		<Unit filename="CodeGen/FormatStrings.cpp" />
 		<Unit filename="CodeGen/FormatStrings.hpp" />
 		<Unit filename="CodeGen/OutputCodeCallbacks.hpp" />
+		<Unit filename="Core/GlobalPropertyBindings.hpp" />
 		<Unit filename="Core/Object.cpp" />
 		<Unit filename="Core/Object.hpp" />
 		<Unit filename="Editor/BlockVisualizer.cpp" />
@@ -59,6 +60,8 @@
 		<Unit filename="Editor/Editor.cpp" />
 		<Unit filename="Editor/Editor.hpp" />
 		<Unit filename="Editor/EditorSprite.hpp" />
+		<Unit filename="Editor/PropertiesListUI.cpp" />
+		<Unit filename="Editor/PropertiesListUI.hpp" />
 		<Unit filename="Editor/RadiusGizmoPlugin.cpp" />
 		<Unit filename="Editor/RadiusGizmoPlugin.hpp" />
 		<Unit filename="Editor/Script.hpp" />

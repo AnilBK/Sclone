@@ -184,6 +184,10 @@ void Editor::select_sprite_by_id(int id) {
       // TODO??Fix that.
       script_editor.reset_dragged_block();
       script_editor.script = selected_script_ptr();
+
+      // When object selection changes, we need to fetch new properties.
+      // So that's why we call this function here.
+      properties_list_ui.build_initial_property_list_ui(sprite.node.get());
       return;
     }
   }
@@ -405,7 +409,7 @@ void Editor::handle_inputs(sf::Event event) {
   if (selected_info_tab == 0) {
     editor_inspector.handle_inputs(event);
   } else if (selected_info_tab == 1) {
-    info_container.handle_inputs(event);
+    properties_list_ui.handle_inputs(event);
   }
 
   script_editor.handle_inputs(event);
@@ -444,8 +448,8 @@ void Editor::_render_ui() {
   if (selected_info_tab == 0) {
     editor_inspector.Render();
   } else if (selected_info_tab == 1) {
-
-    info_container.Render();
+    properties_list_ui.Update(selected_sprite_ptr()->get_node());
+    properties_list_ui.Render();
   }
 
   build_and_run_btn.Render();

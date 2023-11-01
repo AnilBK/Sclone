@@ -1,3 +1,4 @@
+#include "Core/GlobalPropertyBindings.hpp"
 #include "Editor/Editor.hpp"
 #include "Editor/Windows/GlobalAlertWindow.hpp"
 #include "Globals.hpp"
@@ -17,6 +18,8 @@ sf::Vector2i mouse_position;
 
 /// @brief The main editor window where everything is drawn.
 sf::RenderWindow window;
+
+GlobalPropertyBindings _global_binder;
 
 #ifdef SHOW_FPS
 float get_fps() {
