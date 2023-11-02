@@ -13,14 +13,17 @@ PropertiesListUI::PropertiesListUI(sf::Vector2f pos) {
 void PropertiesListUI::_add_property_to_property_list(
     const std::string &property_name) {
 
-  auto radius_label = std::make_shared<UILineInput>(property_name);
-  radius_label->is_flat = false;
+  auto property_name_label = std::make_shared<UILabel>(property_name);
 
+  auto property_input = std::make_shared<UILineInput>(property_name);
+  property_input->is_flat = false;
   // TODO ?? Setup Enter pressed callback here.
   // As of now, we have done in update loop.
 
-  property_ui_items.push_back(radius_label);
+  property_ui_items.push_back(property_name_label);
+  info_container.add_child(*property_ui_items.back().get());
 
+  property_ui_items.push_back(property_input);
   info_container.add_child(*property_ui_items.back().get());
 }
 
@@ -71,11 +74,17 @@ void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
   auto bounded_properties_ref =
       GlobalPropertyBindings::bounded_properties<NodeType>();
 
-  if (property_ui_items.size() != bounded_properties_ref->size()) {
+  // Every property has 2 UI Items related.
+  if (property_ui_items.size() != bounded_properties_ref->size() * 2) {
     return;
   }
 
-  std::size_t count = 0;
+  // Every Property has the following UI Items.
+  // ---- Index (0) : Property Label (property_name_label)
+  // ---- Index (1) : Property Input (property_input)
+
+  // So, we start from index 1.
+  std::size_t count = 1;
 
   for (auto &property : *bounded_properties_ref) {
     auto ui_item = property_ui_items.at(count).get();
@@ -84,8 +93,8 @@ void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
       // We are not currently setting custom values for this property using
       // UILineInput in the editor, so update it using the getter fn.
       if (!label->line_input_active) {
-        auto value = property.getter_fn(*p_target_object);
-        label->set_text(property.property_name + " : " + std::to_string(value));
+        auto value = std::to_string(property.getter_fn(*p_target_object));
+        label->set_text(value);
       }
 
       // No callbacks set up.
@@ -103,7 +112,8 @@ void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
       }
     }
 
-    count++;
+    // Since, every property has 2 UI Items associated with it.
+    count += 2;
   }
 }
 
