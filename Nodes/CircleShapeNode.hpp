@@ -18,6 +18,10 @@ public:
 
   sf::CircleShape &get_shape() { return m_shape; }
 
+  void update_shape_bounds();
+
+  void set_radius(float p_new_radius);
+
   //////////////////////////////////////////////////////////////////////
   //                      Bindings Related Code.                      //
   //////////////////////////////////////////////////////////////////////

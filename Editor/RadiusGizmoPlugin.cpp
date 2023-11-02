@@ -53,9 +53,5 @@ void RadiusGizmoPlugin::Update() {
   auto rad = MATH_UTILITIES::distance_between(get_mouse_position(),
                                               circle->getPosition());
 
-  auto &circle_shape_ref = circle->get_shape();
-  auto circle_bounds = circle_shape_ref.getGlobalBounds().getSize();
-
-  circle_shape_ref.setRadius(rad);
-  circle_shape_ref.setOrigin(circle_bounds.x / 2.0f, circle_bounds.y / 2.0f);
+  circle->set_radius(rad);
 }

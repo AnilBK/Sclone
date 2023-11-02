@@ -5,10 +5,20 @@ CircleShapeNode::CircleShapeNode(sf::CircleShape p_circle_shape) {
 
   m_shape = p_circle_shape;
   m_shape.setPosition(sf::Vector2f());
-  m_shape.setOrigin(m_shape.getGlobalBounds().getSize().x / 2.0f,
-                    m_shape.getGlobalBounds().getSize().y / 2.0f);
+  update_shape_bounds();
 
   setPosition(circle_pos);
+}
+
+void CircleShapeNode::update_shape_bounds() {
+  auto bounds = m_shape.getGlobalBounds().getSize();
+  m_shape.setOrigin(bounds.x / 2.0f, bounds.y / 2.0f);
+}
+
+void CircleShapeNode::set_radius(float p_new_radius) {
+  auto &circle_shape_ref = get_shape();
+  circle_shape_ref.setRadius(p_new_radius);
+  update_shape_bounds();
 }
 
 sf::FloatRect CircleShapeNode::get_global_bounds() {
