@@ -26,10 +26,13 @@ public:
   //                      Bindings Related Code.                      //
   //////////////////////////////////////////////////////////////////////
   using fn_type = std::function<float(CircleShapeNode &circle)>;
+  using fn_setter_type =
+      std::function<void(CircleShapeNode &circle, float new_value)>;
 
   struct Property {
     std::string property_name;
     fn_type fn;
+    fn_setter_type fn_setter;
   };
 
   // Important : Always delete them.

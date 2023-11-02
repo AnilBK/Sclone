@@ -32,8 +32,10 @@ void CircleShapeNode::onDraw(sf::RenderTarget &target,
 }
 
 void CircleShapeNode::bind() {
-  auto bind_property = [](const std::string &property_name, fn_type getter_fn) {
-    CircleShapeNode::bounded_properties->push_back({property_name, getter_fn});
+  auto bind_property = [](const std::string &property_name, fn_type getter_fn,
+                          fn_setter_type setter_fn) {
+    CircleShapeNode::bounded_properties->push_back(
+        {property_name, getter_fn, setter_fn});
   };
 
   fn_type get_radius_fn;
@@ -41,11 +43,23 @@ void CircleShapeNode::bind() {
     return circle.get_shape().getRadius();
   };
 
+  fn_setter_type set_radius_fn;
+  set_radius_fn = [](CircleShapeNode &circle, float new_value) {
+    circle.set_radius(new_value);
+  };
+
   fn_type get_scale_x;
   get_scale_x = [](CircleShapeNode &circle) {
     return circle.get_shape().getScale().x;
   };
 
-  bind_property("Radius", get_radius_fn);
-  bind_property("Scale(x)", get_scale_x);
+  fn_setter_type set_scale_fn;
+  set_scale_fn = [](CircleShapeNode &circle, float new_value) {
+    auto &shape_ref = circle.get_shape();
+    auto current_scale = shape_ref.getScale();
+    shape_ref.setScale(sf::Vector2f(new_value, current_scale.y));
+  };
+
+  bind_property("Radius", get_radius_fn, set_radius_fn);
+  bind_property("Scale(x)", get_scale_x, set_scale_fn);
 }
