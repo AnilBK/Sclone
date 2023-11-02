@@ -50,7 +50,7 @@ void PropertiesListUI::build_initial_property_list_ui(Node *p_target_object) {
 template <class NodeType>
 void PropertiesListUI::apply_setter_fn(
     std::size_t ui_item_index, NodeType *p_target_object,
-    typename NodeType::fn_setter_type p_fn_setter) {
+    typename NodeType::setter_fn_type p_fn_setter) {
 
   auto ui_item = property_ui_items.at(ui_item_index).get();
 
@@ -84,7 +84,7 @@ void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
       // We are not currently setting custom values for this property using
       // UILineInput in the editor, so update it using the getter fn.
       if (!label->line_input_active) {
-        auto value = property.fn(*p_target_object);
+        auto value = property.getter_fn(*p_target_object);
         label->set_text(property.property_name + " : " + std::to_string(value));
       }
 
@@ -93,7 +93,7 @@ void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
       // 'p_target_object'. But we could cache it, since it doesnt change ??
       // TODO ??
       if (!label->enter_pressed_callback) {
-        auto setter_fn = property.fn_setter;
+        auto setter_fn = property.setter_fn;
 
         auto set_value = [this, count, p_target_object, setter_fn]() {
           apply_setter_fn(count, p_target_object, setter_fn);

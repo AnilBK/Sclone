@@ -39,7 +39,7 @@ private:
 
   template <class NodeType>
   void apply_setter_fn(std::size_t ui_item_index, NodeType *p_target_object,
-                       typename NodeType::fn_setter_type p_fn_setter);
+                       typename NodeType::setter_fn_type p_fn_setter);
 
   void _add_property_to_property_list(const std::string &property_name);
 
