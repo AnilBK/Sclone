@@ -448,7 +448,7 @@ void Editor::_render_ui() {
   if (selected_info_tab == 0) {
     editor_inspector.Render();
   } else if (selected_info_tab == 1) {
-    properties_list_ui.Update(selected_sprite_ptr()->get_node());
+    properties_list_ui.Update();
     properties_list_ui.Render();
   }
 

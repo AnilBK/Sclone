@@ -10,15 +10,38 @@ PropertiesListUI::PropertiesListUI(sf::Vector2f pos) {
   info_container.setPosition(pos);
 }
 
+template <class T>
+void PropertiesListUI::apply_setter_fn(typename T::setter_fn_type p_setter_fn,
+                                       UILineInput *line_input_ref) {
+
+  // Use the setter function on the currently selected object with the value
+  // in the UILineInput as the argument for the setter function.
+
+  if (auto casted = dynamic_cast<T *>(target_object)) {
+    auto param = MATH_UTILITIES::str_to_float(
+        line_input_ref->get_text_no_prefix(), 1.0f);
+
+    p_setter_fn(*casted, param);
+  } else {
+    ERR_CRASH_IF(true, "Setting up value for member variable failed.")
+  }
+}
+
+template <class T>
 void PropertiesListUI::_add_property_to_property_list(
-    const std::string &property_name) {
+    typename T::Property property) {
 
-  auto property_name_label = std::make_shared<UILabel>(property_name);
+  auto property_name_label = std::make_shared<UILabel>(property.property_name);
 
-  auto property_input = std::make_shared<UILineInput>(property_name);
+  auto property_input = std::make_shared<UILineInput>("0");
   property_input->is_flat = false;
-  // TODO ?? Setup Enter pressed callback here.
-  // As of now, we have done in update loop.
+
+  auto setter_fn = property.setter_fn;
+  auto line_input_ref = property_input.get();
+  auto set_value_func = [this, setter_fn, line_input_ref]() {
+    apply_setter_fn<T>(setter_fn, line_input_ref);
+  };
+  property_input->enter_pressed_callback = set_value_func;
 
   property_ui_items.push_back(property_name_label);
   info_container.add_child(*property_ui_items.back().get());
@@ -28,6 +51,8 @@ void PropertiesListUI::_add_property_to_property_list(
 }
 
 void PropertiesListUI::build_initial_property_list_ui(Node *p_target_object) {
+  target_object = p_target_object;
+
   // First Clear all previous properties.
   info_container.children.clear();
   property_ui_items.clear();
@@ -38,7 +63,7 @@ void PropertiesListUI::build_initial_property_list_ui(Node *p_target_object) {
 
 #define BUILD_PROPERTY_LIST(T)                                                 \
   for (auto &property : *GlobalPropertyBindings::bounded_properties<T>()) {    \
-    _add_property_to_property_list(property.property_name);                    \
+    _add_property_to_property_list<T>(property);                               \
   }
 
 #define OBJECT_IS(T) auto casted = dynamic_cast<T *>(p_target_object)
@@ -50,30 +75,12 @@ void PropertiesListUI::build_initial_property_list_ui(Node *p_target_object) {
 #undef BUILD_PROPERTY_LIST
 }
 
-template <class NodeType>
-void PropertiesListUI::apply_setter_fn(
-    std::size_t ui_item_index, NodeType *p_target_object,
-    typename NodeType::setter_fn_type p_fn_setter) {
-
-  auto ui_item = property_ui_items.at(ui_item_index).get();
-
-  if (auto line_input = dynamic_cast<UILineInput *>(ui_item)) {
-    auto val =
-        MATH_UTILITIES::str_to_float(line_input->get_text_no_prefix(), 1.0f);
-    p_fn_setter(*p_target_object, val);
-  } else {
-    ERR_CRASH_IF(true, "Setting up value for member variable failed.")
-  }
-}
-
-template <class NodeType>
-void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
+template <class T> void PropertiesListUI::_update_property_list_ui() {
   if (property_ui_items.empty()) {
     return;
   }
 
-  auto bounded_properties_ref =
-      GlobalPropertyBindings::bounded_properties<NodeType>();
+  auto bounded_properties_ref = GlobalPropertyBindings::bounded_properties<T>();
 
   // Every property has 2 UI Items related.
   if (property_ui_items.size() != bounded_properties_ref->size() * 2) {
@@ -94,22 +101,10 @@ void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
       // We are not currently setting custom values for this property using
       // UILineInput in the editor, so update it using the getter fn.
       if (!line_input->line_input_active) {
-        auto value = std::to_string(property.getter_fn(*p_target_object));
-        line_input->set_text(value);
-      }
-
-      // No callbacks set up.
-      // Setup the callbacks here so that we get update reference to
-      // 'p_target_object'. But we could cache it, since it doesnt change ??
-      // TODO ??
-      if (!line_input->enter_pressed_callback) {
-        auto setter_fn = property.setter_fn;
-
-        auto set_value = [this, count, p_target_object, setter_fn]() {
-          apply_setter_fn(count, p_target_object, setter_fn);
-        };
-
-        line_input->enter_pressed_callback = set_value;
+        if (auto casted_obj = dynamic_cast<T *>(target_object)) {
+          auto value = std::to_string(property.getter_fn(*casted_obj));
+          line_input->set_text(value);
+        }
       }
     }
 
@@ -118,11 +113,11 @@ void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
   }
 }
 
-void PropertiesListUI::Update(Node *p_target_object) {
-#define OBJECT_IS(T) auto current_node = dynamic_cast<T *>(p_target_object)
+void PropertiesListUI::Update() {
+#define OBJECT_IS(T) auto current_node = dynamic_cast<T *>(target_object)
 
   if (OBJECT_IS(CircleShapeNode)) {
-    _update_property_list_ui(current_node);
+    _update_property_list_ui<CircleShapeNode>();
   }
 
 #undef OBJECT_IS
