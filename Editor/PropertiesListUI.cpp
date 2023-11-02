@@ -4,7 +4,9 @@
 #include "../Nodes/CircleShapeNode.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../Utils.hpp"
+#include <iomanip>
 #include <iostream>
+#include <sstream>
 
 PropertiesListUI::PropertiesListUI(sf::Vector2f pos) {
   info_container.setPosition(pos);
@@ -102,8 +104,14 @@ template <class T> void PropertiesListUI::_update_property_list_ui() {
       // UILineInput in the editor, so update it using the getter fn.
       if (!line_input->line_input_active) {
         if (auto casted_obj = dynamic_cast<T *>(target_object)) {
-          auto value = std::to_string(property.getter_fn(*casted_obj));
-          line_input->set_text(value);
+          auto value = property.getter_fn(*casted_obj);
+
+          // Format the number with 2 digits precision.
+          std::ostringstream oss;
+          oss << std::fixed << std::setprecision(2) << value;
+          const std::string &result = oss.str();
+
+          line_input->set_text(result);
         }
       }
     }
