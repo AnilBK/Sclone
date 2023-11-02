@@ -57,8 +57,9 @@ void PropertiesListUI::apply_setter_fn(
 
   auto ui_item = property_ui_items.at(ui_item_index).get();
 
-  if (auto label = dynamic_cast<UILineInput *>(ui_item)) {
-    auto val = MATH_UTILITIES::str_to_float(label->get_text_no_prefix(), 1.0f);
+  if (auto line_input = dynamic_cast<UILineInput *>(ui_item)) {
+    auto val =
+        MATH_UTILITIES::str_to_float(line_input->get_text_no_prefix(), 1.0f);
     p_fn_setter(*p_target_object, val);
   } else {
     ERR_CRASH_IF(true, "Setting up value for member variable failed.")
@@ -89,26 +90,26 @@ void PropertiesListUI::_update_property_list_ui(NodeType *p_target_object) {
   for (auto &property : *bounded_properties_ref) {
     auto ui_item = property_ui_items.at(count).get();
 
-    if (auto label = dynamic_cast<UILineInput *>(ui_item)) {
+    if (auto line_input = dynamic_cast<UILineInput *>(ui_item)) {
       // We are not currently setting custom values for this property using
       // UILineInput in the editor, so update it using the getter fn.
-      if (!label->line_input_active) {
+      if (!line_input->line_input_active) {
         auto value = std::to_string(property.getter_fn(*p_target_object));
-        label->set_text(value);
+        line_input->set_text(value);
       }
 
       // No callbacks set up.
       // Setup the callbacks here so that we get update reference to
       // 'p_target_object'. But we could cache it, since it doesnt change ??
       // TODO ??
-      if (!label->enter_pressed_callback) {
+      if (!line_input->enter_pressed_callback) {
         auto setter_fn = property.setter_fn;
 
         auto set_value = [this, count, p_target_object, setter_fn]() {
           apply_setter_fn(count, p_target_object, setter_fn);
         };
 
-        label->enter_pressed_callback = set_value;
+        line_input->enter_pressed_callback = set_value;
       }
     }
 
