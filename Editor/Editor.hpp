@@ -20,6 +20,7 @@
 #include "ScriptEditor.hpp"
 #include "TransformGizmo2D.hpp"
 #include "Windows/GlobalAlertWindow.hpp"
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -125,6 +126,20 @@ private:
   int _total_sprites_added = 0;
   int currently_selected_sprite_id = -1;
 
+  /// @brief When a sprite is added, we store their name here and count how many
+  /// times it is repeated. So let's say first time we add 'Sprite' and set
+  /// count = 0, second time when we press the '+' button, we add "Sprite_1".
+  /// (std::string) name of the sprite,
+  /// (std::size_t) number of sprites added from this name.
+  std::map<std::string, std::size_t> added_sprite_names;
+
+  /// @brief Looks for sprite names. If they don't already exist, then returns
+  /// that name, otherwise appends the sprite_name with some index and returns
+  /// them. Basically used for duplicating sprites.
+  /// @param name Name of the sprite to generate unique name from.
+  /// @return Valid sprite name that hasn't already been added.
+  std::string get_unique_sprite_name_from(const std::string &name);
+
   // Textures are loaded using shared_ptrs, so that they are alive throughout
   // the entire program and freed when the program terminates. The pointer
   // to the texture is same throughout the program execution.
@@ -138,7 +153,7 @@ private:
 
   void select_sprite_by_id(int id);
   void _highlight_btn_in_list(const int id);
-  void add_new_sprite(const std::string &p_name);
+  void add_new_sprite(const std::string &p_sprite_name);
 
   void _refresh_layout();
 

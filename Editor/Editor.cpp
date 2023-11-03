@@ -225,15 +225,31 @@ void Editor::_highlight_btn_in_list(const int id) {
   }
 }
 
-void Editor::add_new_sprite(const std::string &p_name) {
-  RETURN_IF_STRING_HAS_SPACE(p_name, "Sprite name shouldn't contain space.")
+std::string Editor::get_unique_sprite_name_from(const std::string &name) {
+  // Search the name in the map.
+  auto it = added_sprite_names.find(name);
+  auto found = it != added_sprite_names.end();
 
-  for (const auto &sprite : user_added_sprites) {
-    if (sprite.name == p_name) {
-      SHOW_ERROR_ALERT("[Error] Sprite with given name Already Exits.\n");
-      return;
-    }
+  if (found) {
+    // That name already exists.
+    auto new_count = it->second + 1;
+    added_sprite_names[name] = new_count;
+
+    auto new_name = name + "_" + std::to_string(new_count);
+    return get_unique_sprite_name_from(new_name);
+  } else {
+    // No names with that till now. So, register that name.
+    added_sprite_names[name] = 0;
+
+    return name;
   }
+}
+
+void Editor::add_new_sprite(const std::string &p_sprite_name) {
+  RETURN_IF_STRING_HAS_SPACE(p_sprite_name,
+                             "Sprite name shouldn't contain space.")
+
+  auto p_name = get_unique_sprite_name_from(p_sprite_name);
 
   int new_working_id = _total_sprites_added;
 
