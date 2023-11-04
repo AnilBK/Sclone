@@ -1,6 +1,7 @@
 #include "Utils.hpp"
 #include <algorithm>
 #include <cmath>
+#include <sstream>
 
 namespace STRING_UTILITIES {
 // https://stackoverflow.com/questions/4643512/replace-substring-with-another-substring-c
@@ -34,6 +35,20 @@ void remove_last_occurence(std::string &s, char ch) {
     }
   }
 }
+
+std::vector<std::string> SplitString(std::string &input, char split_character) {
+  std::istringstream iss(input);
+
+  std::string token;
+  std::vector<std::string> tokens;
+
+  while (std::getline(iss, token, split_character)) {
+    tokens.push_back(token);
+  }
+
+  return tokens;
+}
+
 } // namespace STRING_UTILITIES
 
 namespace MATH_UTILITIES {

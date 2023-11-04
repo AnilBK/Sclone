@@ -1,6 +1,7 @@
 #include "Block/Block.hpp"
 #include <SFML/Graphics/Rect.hpp>
 #include <string>
+#include <vector>
 
 namespace STRING_UTILITIES {
 void replaceAll(std::string &s, const std::string &search,
@@ -9,6 +10,8 @@ void replaceAll(std::string &s, const std::string &search,
 void remove_first_occurence(std::string &s, char ch);
 
 void remove_last_occurence(std::string &s, char ch);
+
+std::vector<std::string> SplitString(std::string &input, char split_character);
 } // namespace STRING_UTILITIES
 
 namespace MATH_UTILITIES {
