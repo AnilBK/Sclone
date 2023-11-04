@@ -1,6 +1,7 @@
 #include "Utils.hpp"
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <sstream>
 
 namespace STRING_UTILITIES {
@@ -47,6 +48,13 @@ std::vector<std::string> SplitString(std::string &input, char split_character) {
   }
 
   return tokens;
+}
+
+template <class T>
+std::string format_string_with_precision(T value, int precision) {
+  std::ostringstream oss;
+  oss << std::fixed << std::setprecision(precision) << value;
+  return oss.str();
 }
 
 } // namespace STRING_UTILITIES

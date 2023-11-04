@@ -12,6 +12,9 @@ void remove_first_occurence(std::string &s, char ch);
 void remove_last_occurence(std::string &s, char ch);
 
 std::vector<std::string> SplitString(std::string &input, char split_character);
+
+template <class T>
+std::string format_string_with_precision(T value, int precision);
 } // namespace STRING_UTILITIES
 
 namespace MATH_UTILITIES {
