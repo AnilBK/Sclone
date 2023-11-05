@@ -40,14 +40,39 @@ private:
   // pushed to 'info_container'.
   std::vector<std::shared_ptr<UIBaseClass>> property_ui_items;
 
-  template <class NodeType>
-  void apply_setter_fn(typename NodeType::setter_fn_type p_setter_fn,
-                       UILineInput *line_input_ref);
+  /// @brief Suppose when we bind a float variable named "Radius", we create a
+  /// Label named "Radius" & a LineInput with the initial value. This two UI
+  /// items are combinely called a Property Field.
+  struct PropertyField {
+    std::string name, initial_value;
+  };
 
-  template <class NodeType>
-  void _add_property_to_property_list(typename NodeType::Property property);
+  template <class T>
+  void apply_setter_fn(typename T::PropertyVariant p_property,
+                       HBoxContainer *hbox_ref);
 
-  template <class NodeType> void _update_property_list_ui();
+  template <class T>
+  void _add_property_to_property_list(typename T::PropertyVariant p_property);
+
+  template <class T>
+  void add_fields(std::vector<PropertyField> &p_fields,
+                  const typename T::PropertyVariant &p_property);
+
+  template <class T> void _update_property_list_ui();
+
+  /// @brief Fill a row with the values.
+  /// @param parent_hbox The reference to the parent HBox which contains line
+  /// inputs which are to be filled.
+  /// @param results Values which are to be filled in this row.
+  void fill_values(HBoxContainer *parent_hbox,
+                   const std::vector<std::string> &results);
+
+  /// @brief Get 'count' number of values that are in this row.
+  /// @param parent_hbox The reference to the parent HBox for a given row which
+  /// contains different line inputs whose values are to be fetched.
+  /// @param count Number of values to be fetched from the provided row.
+  /// @return A list of values.
+  std::vector<float> get_values(HBoxContainer *parent_hbox, std::size_t count);
 };
 
 #endif // PROPERTIESLISTUI_HPP

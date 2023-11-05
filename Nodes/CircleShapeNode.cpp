@@ -32,34 +32,37 @@ void CircleShapeNode::onDraw(sf::RenderTarget &target,
 }
 
 void CircleShapeNode::bind() {
-  auto bind_property = [](const std::string &property_name,
-                          getter_fn_type getter_fn, setter_fn_type setter_fn) {
-    CircleShapeNode::bounded_properties->push_back(
-        {property_name, getter_fn, setter_fn});
+  setter_fn_type<float> set_radius;
+  set_radius.set = [](CircleShapeNode &circle, float p_radius) {
+    circle.set_radius(p_radius);
   };
 
-  getter_fn_type get_radius_fn;
-  get_radius_fn = [](CircleShapeNode &circle) {
+  getter_fn_type<float> get_radius;
+  get_radius.get = [](CircleShapeNode &circle) {
     return circle.get_shape().getRadius();
   };
 
-  setter_fn_type set_radius_fn;
-  set_radius_fn = [](CircleShapeNode &circle, float new_value) {
-    circle.set_radius(new_value);
+  setter_fn_type<sf::Color> set_color;
+  set_color.set = [](CircleShapeNode &circle, sf::Color new_color) {
+    circle.get_shape().setFillColor(new_color);
   };
 
-  getter_fn_type get_scale_x_fn;
-  get_scale_x_fn = [](CircleShapeNode &circle) {
-    return circle.get_shape().getScale().x;
+  getter_fn_type<sf::Color> get_color;
+  get_color.get = [](CircleShapeNode &circle) {
+    return circle.get_shape().getFillColor();
   };
 
-  setter_fn_type set_scale_x_fn;
-  set_scale_x_fn = [](CircleShapeNode &circle, float new_value) {
-    auto &shape_ref = circle.get_shape();
-    auto current_scale = shape_ref.getScale();
-    shape_ref.setScale(sf::Vector2f(new_value, current_scale.y));
-  };
+#define bind(T, NAME, PARAMS, COUNT, GET, SET)                                 \
+  {                                                                            \
+    Property<T> property;                                                      \
+    property.name = NAME;                                                      \
+    property.params = PARAMS;                                                  \
+    property.params_count = COUNT;                                             \
+    property.getter_fn = GET;                                                  \
+    property.setter_fn = SET;                                                  \
+    bounded_properties->push_back(property);                                   \
+  }
 
-  bind_property("Radius", get_radius_fn, set_radius_fn);
-  bind_property("Scale(x)", get_scale_x_fn, set_scale_x_fn);
+  bind(sf::Color, "Color", "r,g,b,a", 4, get_color, set_color);
+  bind(float, "Radius", "", 1, get_radius, set_radius);
 }

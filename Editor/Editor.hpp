@@ -87,7 +87,7 @@ private:
   UIButton blocks_tab_bar_collapse_btn = UIButton("V");
 
   // The information and properties tab.
-  TabBar info_tab = TabBar(sf::Vector2f(250, 0), sf::Vector2f(300, 300));
+  TabBar info_tab = TabBar(sf::Vector2f(250, 0), sf::Vector2f(335, 300));
 
   PropertiesListUI properties_list_ui = PropertiesListUI(sf::Vector2f(265, 40));
 

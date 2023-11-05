@@ -4,52 +4,104 @@
 #include "../Nodes/CircleShapeNode.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../Utils.hpp"
-#include <iomanip>
+#include <SFML/Graphics/Color.hpp>
 #include <iostream>
-#include <sstream>
 
 PropertiesListUI::PropertiesListUI(sf::Vector2f pos) {
   info_container.setPosition(pos);
 }
 
 template <class T>
-void PropertiesListUI::apply_setter_fn(typename T::setter_fn_type p_setter_fn,
-                                       UILineInput *line_input_ref) {
-
+void PropertiesListUI::apply_setter_fn(typename T::PropertyVariant p_property,
+                                       HBoxContainer *hbox_ref) {
   // Use the setter function on the currently selected object with the value
   // in the UILineInput as the argument for the setter function.
-
-  if (auto casted = dynamic_cast<T *>(target_object)) {
-    auto param = MATH_UTILITIES::str_to_float(
-        line_input_ref->get_text_no_prefix(), 1.0f);
-
-    p_setter_fn(*casted, param);
-  } else {
-    ERR_CRASH_IF(true, "Setting up value for member variable failed.")
+  auto casted = dynamic_cast<T *>(target_object);
+  if (!casted) {
+    return;
   }
+
+  std::visit(
+      [this, hbox_ref, casted](auto &&property) {
+        auto params_count = property.params_count;
+        std::vector<float> results = get_values(hbox_ref, params_count);
+
+        auto setter_fn = property.setter_fn.set;
+
+        using PropertyType = std::decay_t<decltype(property)>;
+        if constexpr (std::is_same_v<PropertyType, typename T::ColorType>) {
+          auto color = sf::Color(results.at(0), results.at(1), results.at(2),
+                                 results.at(3));
+          setter_fn(*casted, color);
+        } else if constexpr (std::is_same_v<PropertyType,
+                                            typename T::FloatType>) {
+          auto radius = results.at(0);
+          setter_fn(*casted, radius);
+        }
+      },
+      p_property);
+}
+
+template <class T>
+void PropertiesListUI::add_fields(
+    std::vector<PropertyField> &p_fields,
+    const typename T::PropertyVariant &p_property) {
+
+  auto h_box = std::make_shared<HBoxContainer>();
+  auto hbox_ref = h_box.get();
+
+  hbox_ref->padding.x = 10.0f;
+
+  // In a horizontal row, whenever any of the input is set, then all the inputs
+  // in that row call the same setter function.
+  // This is done because the setter function expects 1 argument.
+  // For example : setColor(sf::Color);
+  // The setColor function requires sf::Color(4 floats) & we have to construct
+  // this sf::Color from 4 individual items in that row.
+  auto set_value_func = [this, p_property, hbox_ref]() {
+    apply_setter_fn<T>(p_property, hbox_ref);
+  };
+
+  for (auto &[name, initial_value] : p_fields) {
+    auto property_name_label = std::make_shared<UILabel>(name);
+
+    auto property_input = std::make_shared<UILineInput>(initial_value);
+    property_input->is_flat = false;
+
+    property_input->enter_pressed_callback = set_value_func;
+
+    hbox_ref->add_child(*property_name_label.get());
+    hbox_ref->add_child(*property_input.get());
+
+    property_ui_items.push_back(property_name_label);
+    property_ui_items.push_back(property_input);
+  }
+
+  property_ui_items.push_back(h_box);
+  info_container.add_child(*property_ui_items.back().get());
 }
 
 template <class T>
 void PropertiesListUI::_add_property_to_property_list(
-    typename T::Property property) {
+    typename T::PropertyVariant p_property) {
 
-  auto property_name_label = std::make_shared<UILabel>(property.property_name);
+  std::visit(
+      [this, p_property](auto &&property) {
+        std::vector<PropertyField> fields;
 
-  auto property_input = std::make_shared<UILineInput>("0");
-  property_input->is_flat = false;
+        if (property.params == "" || property.params_count == 0 ||
+            property.params_count == 1) {
+          fields.push_back({property.name, "0"});
+        } else {
+          auto params = STRING_UTILITIES::SplitString(property.params, ',');
+          for (auto &param : params) {
+            fields.push_back({param, "0"});
+          }
+        }
 
-  auto setter_fn = property.setter_fn;
-  auto line_input_ref = property_input.get();
-  auto set_value_func = [this, setter_fn, line_input_ref]() {
-    apply_setter_fn<T>(setter_fn, line_input_ref);
-  };
-  property_input->enter_pressed_callback = set_value_func;
-
-  property_ui_items.push_back(property_name_label);
-  info_container.add_child(*property_ui_items.back().get());
-
-  property_ui_items.push_back(property_input);
-  info_container.add_child(*property_ui_items.back().get());
+        add_fields<T>(fields, p_property);
+      },
+      p_property);
 }
 
 void PropertiesListUI::build_initial_property_list_ui(Node *p_target_object) {
@@ -77,47 +129,86 @@ void PropertiesListUI::build_initial_property_list_ui(Node *p_target_object) {
 #undef BUILD_PROPERTY_LIST
 }
 
+void PropertiesListUI::fill_values(HBoxContainer *parent_hbox,
+                                   const std::vector<std::string> &results) {
+  for (std::size_t i = 0; i < results.size(); i++) {
+    auto &child = parent_hbox->children.at((i * 2) + 1);
+
+    if (auto line_input = dynamic_cast<UILineInput *>(child)) {
+      // We are not currently setting custom values for this
+      // property using UILineInput in the editor, so update it
+      // using the getter fn.
+      if (!line_input->line_input_active) {
+        line_input->set_text(results[i]);
+      }
+    }
+  }
+}
+
+std::vector<float> PropertiesListUI::get_values(HBoxContainer *parent_hbox,
+                                                std::size_t count) {
+  std::vector<float> results;
+  results.reserve(count);
+
+  for (std::size_t i = 0; i < count; i++) {
+    // First index : UILabel.
+    // Second index : UILineInput.
+    auto &child = parent_hbox->children.at((i * 2) + 1);
+
+    if (auto line_input = dynamic_cast<UILineInput *>(child)) {
+      auto param =
+          MATH_UTILITIES::str_to_float(line_input->get_text_no_prefix(), 1.0f);
+      results.push_back(param);
+    }
+  }
+
+  return results;
+}
+
 template <class T> void PropertiesListUI::_update_property_list_ui() {
   if (property_ui_items.empty()) {
     return;
   }
 
-  auto bounded_properties_ref = GlobalPropertyBindings::bounded_properties<T>();
-
-  // Every property has 2 UI Items related.
-  if (property_ui_items.size() != bounded_properties_ref->size() * 2) {
+  auto casted_obj = dynamic_cast<T *>(target_object);
+  if (!casted_obj) {
     return;
   }
 
-  // Every Property has the following UI Items.
-  // ---- Index (0) : Property Label (property_name_label)
-  // ---- Index (1) : Property Input (property_input)
+  auto bounded_properties_ref = GlobalPropertyBindings::bounded_properties<T>();
 
-  // So, we start from index 1.
-  std::size_t count = 1;
+  std::size_t count = 0;
+  for (auto &bound_property : *bounded_properties_ref) {
+    auto ui_item = info_container.children.at(count);
 
-  for (auto &property : *bounded_properties_ref) {
-    auto ui_item = property_ui_items.at(count).get();
+    if (auto parent_hbox = dynamic_cast<HBoxContainer *>(ui_item)) {
 
-    if (auto line_input = dynamic_cast<UILineInput *>(ui_item)) {
-      // We are not currently setting custom values for this property using
-      // UILineInput in the editor, so update it using the getter fn.
-      if (!line_input->line_input_active) {
-        if (auto casted_obj = dynamic_cast<T *>(target_object)) {
-          auto value = property.getter_fn(*casted_obj);
+      std::visit(
+          [&](auto &&property) {
+            auto value = property.getter_fn.get(*casted_obj);
 
-          // Format the number with 2 digits precision.
-          std::ostringstream oss;
-          oss << std::fixed << std::setprecision(2) << value;
-          const std::string &result = oss.str();
+            std::vector<std::string> obtained_values;
 
-          line_input->set_text(result);
-        }
-      }
+            using PropertyType = std::decay_t<decltype(property)>;
+            if constexpr (std::is_same_v<PropertyType, typename T::ColorType>) {
+              obtained_values = {
+                  std::to_string(value.r), std::to_string(value.g),
+                  std::to_string(value.b), std::to_string(value.a)};
+            } else if constexpr (std::is_same_v<PropertyType,
+                                                typename T::FloatType>) {
+              obtained_values = {std::to_string(value)};
+            }
+
+            auto params_count = property.params_count;
+
+            if (params_count == obtained_values.size()) {
+              fill_values(parent_hbox, obtained_values);
+            }
+          },
+          bound_property);
     }
 
-    // Since, every property has 2 UI Items associated with it.
-    count += 2;
+    count++;
   }
 }
 

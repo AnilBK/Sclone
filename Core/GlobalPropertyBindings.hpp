@@ -13,7 +13,7 @@ public:
   ~GlobalPropertyBindings() { delete CircleShapeNode::bounded_properties; }
 
   template <class T>
-  static std::vector<typename T::Property> *bounded_properties() {
+  static std::vector<typename T::PropertyVariant> *bounded_properties() {
     // We assume the properties are bounded to a vector named
     // 'bounded_properties' in the respective classes.
     return T::bounded_properties;

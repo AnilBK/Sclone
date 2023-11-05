@@ -6,6 +6,7 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <variant>
 
 class CircleShapeNode : public Node {
 public:
@@ -25,19 +26,31 @@ public:
   //////////////////////////////////////////////////////////////////////
   //                      Bindings Related Code.                      //
   //////////////////////////////////////////////////////////////////////
-  using getter_fn_type = std::function<float(CircleShapeNode &)>;
-  using setter_fn_type = std::function<void(CircleShapeNode &, float)>;
-
-  struct Property {
-    std::string property_name;
-    getter_fn_type getter_fn;
-    setter_fn_type setter_fn;
+  template <class return_type> struct getter_fn_type {
+    std::function<return_type(CircleShapeNode &)> get;
   };
+
+  template <class set_type> struct setter_fn_type {
+    std::function<void(CircleShapeNode &, set_type)> set;
+  };
+
+  template <class T> struct Property {
+    std::string name;
+    std::string params;
+    std::size_t params_count;
+    getter_fn_type<T> getter_fn;
+    setter_fn_type<T> setter_fn;
+  };
+
+  using ColorType = Property<sf::Color>;
+  using FloatType = Property<float>;
+
+  using PropertyVariant = std::variant<ColorType, FloatType>;
 
   // Important : Always delete them.
   // Deletion is Handled by '_global_binder'.
-  inline static std::vector<Property> *bounded_properties =
-      new std::vector<Property>();
+  inline static std::vector<PropertyVariant> *bounded_properties =
+      new std::vector<PropertyVariant>();
 
   static void bind();
 
