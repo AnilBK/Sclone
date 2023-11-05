@@ -31,6 +31,23 @@ void CircleShapeNode::onDraw(sf::RenderTarget &target,
   target.draw(m_shape, combined);
 }
 
+//////////////////////////////////////////////////////////////////////
+//                      Bindings Related Code.                      //
+//////////////////////////////////////////////////////////////////////
+template <typename T> constexpr const char *get_params() { return ""; }
+template <typename T> constexpr std::size_t get_params_count() { return 1; }
+
+#define REGISTER_TYPE(T, params, params_count)                                 \
+  template <> constexpr const char *get_params<T>() { return params; }         \
+  template <> constexpr std::size_t get_params_count<T>() {                    \
+    return params_count;                                                       \
+  }
+
+REGISTER_TYPE(sf::Color, "r,g,b,a", 4)
+REGISTER_TYPE(float, "", 1)
+
+#undef REGISTER_TYPE
+
 void CircleShapeNode::bind() {
   setter_fn_type<float> set_radius;
   set_radius.set = [](CircleShapeNode &circle, float p_radius) {
@@ -52,17 +69,17 @@ void CircleShapeNode::bind() {
     return circle.get_shape().getFillColor();
   };
 
-#define bind(T, NAME, PARAMS, COUNT, GET, SET)                                 \
+#define bind(T, NAME, GET, SET)                                                \
   {                                                                            \
     Property<T> property;                                                      \
     property.name = NAME;                                                      \
-    property.params = PARAMS;                                                  \
-    property.params_count = COUNT;                                             \
+    property.params = get_params<T>();                                         \
+    property.params_count = get_params_count<T>();                             \
     property.getter_fn = GET;                                                  \
     property.setter_fn = SET;                                                  \
     bounded_properties->push_back(property);                                   \
   }
 
-  bind(sf::Color, "Color", "r,g,b,a", 4, get_color, set_color);
-  bind(float, "Radius", "", 1, get_radius, set_radius);
+  bind(sf::Color, "Color", get_color, set_color);
+  bind(float, "Radius", get_radius, set_radius);
 }
