@@ -1,4 +1,6 @@
 #include "RectangleShapeNode.hpp"
+#include "../Core/GenerateBindingsCode.hpp"
+#include "../Core/RegisteredTypes.hpp"
 
 RectangleShapeNode::RectangleShapeNode(sf::RectangleShape p_rect_shape) {
   const auto rect_pos = p_rect_shape.getPosition();
@@ -18,4 +20,21 @@ void RectangleShapeNode::onDraw(sf::RenderTarget &target,
                                 const sf::Transform &transform) const {
   const sf::Transform combined = transform;
   target.draw(m_shape, combined);
+}
+
+//////////////////////////////////////////////////////////////////////
+//                      Bindings Related Code.                      //
+//////////////////////////////////////////////////////////////////////
+void RectangleShapeNode::bind() {
+  setter_fn_type<sf::Color> set_color;
+  set_color.set = [](RectangleShapeNode &circle, sf::Color new_color) {
+    circle.get_shape().setFillColor(new_color);
+  };
+
+  getter_fn_type<sf::Color> get_color;
+  get_color.get = [](RectangleShapeNode &circle) {
+    return circle.get_shape().getFillColor();
+  };
+
+  bind_member(sf::Color, "Color", get_color, set_color);
 }

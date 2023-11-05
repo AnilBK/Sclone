@@ -1,8 +1,13 @@
 #ifndef RECTANGLE_SHAPE_NODE_HPP
 #define RECTANGLE_SHAPE_NODE_HPP
 
+#include "../Core/GenerateBindingsCode.hpp"
 #include "Node.hpp"
 #include <SFML/Graphics.hpp>
+#include <functional>
+#include <string>
+#include <variant>
+#include <vector>
 
 class RectangleShapeNode : public Node {
 public:
@@ -14,6 +19,11 @@ public:
   sf::FloatRect get_global_bounds() override;
 
   sf::RectangleShape &get_shape() { return m_shape; }
+
+  //////////////////////////////////////////////////////////////////////
+  //                      Bindings Related Code.                      //
+  //////////////////////////////////////////////////////////////////////
+  GENERATE_BINDINGS_CODE(RectangleShapeNode)
 
 private:
   sf::RectangleShape m_shape;

@@ -123,6 +123,8 @@ void PropertiesListUI::build_initial_property_list_ui(Node *p_target_object) {
 #define OBJECT_IS(T) auto casted = dynamic_cast<T *>(p_target_object)
   if (OBJECT_IS(CircleShapeNode)) {
     BUILD_PROPERTY_LIST(CircleShapeNode)
+  } else if (OBJECT_IS(RectangleShapeNode)) {
+    BUILD_PROPERTY_LIST(RectangleShapeNode)
   }
 #undef OBJECT_IS
 
@@ -217,6 +219,8 @@ void PropertiesListUI::Update() {
 
   if (OBJECT_IS(CircleShapeNode)) {
     _update_property_list_ui<CircleShapeNode>();
+  } else if (OBJECT_IS(RectangleShapeNode)) {
+    _update_property_list_ui<RectangleShapeNode>();
   }
 
 #undef OBJECT_IS
