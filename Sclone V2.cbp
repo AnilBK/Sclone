@@ -52,9 +52,11 @@
 		<Unit filename="CodeGen/FormatStrings.cpp" />
 		<Unit filename="CodeGen/FormatStrings.hpp" />
 		<Unit filename="CodeGen/OutputCodeCallbacks.hpp" />
+		<Unit filename="Core/GenerateBindingsCode.hpp" />
 		<Unit filename="Core/GlobalPropertyBindings.hpp" />
 		<Unit filename="Core/Object.cpp" />
 		<Unit filename="Core/Object.hpp" />
+		<Unit filename="Core/RegisteredTypes.hpp" />
 		<Unit filename="Editor/BlockVisualizer.cpp" />
 		<Unit filename="Editor/BlockVisualizer.hpp" />
 		<Unit filename="Editor/Editor.cpp" />
