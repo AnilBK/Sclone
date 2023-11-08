@@ -390,6 +390,35 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
       view.zoom(0.99f);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
       view.zoom(1.01f);
+    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) {
+      gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
+
+      auto mouse_world_pos = window.mapPixelToCoords(
+          static_cast<sf::Vector2i>(get_mouse_position()), view);
+
+      gizmo_2D.offset =
+          mouse_world_pos - selected_sprite_ptr()->get_node()->getPosition();
+    }
+
+    if (gizmo_2D.is_gizmo_selected()) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
+        gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
+        gizmo_2D.offset = sf::Vector2f();
+      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+        gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::X;
+
+        auto mouse_world_pos = window.mapPixelToCoords(
+            static_cast<sf::Vector2i>(get_mouse_position()), view);
+        gizmo_2D.offset.x = mouse_world_pos.x -
+                            selected_sprite_ptr()->get_node()->getPosition().x;
+      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
+        gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::Y;
+
+        auto mouse_world_pos = window.mapPixelToCoords(
+            static_cast<sf::Vector2i>(get_mouse_position()), view);
+        gizmo_2D.offset.y = mouse_world_pos.y -
+                            selected_sprite_ptr()->get_node()->getPosition().y;
+      }
     }
 
     if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {

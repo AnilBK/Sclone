@@ -37,7 +37,7 @@ void TransformGizmo2D::_update_gizmo() {
 
     draw_line({left_most_x, y_pos}, {win_width, y_pos}, x_line_color);
 
-    target_node->setPosition(get_mouse_position().x - 100.0f, y_pos);
+    target_node->setPosition(get_mouse_position().x - offset.x, y_pos);
 
     if (translation_updated_callbacks) {
       // update translation = true.
@@ -56,7 +56,7 @@ void TransformGizmo2D::_update_gizmo() {
 
     draw_line({x_pos, top_most_y}, {x_pos, win_height}, y_line_color);
 
-    target_node->setPosition(x_pos, get_mouse_position().y + 100.0f);
+    target_node->setPosition(x_pos, get_mouse_position().y - offset.y);
 
     if (translation_updated_callbacks) {
       translation_updated_callbacks(true, false);
@@ -64,7 +64,7 @@ void TransformGizmo2D::_update_gizmo() {
   } break;
 
   case GIZMO_SELECT_STATE::CENTER: {
-    target_node->setPosition(get_mouse_position());
+    target_node->setPosition(get_mouse_position() - offset);
 
     if (translation_updated_callbacks) {
       translation_updated_callbacks(true, false);
@@ -210,8 +210,10 @@ void TransformGizmo2D::_draw_gizmo() {
 
   if (isMouseOverSprite(x)) {
     current_gizmo_state = GIZMO_SELECT_STATE::X;
+    offset.x = 100;
   } else if (isMouseOverSprite(y)) {
     current_gizmo_state = GIZMO_SELECT_STATE::Y;
+    offset.y = 100;
   } else if (isMouseOverSprite(c)) {
     current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
   } else if (isMouseOverSprite(br)) {
