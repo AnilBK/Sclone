@@ -121,7 +121,7 @@ void Editor::_update_sprite_texure() {
   RETURN_IF_STRING_HAS_SPACE(sprite_texture_name.get_text(),
                              "Texture file name should not contain space.")
 
-  auto texture_ref = load_texture(selected_sprite->texture);
+  auto texture_ref = load_texture(sprite_texture_name.get_text());
   if (!texture_ref) {
     return;
   }
@@ -131,7 +131,8 @@ void Editor::_update_sprite_texure() {
 #define OBJECT_IS(T)                                                           \
   auto casted = dynamic_cast<T *>(selected_sprite->node.get())
   if (OBJECT_IS(SpriteNode)) {
-    auto sprite_ref = casted->get_shape();
+    auto &sprite_ref = casted->get_shape();
+
     sprite_ref.setTexture(*texture_ref.value());
 
     auto texture_size = (sf::Vector2f)sprite_ref.getTexture()->getSize();
