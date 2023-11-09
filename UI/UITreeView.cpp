@@ -55,6 +55,7 @@ int UITreeView::add_item(const std::string &p_text,
                          std::function<void()> clicked_callback) {
 
   std::shared_ptr<Button> btn(new Button(p_text));
+  btn.get()->default_fill_color = sf::Color::Transparent;
   btn.get()->set_pressed(false);
   btn.get()->clicked_callback = clicked_callback;
 

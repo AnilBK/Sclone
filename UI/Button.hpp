@@ -7,18 +7,23 @@
 
 inline sf::Font button_font;
 
+enum TEXT_ALIGN { CENTER, LEFT, EXPAND_BUTTON_TO_TEXT };
+
 class Button : public UIBaseClass {
 private:
   sf::Text text;
   sf::RectangleShape rectangle;
 
-  enum TEXT_ALIGN { CENTER, LEFT, EXPAND_BUTTON_TO_TEXT } text_align;
-
   bool mouse_over = false;
-  bool clicked = false;
   bool pressed = false;
 
 public:
+  bool clicked = false;
+  TEXT_ALIGN text_align;
+
+  sf::Color default_fill_color = sf::Color(150, 144, 80),
+            pressed_fill_color = sf::Color(206, 207, 131);
+
   std::function<void()> clicked_callback;
 
   void set_pressed(bool p_pressed);
@@ -29,8 +34,11 @@ public:
 
   sf::Vector2f rect_size() override;
 
+  void set_outline_thickness(float p_thickness);
+
   Button(const std::string &btn_text,
-         sf::Vector2f pos = sf::Vector2f(0.0f, 0.0f));
+         sf::Vector2f pos = sf::Vector2f(0.0f, 0.0f),
+         TEXT_ALIGN p_text_align = TEXT_ALIGN::LEFT);
 
   void Render() override;
 

@@ -33,10 +33,10 @@ void Button::set_pressed(bool p_pressed) {
   pressed = p_pressed;
 
   if (pressed) {
-    rectangle.setFillColor(sf::Color(230, 244, 255));
+    rectangle.setFillColor(pressed_fill_color);
     text.setFillColor(sf::Color(0, 136, 204));
   } else {
-    rectangle.setFillColor(sf::Color(150, 144, 80));
+    rectangle.setFillColor(default_fill_color);
     text.setFillColor(sf::Color::Black);
   }
 }
@@ -47,28 +47,36 @@ void Button::set_button_size(sf::Vector2f new_size) {
 
 sf::Vector2f Button::rect_size() { return rectangle.getSize(); }
 
-Button::Button(const std::string &btn_text, sf::Vector2f pos) {
+void Button::set_outline_thickness(float p_thickness) {
+  rectangle.setOutlineThickness(p_thickness);
+}
+
+Button::Button(const std::string &btn_text, sf::Vector2f pos,
+               TEXT_ALIGN p_text_align) {
   text.setFont(button_font);
   text.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
   text.setString(btn_text);
   text.setFillColor(sf::Color(101, 90, 124));
 
-  rectangle.setOutlineThickness(2.f);
+  set_outline_thickness(2.0F);
   rectangle.setOutlineColor(sf::Color(171, 146, 191));
   rectangle.setFillColor(sf::Color::Transparent);
   rectangle.setOrigin(sf::Vector2f(0.0F, 0.0F));
 
-  text_align = TEXT_ALIGN::LEFT;
+  text_align = p_text_align;
 
-  set_button_size({130.0F, 30.0F});
+  if (text_align == TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT) {
+    auto text_size = text.getGlobalBounds().getSize() + sf::Vector2f(10, 10);
+    set_button_size(text_size);
+  } else {
+    set_button_size({130.0F, 30.0F});
+  }
+
   setPosition(pos);
 }
 
 void Button::Render() {
-  if (pressed) {
-    window.draw(rectangle);
-  }
-
+  window.draw(rectangle);
   window.draw(text);
 }
 
