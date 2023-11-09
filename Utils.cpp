@@ -20,20 +20,16 @@ void replaceAll(std::string &s, const std::string &search,
 }
 
 void remove_first_occurence(std::string &s, char ch) {
-  for (int i = 0; i < s.length(); i++) {
-    if (s[i] == ch) {
-      s.erase(s.begin() + i);
-      break;
-    }
+  auto pos = s.find(ch);
+  if (pos != std::string::npos) {
+    s.erase(pos);
   }
 }
 
 void remove_last_occurence(std::string &s, char ch) {
-  for (int i = s.length() - 1; i >= 0; i--) {
-    if (s[i] == ch) {
-      s.erase(s.begin() + i);
-      break;
-    }
+  auto pos = s.rfind(ch);
+  if (pos != std::string::npos) {
+    s.erase(pos);
   }
 }
 
