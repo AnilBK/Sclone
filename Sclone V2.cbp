@@ -42,9 +42,12 @@
 			<Add option="-Wall" />
 			<Add option="-DSFML_STATIC" />
 			<Add directory="C:/SFML-2.6.0/include" />
+			<Add directory="D:/Program Files (x86)/boost_1_83_0" />
 		</Compiler>
 		<Linker>
+			<Add library="D:/Program Files (x86)/boost_1_83_0/stage/lib/libboost_filesystem-mgw8-mt-d-x64-1_83.a" />
 			<Add directory="C:/SFML-2.6.0/lib" />
+			<Add directory="D:/Program Files (x86)/boost_1_83_0/stage/lib" />
 		</Linker>
 		<Unit filename="BuiltInBlocks.hpp" />
 		<Unit filename="CodeGen/CodeGenerator.cpp" />
@@ -71,8 +74,12 @@
 		<Unit filename="Editor/ScriptEditor.hpp" />
 		<Unit filename="Editor/TransformGizmo2D.cpp" />
 		<Unit filename="Editor/TransformGizmo2D.hpp" />
+		<Unit filename="Editor/Windows/FilePickerWindow.cpp" />
+		<Unit filename="Editor/Windows/FilePickerWindow.hpp" />
 		<Unit filename="Editor/Windows/GlobalAlertWindow.cpp" />
 		<Unit filename="Editor/Windows/GlobalAlertWindow.hpp" />
+		<Unit filename="FileSystemUtils.cpp" />
+		<Unit filename="FileSystemUtils.hpp" />
 		<Unit filename="Globals.hpp" />
 		<Unit filename="Nodes/CircleShapeNode.cpp" />
 		<Unit filename="Nodes/CircleShapeNode.hpp" />

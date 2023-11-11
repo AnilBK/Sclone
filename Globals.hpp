@@ -1,6 +1,7 @@
 #ifndef GLOBALS_HPP
 #define GLOBALS_HPP
 
+#include "Editor/Windows/FilePickerWindow.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <iostream>
@@ -59,6 +60,8 @@ constexpr unsigned int DEFAULT_TEXT_FONT_SIZE = 20;
 constexpr bool DEBUG_BLOCK_SPAWN_STATS = false;
 
 inline sf::View *editor_view;
+
+inline FilePickerWindow file_picker;
 
 [[nodiscard]] static inline sf::Vector2f
 get_mouse_position(const sf::RenderWindow &p_window) {

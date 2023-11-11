@@ -107,6 +107,8 @@ int main() {
     // Since Alert Windows are drawn at last, that means we don't even need a
     // window. We can just draw a rect with label as well.
     MainAlert.MainLoop();
+
+    file_picker.MainLoop();
   }
 
   return 0;

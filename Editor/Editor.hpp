@@ -47,6 +47,7 @@ private:
   UILabel sprite_pos = UILabel("Position: X: Y:");
   UILabel sprite_texture = UILabel("Texture:");
   UILineInput sprite_texture_name = UILineInput("cat.png");
+  UIButton sprite_texture_load_btn = UIButton("Load");
 
   UILabel sprite_layer_label = UILabel("Layer:");
   UILineInput sprite_layer_value_input = UILineInput("0");
@@ -194,6 +195,19 @@ private:
     sprite_list_ui_tree.init_ui();
   }
 
+  void _select_image_using_file_picker() {
+    // When the file picker window is closed, get the filename of the image
+    // selected in that window, and update the texture of currently selected
+    // Node.
+    file_picker.file_selected_callback = [&](std::string file_name) {
+      sprite_texture_name.set_text(file_name);
+      _update_sprite_texure();
+    };
+
+    // Open the file picker window.
+    file_picker.instantiate();
+  }
+
 public:
   std::vector<EditorSprite> user_added_sprites;
   std::vector<std::shared_ptr<Script>> scripts;
@@ -249,13 +263,19 @@ public:
     sprite_texture_name.enter_pressed_callback = [&]() {
       _update_sprite_texure();
     };
+
     sprite_name.enter_pressed_callback = [&]() { _update_sprite_name(); };
+
+    sprite_texture_load_btn.clicked_callback = [&]() {
+      _select_image_using_file_picker();
+    };
 
     first_line.add_child(sprite_name);
     // first_line.add_child(sprite_visibility);
 
     third_line.add_child(sprite_texture);
     third_line.add_child(sprite_texture_name);
+    third_line.add_child(sprite_texture_load_btn);
 
     sprite_move_layer_up.clicked_callback = [&]() {
       _increment_sprite_layer();
