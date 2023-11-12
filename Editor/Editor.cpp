@@ -795,8 +795,20 @@ void Editor::_render_block_spawner_tab() {
 
   window.setView(tab_view);
 
+  built_in_blocks_tab_bar.can_scroll_up = true;
+  built_in_blocks_tab_bar.can_scroll_down = true;
+
   sf::Vector2f draw_position = sf::Vector2f(
       50, 10 + built_in_blocks_tab_bar.get_current_tab_body_scroll() * 30.0f);
+
+  // This is the position of the first block.
+  // Initially, the y is 10, if the first block has gone above this, then we
+  // shouldn't allow to scroll down.
+  if (draw_position.y > 10) {
+    // This will be picked in next frame & mouse scroll isn't registered by the
+    // input handler.
+    built_in_blocks_tab_bar.can_scroll_down = false;
+  }
 
   auto currently_selected_tab =
       built_in_blocks_tab_bar.get_currently_selected_tab();
@@ -832,6 +844,12 @@ void Editor::_render_block_spawner_tab() {
     if (draw_position.y > tab_world.top + tab_world.height) {
       break;
     }
+  }
+
+  // The bottom part of the last block has entered our view.
+  // Now, we shouldn't allow to scroll up.
+  if (draw_position.y < tab_world.top + tab_world.height) {
+    built_in_blocks_tab_bar.can_scroll_up = false;
   }
 
   window.setView(window.getDefaultView());
