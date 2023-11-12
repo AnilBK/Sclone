@@ -96,7 +96,9 @@ int TabBar::get_current_tab_body_scroll() {
 }
 
 void TabBar::_add_scroll_value_to_current_tab(int p_delta) {
-  tab_bar_scroll_value.at(currently_selected_tab) += p_delta;
+  if ((p_delta < 0 && can_scroll_up) || (p_delta > 0 && can_scroll_down)) {
+    tab_bar_scroll_value.at(currently_selected_tab) += p_delta;
+  }
 }
 
 void TabBar::_render_title() { tab_container.Render(); }

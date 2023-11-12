@@ -42,6 +42,8 @@ private:
 public:
   TabBarStatus render_status = TabBarStatus::SHOW_ALL;
 
+  bool can_scroll_up = true, can_scroll_down = true;
+
   TabBar(sf::Vector2f position, sf::Vector2f size);
 
   void set_pos(sf::Vector2f pos);
