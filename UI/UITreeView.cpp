@@ -87,16 +87,13 @@ void UITreeView::handle_inputs(sf::Event event) {
         constexpr int OFFSET = 15;
         sf::FloatRect view_rect = {list_view.getCenter(), list_view.getSize()};
 
-        bool first_item_went_below_the_bottom =
-            (view_rect.top + view_rect.height / 2.0) < pos.y + OFFSET + 25;
+        bool first_item_went_above_top_pos =
+            (view_rect.top - view_rect.height / 2.0) < pos.y - OFFSET;
 
-        bool last_item_went_above_the_top =
-            (view_rect.top - view_rect.height / 2.0) >
-            pos.y + size.y - OFFSET * 2 - 10 - 25;
-        // 10 padding of the inner child. 25 because that's probably
-        // size of a button.
+        bool last_item_went_below_bottom_pos =
+            (view_rect.top + view_rect.height / 2.0) > pos.y + size.y - OFFSET;
 
-        if (first_item_went_below_the_bottom || last_item_went_above_the_top) {
+        if (first_item_went_above_top_pos || last_item_went_below_bottom_pos) {
           // Revert back the scroll.
           list_view.move(0, +event.mouseWheel.delta * 5);
         }
