@@ -102,7 +102,7 @@ private:
 
   /// @brief The blocks found in different tabs, that helps to create new blocks
   /// in the editor.
-  std::vector<Block> editor_blocks;
+  std::map<BLOCKS_TAB_NAME, std::vector<Block>> editor_blocks;
 
   struct ListItemSpritePair {
     int list_item_id;

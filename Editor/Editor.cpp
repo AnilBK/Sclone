@@ -676,8 +676,8 @@ void Editor::spawn_and_bind_editor_blocks() {
     Block block;
     fn_ptr(&block);
 
-    // Add the block to the editor.
-    editor_blocks.push_back(block);
+    // Add the block to the corresponding tab in the editor.
+    editor_blocks[block.TabItBelongsToName].push_back(block);
 
     // Get the string that uniquely identifies the block and bind that string
     // with the function that generated it in the first place.
@@ -691,8 +691,6 @@ void Editor::spawn_and_bind_editor_blocks() {
   // The advantage of this lambda is we don't need to manually register the
   // functions. In this way, we create a block for the editor and use that
   // oppurtunity to register it as well.
-
-  editor_blocks.reserve(35);
 
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_program_started);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_sprite_clicked);
@@ -740,6 +738,15 @@ void Editor::spawn_and_bind_editor_blocks() {
 
   if (DEBUG_BLOCK_SPAWN_BIND_STATS) {
     std::cout << "\n[Done]Creating Editor Blocks:\n\n";
+    std::cout << "TAB_CONTROL count : "
+              << editor_blocks[BLOCKS_TAB_NAME::TAB_CONTROL].size() << "\n";
+    std::cout << "TAB_DRAW_PRIMITIVES count : "
+              << editor_blocks[BLOCKS_TAB_NAME::TAB_DRAW_PRIMITIVES].size()
+              << "\n";
+    std::cout << "TAB_MOTION count : "
+              << editor_blocks[BLOCKS_TAB_NAME::TAB_MOTION].size() << "\n";
+    std::cout << "TAB_VARIABLES count : "
+              << editor_blocks[BLOCKS_TAB_NAME::TAB_VARIABLES].size() << "\n";
   }
 }
 
@@ -810,18 +817,14 @@ void Editor::_render_block_spawner_tab() {
     built_in_blocks_tab_bar.can_scroll_down = false;
   }
 
-  auto currently_selected_tab =
-      built_in_blocks_tab_bar.get_currently_selected_tab();
+  auto currently_selected_tab = static_cast<BLOCKS_TAB_NAME>(
+      built_in_blocks_tab_bar.get_currently_selected_tab());
 
   bool is_any_block_being_dragged = script_editor.is_any_block_dragging();
   bool can_spawn_editor_block = !is_any_block_being_dragged && tab_body_clicked;
 
   // These are editor blocks which are for spawning new blocks.
-  for (auto &block : editor_blocks) {
-    if (block.TabItBelongsToName != currently_selected_tab) {
-      continue;
-    }
-
+  for (auto &block : editor_blocks[currently_selected_tab]) {
     block.set_position(draw_position);
     block.Render();
 
