@@ -105,6 +105,11 @@ float str_to_float(const std::string &str, float default_value) {
 
   return default_value;
 }
+
+float range_to_percent(float p_min, float p_max, float p_value) {
+  return 100 * (p_value - p_min) / (p_max - p_min);
+}
+
 } // namespace MATH_UTILITIES
 
 namespace BLOCK_UTILITIES {

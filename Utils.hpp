@@ -33,6 +33,8 @@ namespace MATH_UTILITIES {
 
 [[nodiscard]] float str_to_float(const std::string &str,
                                  float default_value = 1.0f);
+
+[[nodiscard]] float range_to_percent(float p_min, float p_max, float p_value);
 } // namespace MATH_UTILITIES
 
 namespace BLOCK_UTILITIES {
