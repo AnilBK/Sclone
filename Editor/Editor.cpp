@@ -1,4 +1,5 @@
 #include "Editor.hpp"
+#include "../FileSystemUtils.hpp"
 #include "../Nodes/CircleShapeNode.hpp"
 #include "../Nodes/RectangleShapeNode.hpp"
 #include "../Nodes/SpriteNode.hpp"
@@ -118,8 +119,10 @@ void Editor::_update_sprite_texure() {
     return;
   }
 
-  RETURN_IF_STRING_HAS_SPACE(sprite_texture_name.get_text(),
-                             "Texture file name should not contain space.")
+  /*
+    RETURN_IF_STRING_HAS_SPACE(sprite_texture_name.get_text(),
+                               "Texture file name should not contain space.")
+  */
 
   auto texture_ref = load_texture(sprite_texture_name.get_text());
   if (!texture_ref) {
@@ -127,6 +130,11 @@ void Editor::_update_sprite_texure() {
   }
 
   selected_sprite->texture = sprite_texture_name.get_text();
+
+  // Don't show the full path of the image, as the load button next to its
+  // overflows. So, we just display the image file name.
+  sprite_texture_name.set_text(FileSystemUtils::_image_file_name_from_full_path(
+      sprite_texture_name.get_text()));
 
 #define OBJECT_IS(T)                                                           \
   auto casted = dynamic_cast<T *>(selected_sprite->node.get())
@@ -175,7 +183,8 @@ void Editor::select_sprite_by_id(int id) {
       Cache.selected_sprite_ptr = &sprite;
       sprite_name.set_text(sprite.name);
       sprite_pos.set_text(_position_to_string(sprite.position));
-      sprite_texture_name.set_text(sprite.texture);
+      sprite_texture_name.set_text(
+          FileSystemUtils::_image_file_name_from_full_path(sprite.texture));
       sprite_layer_value_input.set_text(std::to_string(sprite.layer));
       _highlight_btn_in_list(sprite.id);
       // _refresh_layout();
