@@ -40,10 +40,15 @@
 		</Build>
 		<Compiler>
 			<Add option="-Wall" />
+			<Add option="-DUSE_WIN32_FILE_PICKER" />
 			<Add directory="C:/SFML-2.6.0/include" />
 			<Add directory="D:/Program Files (x86)/boost_1_83_0" />
 		</Compiler>
 		<Linker>
+			<Add library="user32" />
+			<Add library="gdi32" />
+			<Add library="kernel32" />
+			<Add library="comdlg32" />
 			<Add library="D:/Program Files (x86)/boost_1_83_0/stage/lib/libboost_filesystem-mgw8-mt-d-x64-1_83.a" />
 			<Add directory="C:/SFML-2.6.0/lib" />
 			<Add directory="D:/Program Files (x86)/boost_1_83_0/stage/lib" />
@@ -75,6 +80,8 @@
 		<Unit filename="Editor/TransformGizmo2D.hpp" />
 		<Unit filename="Editor/Windows/FilePickerWindow.cpp" />
 		<Unit filename="Editor/Windows/FilePickerWindow.hpp" />
+		<Unit filename="Editor/Windows/FilePickerWindowWin32.cpp" />
+		<Unit filename="Editor/Windows/FilePickerWindowWin32.hpp" />
 		<Unit filename="Editor/Windows/GlobalAlertWindow.cpp" />
 		<Unit filename="Editor/Windows/GlobalAlertWindow.hpp" />
 		<Unit filename="FileSystemUtils.cpp" />

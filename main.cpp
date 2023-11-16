@@ -108,7 +108,11 @@ int main() {
     // window. We can just draw a rect with label as well.
     MainAlert.MainLoop();
 
+#ifndef USE_WIN32_FILE_PICKER
+    // Custom BOOST based file picker needs to be updated, whereas win32 based
+    // file picker doesn't.
     file_picker.MainLoop();
+#endif
   }
 
   return 0;

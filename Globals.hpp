@@ -1,7 +1,12 @@
 #ifndef GLOBALS_HPP
 #define GLOBALS_HPP
 
+#ifdef USE_WIN32_FILE_PICKER
+#include "Editor/Windows/FilePickerWindowWin32.hpp"
+#else
 #include "Editor/Windows/FilePickerWindow.hpp"
+#endif
+
 #include <SFML/Graphics.hpp>
 #include <functional>
 #include <iostream>
@@ -61,7 +66,11 @@ constexpr bool DEBUG_BLOCK_SPAWN_STATS = false;
 
 inline sf::View *editor_view;
 
+#ifdef USE_WIN32_FILE_PICKER
+inline FilePickerWindowWin32 file_picker;
+#else
 inline FilePickerWindow file_picker;
+#endif
 
 [[nodiscard]] static inline sf::Vector2f
 get_mouse_position(const sf::RenderWindow &p_window) {
