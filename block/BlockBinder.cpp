@@ -1,8 +1,8 @@
 #include "BlockBinder.hpp"
 
 void BlockBinder::bind_function(
-    const std::string bind_string,
-    const block_generator_fn_ptr fn_that_returns_the_block) {
+    const std::string &bind_string,
+    const block_generator_fn_ptr &fn_that_returns_the_block) {
   for (const auto &b_block : bound_blocks) {
     auto b_bind_string = b_block.first;
     ERR_CRASH_IF(b_bind_string == bind_string,

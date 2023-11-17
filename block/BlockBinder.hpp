@@ -23,8 +23,8 @@ public:
    * the 'block' returned by that function. We use this identifiers to query the
    * function at runtime.
    */
-  void bind_function(const std::string bind_string,
-                     const block_generator_fn_ptr fn_that_returns_the_block);
+  void bind_function(const std::string &bind_string,
+                     const block_generator_fn_ptr &fn_that_returns_the_block);
 
   /// @brief Return the function pointer bound with the given string.
   /// @param query The string to search for.

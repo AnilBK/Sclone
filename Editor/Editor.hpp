@@ -199,7 +199,7 @@ private:
     // When the file picker window is closed, get the filename of the image
     // selected in that window, and update the texture of currently selected
     // Node.
-    file_picker.file_selected_callback = [&](std::string file_name) {
+    file_picker.file_selected_callback = [&](const std::string &file_name) {
       sprite_texture_name.set_text(file_name);
       _update_sprite_texure();
     };

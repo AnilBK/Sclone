@@ -29,10 +29,8 @@
 namespace sf {
 ////////////////////////////////////////////////////////////
 RoundedRectangleShape::RoundedRectangleShape(const Vector2f &size, float radius,
-                                             unsigned int cornerPointCount) {
-  mySize = size;
-  myRadius = radius;
-  myCornerPointCount = cornerPointCount;
+                                             unsigned int cornerPointCount)
+    : mySize(size), myRadius(radius), myCornerPointCount(cornerPointCount) {
   update();
 }
 

@@ -50,7 +50,7 @@ public:
 
   void set_size(sf::Vector2f size);
 
-  void add_tab(std::string tab_name);
+  void add_tab(const std::string &tab_name);
 
   void select_tab(std::size_t new_tab_id);
 

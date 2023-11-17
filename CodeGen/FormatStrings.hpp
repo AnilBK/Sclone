@@ -44,6 +44,6 @@ void _apply_transformation(std::string &original_string);
 /// + ""
 /// @param code The input code to be transformed.
 /// @return String containing the code which ready to be written to cpp.
-std::string formatted_string_to_code(std::string code);
+std::string formatted_string_to_code(const std::string &code);
 
 } // namespace fStrings

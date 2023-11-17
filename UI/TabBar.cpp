@@ -20,7 +20,7 @@ TabBar::TabBar(sf::Vector2f position, sf::Vector2f size) {
   tab_container.setPosition(position);
 }
 
-void TabBar::add_tab(std::string tab_name) {
+void TabBar::add_tab(const std::string &tab_name) {
   auto current_btn_index = tab_bar_buttons.size();
   std::function<void()> select_it = [this, current_btn_index]() {
     select_tab(current_btn_index);

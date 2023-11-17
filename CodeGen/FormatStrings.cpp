@@ -80,7 +80,7 @@ void _apply_transformation(std::string &original_string) {
   original_string.append("\"");
 }
 
-std::string formatted_string_to_code(std::string code) {
+std::string formatted_string_to_code(const std::string &code) {
   auto string = code;
   _apply_transformation(string);
   return string;
