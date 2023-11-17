@@ -60,7 +60,7 @@ Button::Button(const std::string &btn_text, sf::Vector2f pos,
 
   set_outline_thickness(2.0F);
   rectangle.setOutlineColor(sf::Color(171, 146, 191));
-  rectangle.setFillColor(sf::Color::Transparent);
+  rectangle.setFillColor(default_fill_color);
   rectangle.setOrigin(sf::Vector2f(0.0F, 0.0F));
 
   text_align = p_text_align;
@@ -76,6 +76,23 @@ Button::Button(const std::string &btn_text, sf::Vector2f pos,
 }
 
 void Button::Render() {
+  // TODO : Optimize this.
+  sf::Color render_color = default_fill_color;
+
+  if (pressed) {
+    render_color = pressed_fill_color;
+  }
+
+  if (mouse_over) {
+    render_color = sf::Color{
+        static_cast<sf::Uint8>(render_color.r * 0.9),
+        static_cast<sf::Uint8>(render_color.g * 0.9),
+        static_cast<sf::Uint8>(render_color.b * 0.9),
+    };
+  }
+
+  rectangle.setFillColor(render_color);
+
   window.draw(rectangle);
   window.draw(text);
 }
