@@ -1,7 +1,10 @@
 #ifndef FILESYSTEMUTILS_HPP
 #define FILESYSTEMUTILS_HPP
 
+#ifndef USE_WIN32_FILE_PICKER
 #include <boost/filesystem.hpp>
+#endif
+
 #include <string>
 #include <vector>
 

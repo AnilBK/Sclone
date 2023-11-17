@@ -18,6 +18,7 @@ std::string _image_file_name_from_full_path(const std::string &p_path) {
 std::vector<std::string> get_image_file_names_list() {
   std::vector<std::string> file_names;
 
+#ifndef USE_WIN32_FILE_PICKER
   namespace fs = boost::filesystem;
 
   try {
@@ -35,6 +36,7 @@ std::vector<std::string> get_image_file_names_list() {
   } catch (const fs::filesystem_error &ex) {
     std::cerr << "Error: " << ex.what() << std::endl;
   }
+#endif
 
   return file_names;
 }
