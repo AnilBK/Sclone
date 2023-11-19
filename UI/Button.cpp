@@ -51,8 +51,16 @@ void Button::set_outline_thickness(float p_thickness) {
   rectangle.setOutlineThickness(p_thickness);
 }
 
-Button::Button(const std::string &btn_text, sf::Vector2f pos,
-               TEXT_ALIGN p_text_align) {
+void Button::set_text_align(TEXT_ALIGN p_text_align) {
+  text_align = p_text_align;
+
+  if (text_align == TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT) {
+    auto text_size = text.getGlobalBounds().getSize() + sf::Vector2f(10, 10);
+    set_button_size(text_size);
+  }
+}
+
+Button::Button(const std::string &btn_text) {
   text.setFont(button_font);
   text.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
   text.setString(btn_text);
@@ -63,16 +71,9 @@ Button::Button(const std::string &btn_text, sf::Vector2f pos,
   rectangle.setFillColor(default_fill_color);
   rectangle.setOrigin(sf::Vector2f(0.0F, 0.0F));
 
-  text_align = p_text_align;
-
-  if (text_align == TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT) {
-    auto text_size = text.getGlobalBounds().getSize() + sf::Vector2f(10, 10);
-    set_button_size(text_size);
-  } else {
-    set_button_size({130.0F, 30.0F});
-  }
-
-  setPosition(pos);
+  set_button_size({130.0F, 30.0F});
+  set_text_align(TEXT_ALIGN::LEFT);
+  setPosition(sf::Vector2f(0.0F, 0.0F));
 }
 
 void Button::Render() {

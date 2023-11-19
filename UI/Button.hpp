@@ -36,9 +36,9 @@ public:
 
   void set_outline_thickness(float p_thickness);
 
-  Button(const std::string &btn_text,
-         sf::Vector2f pos = sf::Vector2f(0.0f, 0.0f),
-         TEXT_ALIGN p_text_align = TEXT_ALIGN::LEFT);
+  void set_text_align(TEXT_ALIGN p_text_align);
+
+  Button(const std::string &btn_text);
 
   void Render() override;
 

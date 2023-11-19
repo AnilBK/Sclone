@@ -26,12 +26,12 @@ void TabBar::add_tab(const std::string &tab_name) {
     select_tab(current_btn_index);
   };
 
-  std::shared_ptr<Button> btn(
-      new Button(tab_name, sf::Vector2f(), TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT));
+  std::shared_ptr<Button> btn(new Button(tab_name));
   btn->clicked_callback = select_it;
   btn->default_fill_color = btn_default_fill_color;
   btn->pressed_fill_color = btn_selected_fill_color;
   btn->set_outline_thickness(0);
+  btn->set_text_align(TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT);
 
   tab_bar_buttons.push_back(btn);
   tab_container.add_child(*tab_bar_buttons.back());
