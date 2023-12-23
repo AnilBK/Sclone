@@ -17,6 +17,8 @@ private:
   bool mouse_over = false;
   bool pressed = false;
 
+  void reposition();
+
 public:
   bool clicked = false;
   TEXT_ALIGN text_align;

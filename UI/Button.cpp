@@ -5,11 +5,7 @@
 
 void Button::set_text(std::string &str) { text.setString(str); }
 
-sf::Vector2f Button::getPosition() { return rectangle.getPosition(); }
-
-void Button::setPosition(sf::Vector2f pos) {
-  rectangle.setPosition(pos);
-
+void Button::reposition() {
   auto rectangle_centre =
       getPosition() + (rectangle.getGlobalBounds().getSize() / 2.f);
 
@@ -29,6 +25,13 @@ void Button::setPosition(sf::Vector2f pos) {
   }
 }
 
+sf::Vector2f Button::getPosition() { return rectangle.getPosition(); }
+
+void Button::setPosition(sf::Vector2f pos) {
+  rectangle.setPosition(pos);
+  reposition();
+}
+
 void Button::set_pressed(bool p_pressed) {
   pressed = p_pressed;
 
@@ -43,6 +46,7 @@ void Button::set_pressed(bool p_pressed) {
 
 void Button::set_button_size(sf::Vector2f new_size) {
   rectangle.setSize(new_size);
+  reposition();
 }
 
 sf::Vector2f Button::rect_size() { return rectangle.getSize(); }
@@ -57,6 +61,8 @@ void Button::set_text_align(TEXT_ALIGN p_text_align) {
   if (text_align == TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT) {
     auto text_size = text.getGlobalBounds().getSize() + sf::Vector2f(10, 10);
     set_button_size(text_size);
+  } else {
+    reposition();
   }
 }
 
