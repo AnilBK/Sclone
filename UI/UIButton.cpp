@@ -100,10 +100,7 @@ void UIButton::handle_inputs(sf::Event event) {
 
 void UIButton::handle_inputs_to(sf::Event event,
                                 sf::RenderWindow &target_window) {
-  auto mouse_pos = get_mouse_position(target_window);
-
-  sf::FloatRect rect{rect_size(), getPosition()};
-  mouse_over = rect.contains((sf::Vector2f)mouse_pos);
+  mouse_over = is_mouse_over(target_window);
 
   if (!mouse_over) {
     return;

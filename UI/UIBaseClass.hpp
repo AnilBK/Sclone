@@ -23,6 +23,13 @@ public:
 
     return isMouseOverRect(sf::FloatRect(position, size));
   }
+
+  bool is_mouse_over(sf::RenderWindow &target_window) {
+    sf::Vector2f size = rect_size();
+    sf::Vector2f position = getPosition();
+
+    return isMouseOverRect(sf::FloatRect(position, size), target_window);
+  }
 };
 
 #endif // UI_BASE_CLASS

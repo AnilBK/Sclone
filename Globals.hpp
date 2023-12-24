@@ -96,6 +96,11 @@ template <class sprite_type> bool isMouseOverSprite(sprite_type *sprite) {
   return rect.contains(get_mouse_position());
 }
 
+[[nodiscard]] static bool isMouseOverRect(const sf::FloatRect rect,
+                                          const sf::RenderWindow &p_window) {
+  return rect.contains(get_mouse_position(p_window));
+}
+
 [[nodiscard]] static inline sf::Vector2f get_mouse_position_wrt_2d_editor() {
   sf::Vector2i pixelPos = sf::Mouse::getPosition(window);
   sf::Vector2f worldPos = window.mapPixelToCoords(pixelPos, *editor_view);
