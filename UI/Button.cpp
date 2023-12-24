@@ -3,7 +3,39 @@
 #include "../Utils.hpp"
 #include <SFML/Graphics.hpp>
 
-void Button::set_text(std::string &str) { text.setString(str); }
+void Button::set_button_size(sf::Vector2f new_size) {
+  rectangle.setSize(new_size);
+  reposition();
+}
+
+void Button::set_pressed(bool p_pressed) {
+  pressed = p_pressed;
+
+  if (pressed) {
+    rectangle.setFillColor(pressed_fill_color);
+    text.setFillColor(sf::Color(0, 136, 204));
+  } else {
+    rectangle.setFillColor(default_fill_color);
+    text.setFillColor(sf::Color::Black);
+  }
+}
+
+void Button::set_outline_thickness(float p_thickness) {
+  rectangle.setOutlineThickness(p_thickness);
+}
+
+void Button::set_text(const std::string &str) { text.setString(str); }
+
+void Button::set_text_align(TEXT_ALIGN p_text_align) {
+  text_align = p_text_align;
+
+  if (text_align == TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT) {
+    auto text_size = text.getGlobalBounds().getSize() + sf::Vector2f(10, 10);
+    set_button_size(text_size);
+  } else {
+    reposition();
+  }
+}
 
 void Button::reposition() {
   auto rectangle_centre =
@@ -32,39 +64,7 @@ void Button::setPosition(sf::Vector2f pos) {
   reposition();
 }
 
-void Button::set_pressed(bool p_pressed) {
-  pressed = p_pressed;
-
-  if (pressed) {
-    rectangle.setFillColor(pressed_fill_color);
-    text.setFillColor(sf::Color(0, 136, 204));
-  } else {
-    rectangle.setFillColor(default_fill_color);
-    text.setFillColor(sf::Color::Black);
-  }
-}
-
-void Button::set_button_size(sf::Vector2f new_size) {
-  rectangle.setSize(new_size);
-  reposition();
-}
-
 sf::Vector2f Button::rect_size() { return rectangle.getSize(); }
-
-void Button::set_outline_thickness(float p_thickness) {
-  rectangle.setOutlineThickness(p_thickness);
-}
-
-void Button::set_text_align(TEXT_ALIGN p_text_align) {
-  text_align = p_text_align;
-
-  if (text_align == TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT) {
-    auto text_size = text.getGlobalBounds().getSize() + sf::Vector2f(10, 10);
-    set_button_size(text_size);
-  } else {
-    reposition();
-  }
-}
 
 Button::Button(const std::string &btn_text) {
   text.setFont(button_font);
@@ -83,12 +83,7 @@ Button::Button(const std::string &btn_text) {
 }
 
 void Button::Render() {
-  // TODO : Optimize this.
-  sf::Color render_color = default_fill_color;
-
-  if (pressed) {
-    render_color = pressed_fill_color;
-  }
+  sf::Color render_color = pressed ? pressed_fill_color : default_fill_color;
 
   if (mouse_over) {
     render_color = sf::Color{

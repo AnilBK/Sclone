@@ -28,7 +28,15 @@ public:
 
   std::function<void()> clicked_callback;
 
+  void set_button_size(sf::Vector2f new_size);
+
   void set_pressed(bool p_pressed);
+
+  void set_outline_thickness(float p_thickness);
+
+  void set_text(const std::string &str);
+
+  void set_text_align(TEXT_ALIGN p_text_align);
 
   sf::Vector2f getPosition() override;
 
@@ -36,19 +44,11 @@ public:
 
   sf::Vector2f rect_size() override;
 
-  void set_outline_thickness(float p_thickness);
-
-  void set_text_align(TEXT_ALIGN p_text_align);
-
   Button(const std::string &btn_text);
 
   void Render() override;
 
-  void set_button_size(sf::Vector2f new_size);
-
   void handle_inputs(sf::Event event) override;
-
-  void set_text(std::string &str);
 };
 
 #endif // BUTTON_HPP
