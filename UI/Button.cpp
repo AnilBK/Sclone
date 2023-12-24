@@ -82,7 +82,21 @@ Button::Button(const std::string &btn_text) {
   setPosition(sf::Vector2f(0.0F, 0.0F));
 }
 
-void Button::Render() {
+void Button::RenderDebug() {
+  sf::RectangleShape debug_shape;
+  debug_shape.setPosition(getPosition());
+  debug_shape.setSize(rect_size());
+  debug_shape.setFillColor(sf::Color::Green);
+  debug_shape.setOutlineThickness(1.0f);
+  debug_shape.setOutlineColor(sf::Color::Black);
+  window.draw(debug_shape);
+}
+
+void Button::Render() { RenderTo(window); }
+
+void Button::handle_inputs(sf::Event event) { handle_inputs_to(event, window); }
+
+void Button::RenderTo(sf::RenderWindow &p_target_window) {
   sf::Color render_color = pressed ? pressed_fill_color : default_fill_color;
 
   if (mouse_over) {
@@ -95,12 +109,13 @@ void Button::Render() {
 
   rectangle.setFillColor(render_color);
 
-  window.draw(rectangle);
-  window.draw(text);
+  p_target_window.draw(rectangle);
+  p_target_window.draw(text);
 }
 
-void Button::handle_inputs(sf::Event event) {
-  mouse_over = is_mouse_over();
+void Button::handle_inputs_to(sf::Event event,
+                              sf::RenderWindow &target_window) {
+  mouse_over = is_mouse_over(target_window);
 
   if (!mouse_over) {
     return;

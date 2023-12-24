@@ -28,6 +28,10 @@ public:
 
   std::function<void()> clicked_callback;
 
+  void deselect() { clicked = false; }
+
+  bool is_clicked() { return clicked; }
+
   void set_button_size(sf::Vector2f new_size);
 
   void set_pressed(bool p_pressed);
@@ -46,9 +50,15 @@ public:
 
   Button(const std::string &btn_text);
 
+  void RenderDebug() override;
+
   void Render() override;
 
+  void RenderTo(sf::RenderWindow &p_target_window);
+
   void handle_inputs(sf::Event event) override;
+
+  void handle_inputs_to(sf::Event event, sf::RenderWindow &target_window);
 };
 
 #endif // BUTTON_HPP
