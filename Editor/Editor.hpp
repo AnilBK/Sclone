@@ -4,9 +4,9 @@
 #include "../CodeGen/CodeGenerator.hpp"
 #include "../Globals.hpp"
 #include "../Nodes/Node.hpp"
+#include "../UI/Button.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/TabBar.hpp"
-#include "../UI/UIButton.hpp"
 #include "../UI/UILabel.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../UI/UISprite.hpp"
@@ -43,16 +43,16 @@ private:
 
   // Inspector.
   UILineInput sprite_name = UILineInput("Cat");
-  // UIButton sprite_visibility = UIButton("Visible"); Not Used At the moment.
+  // Button sprite_visibility = Button("Visible"); Not Used At the moment.
   UILabel sprite_pos = UILabel("Position: X: Y:");
   UILabel sprite_texture = UILabel("Texture:");
   UILineInput sprite_texture_name = UILineInput("cat.png");
-  UIButton sprite_texture_load_btn = UIButton("Load");
+  Button sprite_texture_load_btn = Button("Load");
 
   UILabel sprite_layer_label = UILabel("Layer:");
   UILineInput sprite_layer_value_input = UILineInput("0");
-  UIButton sprite_move_layer_up = UIButton("+");
-  UIButton sprite_move_layer_down = UIButton("-");
+  Button sprite_move_layer_up = Button("+");
+  Button sprite_move_layer_down = Button("-");
 
   HBoxContainer first_line;
   HBoxContainer third_line;
@@ -64,8 +64,8 @@ private:
 
   // 'More' button:
   //    to add more functionalities to a sprite.
-  UIButton show_more_options_btn = UIButton("V");
-  UIButton add_movement_btn = UIButton("Add Movement Script");
+  Button show_more_options_btn = Button("V");
+  Button add_movement_btn = Button("Add Movement Script");
   HBoxContainer show_more_hbox;
 
   sf::Clock frameClock;
@@ -73,7 +73,7 @@ private:
 private:
   // Add new sprite section.
   UILineInput new_sprite_name_input = UILineInput("Sprite");
-  UIButton add_new_sprite_btn = UIButton("+");
+  Button add_new_sprite_btn = Button("+");
 
   HBoxContainer new_sprite_hbox;
 
@@ -85,14 +85,14 @@ private:
   sf::Vector2f tab_pos = sf::Vector2f(700, 0);
   sf::Vector2f tab_size = sf::Vector2f(400, 300);
   TabBar built_in_blocks_tab_bar = TabBar(tab_pos, tab_size);
-  UIButton blocks_tab_bar_collapse_btn = UIButton("V");
+  Button blocks_tab_bar_collapse_btn = Button("V");
 
   // The information and properties tab.
   TabBar info_tab = TabBar(sf::Vector2f(250, 0), sf::Vector2f(335, 300));
 
   PropertiesListUI properties_list_ui = PropertiesListUI(sf::Vector2f(265, 40));
 
-  UIButton build_and_run_btn = UIButton("Play");
+  Button build_and_run_btn = Button("Play");
 
   BlockVisualizer block_visualizer = BlockVisualizer(*this);
 
@@ -236,9 +236,11 @@ public:
     built_in_blocks_tab_bar.set_pos(tab_pos);
     built_in_blocks_tab_bar.set_size(tab_size);
 
-    blocks_tab_bar_collapse_btn.is_flat = false;
     blocks_tab_bar_collapse_btn.setPosition(
         tab_pos - sf::Vector2f(blocks_tab_bar_collapse_btn.rect_size().x, 0));
+
+    // Initially, this button is pressed, so make it green.
+    blocks_tab_bar_collapse_btn.default_fill_color = sf::Color::Green;
 
     blocks_tab_bar_collapse_btn.clicked_callback = [&]() {
       toggle_tab_bar_folding();
@@ -293,17 +295,16 @@ public:
     fourth_line.add_child(sprite_layer_value_input);
     fourth_line.add_child(sprite_move_layer_up);
 
-    show_more_options_btn.is_flat = false;
-    // Disabled at first.
-    show_more_options_btn.button_fill_color = sf::Color(200, 200, 200);
+    show_more_options_btn.default_fill_color = sf::Color(200, 200, 200);
+    show_more_options_btn.pressed_fill_color = sf::Color::Green;
+
     show_more_options_btn.clicked_callback = [&]() {
       if (show_more_options_btn.is_clicked()) {
+        show_more_options_btn.set_pressed(true);
         // Green color, to indicate the button is enabled.
-        show_more_options_btn.button_fill_color = sf::Color::Green;
         _show_more_btn__show_childrens();
       } else {
-        // Gray color,to indicate the button is disabled.
-        show_more_options_btn.button_fill_color = sf::Color(200, 200, 200);
+        show_more_options_btn.set_pressed(false);
         _show_more_btn__hide_childrens();
       }
     };
@@ -322,6 +323,9 @@ public:
     add_node_type_drop_down.setPosition({20, 40});
 
     build_and_run_btn.setPosition(sf::Vector2f(600, 0));
+    build_and_run_btn.set_text_align(TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT);
+    build_and_run_btn.default_fill_color = sf::Color::Green;
+
     std::function<void()> build_and_run_func = [this]() { _build_and_run(); };
     build_and_run_btn.clicked_callback = build_and_run_func;
 

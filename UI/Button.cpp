@@ -70,15 +70,14 @@ Button::Button(const std::string &btn_text) {
   text.setFont(button_font);
   text.setCharacterSize(DEFAULT_TEXT_FONT_SIZE);
   text.setString(btn_text);
-  text.setFillColor(sf::Color(101, 90, 124));
+  text.setFillColor(sf::Color::Black);
 
-  set_outline_thickness(2.0F);
+  set_outline_thickness(0.0F);
   rectangle.setOutlineColor(sf::Color(171, 146, 191));
   rectangle.setFillColor(default_fill_color);
   rectangle.setOrigin(sf::Vector2f(0.0F, 0.0F));
 
-  set_button_size({130.0F, 30.0F});
-  set_text_align(TEXT_ALIGN::LEFT);
+  set_text_align(TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT);
   setPosition(sf::Vector2f(0.0F, 0.0F));
 }
 

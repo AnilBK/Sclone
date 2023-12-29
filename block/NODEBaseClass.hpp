@@ -2,7 +2,7 @@
 #define NODEBASECLASS_HPP
 
 #include "../Globals.hpp"
-#include "../UI/UIButton.hpp"
+#include "../UI/Button.hpp"
 #include "../UI/UIDropDown.hpp"
 #include "../UI/UILabel.hpp"
 #include "../UI/UILineInput.hpp"
@@ -69,14 +69,13 @@ public:
 
 class ButtonNode : public NODEBaseClass {
 protected:
-  UIButton btn;
+  Button btn;
 
 public:
   ButtonNode(const std::string &p_text_str, const std::string &p_bind_str = "")
       : NODEBaseClass(p_text_str, p_bind_str), btn(p_text_str) {
     type = NODE_TYPE::BUTTON;
-    btn.is_flat = false;
-    btn.button_fill_color = sf::Color(192, 195, 198, 255);
+    btn.default_fill_color = sf::Color(192, 195, 198, 255);
   }
 
   sf::Vector2f rect_size() override;

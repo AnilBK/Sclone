@@ -1,7 +1,7 @@
 #ifndef GLOBAL_ALERT_WINDOW
 #define GLOBAL_ALERT_WINDOW
 
-#include "../../UI/UIButton.hpp"
+#include "../../UI/Button.hpp"
 #include <SFML/Graphics.hpp>
 #include <string>
 
@@ -27,7 +27,7 @@ private:
   sf::Font label_font;
 
   sf::Text message_label;
-  UIButton ok_btn = UIButton("Okay");
+  Button ok_btn = Button("Okay");
 
   void Init();
 

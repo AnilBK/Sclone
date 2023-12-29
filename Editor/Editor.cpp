@@ -374,10 +374,10 @@ void Editor::toggle_tab_bar_folding() {
   auto &render_status = built_in_blocks_tab_bar.render_status;
   if (render_status == TabBarStatus::SHOW_ALL) {
     // Gray color,to indicate the button is disabled.
-    blocks_tab_bar_collapse_btn.button_fill_color = sf::Color(200, 200, 200);
+    blocks_tab_bar_collapse_btn.default_fill_color = sf::Color(200, 200, 200);
     render_status = TabBarStatus::SHOW_ONLY_TITLE;
   } else {
-    blocks_tab_bar_collapse_btn.button_fill_color = sf::Color::Green;
+    blocks_tab_bar_collapse_btn.default_fill_color = sf::Color::Green;
     render_status = TabBarStatus::SHOW_ALL;
   }
 }

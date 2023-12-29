@@ -15,6 +15,9 @@ GlobalAlertWindow::GlobalAlertWindow() {
     is_active = false;
     alert_window.close();
   };
+  ok_btn.default_fill_color = sf::Color::Green;
+  ok_btn.set_text_align(TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT);
+  ok_btn.set_outline_thickness(0.0F);
 }
 
 void GlobalAlertWindow::PopupWithMessage(const std::string &message) {
