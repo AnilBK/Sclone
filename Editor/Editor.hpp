@@ -4,9 +4,9 @@
 #include "../CodeGen/CodeGenerator.hpp"
 #include "../Globals.hpp"
 #include "../Nodes/Node.hpp"
-#include "../UI/Button.hpp"
 #include "../UI/Container.hpp"
 #include "../UI/TabBar.hpp"
+#include "../UI/UIButton.hpp"
 #include "../UI/UILabel.hpp"
 #include "../UI/UILineInput.hpp"
 #include "../UI/UISprite.hpp"
@@ -43,16 +43,16 @@ private:
 
   // Inspector.
   UILineInput sprite_name = UILineInput("Cat");
-  // Button sprite_visibility = Button("Visible"); Not Used At the moment.
+  // UIButton sprite_visibility = UIButton("Visible"); Not Used At the moment.
   UILabel sprite_pos = UILabel("Position: X: Y:");
   UILabel sprite_texture = UILabel("Texture:");
   UILineInput sprite_texture_name = UILineInput("cat.png");
-  Button sprite_texture_load_btn = Button("Load");
+  UIButton sprite_texture_load_btn = UIButton("Load");
 
   UILabel sprite_layer_label = UILabel("Layer:");
   UILineInput sprite_layer_value_input = UILineInput("0");
-  Button sprite_move_layer_up = Button("+");
-  Button sprite_move_layer_down = Button("-");
+  UIButton sprite_move_layer_up = UIButton("+");
+  UIButton sprite_move_layer_down = UIButton("-");
 
   HBoxContainer first_line;
   HBoxContainer third_line;
@@ -64,8 +64,8 @@ private:
 
   // 'More' button:
   //    to add more functionalities to a sprite.
-  Button show_more_options_btn = Button("V");
-  Button add_movement_btn = Button("Add Movement Script");
+  UIButton show_more_options_btn = UIButton("V");
+  UIButton add_movement_btn = UIButton("Add Movement Script");
   HBoxContainer show_more_hbox;
 
   sf::Clock frameClock;
@@ -73,7 +73,7 @@ private:
 private:
   // Add new sprite section.
   UILineInput new_sprite_name_input = UILineInput("Sprite");
-  Button add_new_sprite_btn = Button("+");
+  UIButton add_new_sprite_btn = UIButton("+");
 
   HBoxContainer new_sprite_hbox;
 
@@ -85,14 +85,14 @@ private:
   sf::Vector2f tab_pos = sf::Vector2f(700, 0);
   sf::Vector2f tab_size = sf::Vector2f(400, 300);
   TabBar built_in_blocks_tab_bar = TabBar(tab_pos, tab_size);
-  Button blocks_tab_bar_collapse_btn = Button("V");
+  UIButton blocks_tab_bar_collapse_btn = UIButton("V");
 
   // The information and properties tab.
   TabBar info_tab = TabBar(sf::Vector2f(250, 0), sf::Vector2f(335, 300));
 
   PropertiesListUI properties_list_ui = PropertiesListUI(sf::Vector2f(265, 40));
 
-  Button build_and_run_btn = Button("Play");
+  UIButton build_and_run_btn = UIButton("Play");
 
   BlockVisualizer block_visualizer = BlockVisualizer(*this);
 

@@ -2,8 +2,8 @@
 #define UITREEVIEW_H
 
 #include "../Globals.hpp"
-#include "Button.hpp"
 #include "Container.hpp"
+#include "UIButton.hpp"
 #include <functional>
 #include <memory>
 #include <optional>
@@ -13,7 +13,7 @@ class UITreeView {
 
   struct tree_item {
     int id;
-    std::shared_ptr<Button> item;
+    std::shared_ptr<UIButton> item;
   };
 
   VBoxContainer list_parent;

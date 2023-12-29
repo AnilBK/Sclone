@@ -1,180 +1,178 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
 <CodeBlocks_project_file>
-	<FileVersion major="1" minor="6" />
-	<Project>
-		<Option title="Sclone V2" />
-		<Option pch_mode="2" />
-		<Option compiler="gcc" />
-		<Build>
-			<Target title="Debug">
-				<Option output="bin/Debug/Sclone V2" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-g" />
-					<Add option="-DUSE_WIN32_FILE_PICKER" />
-				</Compiler>
-				<Linker>
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="kernel32" />
-					<Add library="comdlg32" />
-					<Add library="sfml-graphics-d" />
-					<Add library="sfml-window-d" />
-					<Add library="sfml-system-d" />
-				</Linker>
-			</Target>
-			<Target title="Release">
-				<Option output="bin/Release/Sclone V2" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-O2" />
-					<Add option="-DUSE_WIN32_FILE_PICKER" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add library="user32" />
-					<Add library="gdi32" />
-					<Add library="kernel32" />
-					<Add library="comdlg32" />
-					<Add library="sfml-graphics" />
-					<Add library="sfml-window" />
-					<Add library="sfml-system" />
-				</Linker>
-			</Target>
-			<Target title="Debug-BOOST">
-				<Option output="bin/Debug/Sclone V2" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-g" />
-					<Add directory="D:/Program Files (x86)/boost_1_83_0" />
-				</Compiler>
-				<Linker>
-					<Add library="sfml-graphics-d" />
-					<Add library="sfml-window-d" />
-					<Add library="sfml-system-d" />
-					<Add library="D:/Program Files (x86)/boost_1_83_0/stage/lib/libboost_filesystem-mgw8-mt-d-x64-1_83.a" />
-					<Add directory="D:/Program Files (x86)/boost_1_83_0/stage/lib" />
-				</Linker>
-			</Target>
-			<Target title="Release-BOOST">
-				<Option output="bin/Release/Sclone V2" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
-				<Option type="1" />
-				<Option compiler="gcc" />
-				<Compiler>
-					<Add option="-O2" />
-					<Add directory="D:/Program Files (x86)/boost_1_83_0" />
-				</Compiler>
-				<Linker>
-					<Add option="-s" />
-					<Add library="sfml-graphics" />
-					<Add library="sfml-window" />
-					<Add library="sfml-system" />
-					<Add library="D:/Program Files (x86)/boost_1_83_0/stage/lib/libboost_filesystem-mgw8-mt-d-x64-1_83.a" />
-					<Add directory="D:/Program Files (x86)/boost_1_83_0/stage/lib" />
-				</Linker>
-			</Target>
-		</Build>
-		<Compiler>
-			<Add option="-Wall" />
-			<Add directory="C:/SFML-2.6.0/include" />
-		</Compiler>
-		<Linker>
-			<Add directory="C:/SFML-2.6.0/lib" />
-		</Linker>
-		<Unit filename="BuiltInBlocks.hpp" />
-		<Unit filename="CodeGen/CodeGenerator.cpp" />
-		<Unit filename="CodeGen/CodeGenerator.hpp" />
-		<Unit filename="CodeGen/FormatStrings.cpp" />
-		<Unit filename="CodeGen/FormatStrings.hpp" />
-		<Unit filename="CodeGen/OutputCodeCallbacks.hpp" />
-		<Unit filename="Core/GenerateBindingsCode.hpp" />
-		<Unit filename="Core/GlobalPropertyBindings.hpp" />
-		<Unit filename="Core/Object.cpp" />
-		<Unit filename="Core/Object.hpp" />
-		<Unit filename="Core/RegisteredTypes.hpp" />
-		<Unit filename="Editor/BlockVisualizer.cpp" />
-		<Unit filename="Editor/BlockVisualizer.hpp" />
-		<Unit filename="Editor/Editor.cpp" />
-		<Unit filename="Editor/Editor.hpp" />
-		<Unit filename="Editor/EditorSprite.hpp" />
-		<Unit filename="Editor/PropertiesListUI.cpp" />
-		<Unit filename="Editor/PropertiesListUI.hpp" />
-		<Unit filename="Editor/RadiusGizmoPlugin.cpp" />
-		<Unit filename="Editor/RadiusGizmoPlugin.hpp" />
-		<Unit filename="Editor/Script.hpp" />
-		<Unit filename="Editor/ScriptEditor.cpp" />
-		<Unit filename="Editor/ScriptEditor.hpp" />
-		<Unit filename="Editor/TransformGizmo2D.cpp" />
-		<Unit filename="Editor/TransformGizmo2D.hpp" />
-		<Unit filename="Editor/Windows/FilePickerWindow.cpp">
-			<Option target="Debug-BOOST" />
-			<Option target="Release-BOOST" />
-		</Unit>
-		<Unit filename="Editor/Windows/FilePickerWindow.hpp">
-			<Option target="Debug-BOOST" />
-			<Option target="Release-BOOST" />
-		</Unit>
-		<Unit filename="Editor/Windows/FilePickerWindowWin32.cpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="Editor/Windows/FilePickerWindowWin32.hpp">
-			<Option target="Debug" />
-			<Option target="Release" />
-		</Unit>
-		<Unit filename="Editor/Windows/GlobalAlertWindow.cpp" />
-		<Unit filename="Editor/Windows/GlobalAlertWindow.hpp" />
-		<Unit filename="FileSystemUtils.cpp" />
-		<Unit filename="FileSystemUtils.hpp" />
-		<Unit filename="Globals.hpp" />
-		<Unit filename="Nodes/CircleShapeNode.cpp" />
-		<Unit filename="Nodes/CircleShapeNode.hpp" />
-		<Unit filename="Nodes/Node.cpp" />
-		<Unit filename="Nodes/Node.hpp" />
-		<Unit filename="Nodes/RectangleShapeNode.cpp" />
-		<Unit filename="Nodes/RectangleShapeNode.hpp" />
-		<Unit filename="Nodes/SpriteNode.cpp" />
-		<Unit filename="Nodes/SpriteNode.hpp" />
-		<Unit filename="UI/Button.cpp" />
-		<Unit filename="UI/Button.hpp" />
-		<Unit filename="UI/Container.cpp" />
-		<Unit filename="UI/Container.hpp" />
-		<Unit filename="UI/TabBar.cpp" />
-		<Unit filename="UI/TabBar.hpp" />
-		<Unit filename="UI/UIBaseClass.hpp" />
-		<Unit filename="UI/UIButton.cpp" />
-		<Unit filename="UI/UIButton.hpp" />
-		<Unit filename="UI/UIDropDown.cpp" />
-		<Unit filename="UI/UIDropDown.hpp" />
-		<Unit filename="UI/UILabel.cpp" />
-		<Unit filename="UI/UILabel.hpp" />
-		<Unit filename="UI/UILineInput.cpp" />
-		<Unit filename="UI/UILineInput.hpp" />
-		<Unit filename="UI/UISprite.cpp" />
-		<Unit filename="UI/UISprite.hpp" />
-		<Unit filename="UI/UITreeView.cpp" />
-		<Unit filename="UI/UITreeView.h" />
-		<Unit filename="Utils.cpp" />
-		<Unit filename="Utils.hpp" />
-		<Unit filename="block/Block.cpp" />
-		<Unit filename="block/Block.hpp" />
-		<Unit filename="block/BlockBinder.cpp" />
-		<Unit filename="block/BlockBinder.hpp" />
-		<Unit filename="block/BuiltInBlocks.cpp" />
-		<Unit filename="block/BuiltInBlocks.hpp" />
-		<Unit filename="block/NODEBaseClass.cpp" />
-		<Unit filename="block/NODEBaseClass.hpp" />
-		<Unit filename="main.cpp" />
-		<Unit filename="thirdparty/RoundedRectangleShape.cpp" />
-		<Extensions>
-			<lib_finder disable_auto="1" />
-		</Extensions>
-	</Project>
+  <FileVersion major="1" minor="6" />
+  <Project>
+    <Option title="Sclone V2" />
+    <Option pch_mode="2" />
+    <Option compiler="gcc" />
+    <Build>
+      <Target title="Debug">
+        <Option output="bin/Debug/Sclone V2" prefix_auto="1" extension_auto="1" />
+        <Option object_output="obj/Debug/" />
+        <Option type="1" />
+        <Option compiler="gcc" />
+        <Compiler>
+          <Add option="-g" />
+          <Add option="-DUSE_WIN32_FILE_PICKER" />
+        </Compiler>
+        <Linker>
+          <Add library="user32" />
+          <Add library="gdi32" />
+          <Add library="kernel32" />
+          <Add library="comdlg32" />
+          <Add library="sfml-graphics-d" />
+          <Add library="sfml-window-d" />
+          <Add library="sfml-system-d" />
+        </Linker>
+      </Target>
+      <Target title="Release">
+        <Option output="bin/Release/Sclone V2" prefix_auto="1" extension_auto="1" />
+        <Option object_output="obj/Release/" />
+        <Option type="1" />
+        <Option compiler="gcc" />
+        <Compiler>
+          <Add option="-O2" />
+          <Add option="-DUSE_WIN32_FILE_PICKER" />
+        </Compiler>
+        <Linker>
+          <Add option="-s" />
+          <Add library="user32" />
+          <Add library="gdi32" />
+          <Add library="kernel32" />
+          <Add library="comdlg32" />
+          <Add library="sfml-graphics" />
+          <Add library="sfml-window" />
+          <Add library="sfml-system" />
+        </Linker>
+      </Target>
+      <Target title="Debug-BOOST">
+        <Option output="bin/Debug/Sclone V2" prefix_auto="1" extension_auto="1" />
+        <Option object_output="obj/Debug/" />
+        <Option type="1" />
+        <Option compiler="gcc" />
+        <Compiler>
+          <Add option="-g" />
+          <Add directory="D:/Program Files (x86)/boost_1_83_0" />
+        </Compiler>
+        <Linker>
+          <Add library="sfml-graphics-d" />
+          <Add library="sfml-window-d" />
+          <Add library="sfml-system-d" />
+          <Add library="D:/Program Files (x86)/boost_1_83_0/stage/lib/libboost_filesystem-mgw8-mt-d-x64-1_83.a" />
+          <Add directory="D:/Program Files (x86)/boost_1_83_0/stage/lib" />
+        </Linker>
+      </Target>
+      <Target title="Release-BOOST">
+        <Option output="bin/Release/Sclone V2" prefix_auto="1" extension_auto="1" />
+        <Option object_output="obj/Release/" />
+        <Option type="1" />
+        <Option compiler="gcc" />
+        <Compiler>
+          <Add option="-O2" />
+          <Add directory="D:/Program Files (x86)/boost_1_83_0" />
+        </Compiler>
+        <Linker>
+          <Add option="-s" />
+          <Add library="sfml-graphics" />
+          <Add library="sfml-window" />
+          <Add library="sfml-system" />
+          <Add library="D:/Program Files (x86)/boost_1_83_0/stage/lib/libboost_filesystem-mgw8-mt-d-x64-1_83.a" />
+          <Add directory="D:/Program Files (x86)/boost_1_83_0/stage/lib" />
+        </Linker>
+      </Target>
+    </Build>
+    <Compiler>
+      <Add option="-Wall" />
+      <Add directory="C:/SFML-2.6.0/include" />
+    </Compiler>
+    <Linker>
+      <Add directory="C:/SFML-2.6.0/lib" />
+    </Linker>
+    <Unit filename="BuiltInBlocks.hpp" />
+    <Unit filename="CodeGen/CodeGenerator.cpp" />
+    <Unit filename="CodeGen/CodeGenerator.hpp" />
+    <Unit filename="CodeGen/FormatStrings.cpp" />
+    <Unit filename="CodeGen/FormatStrings.hpp" />
+    <Unit filename="CodeGen/OutputCodeCallbacks.hpp" />
+    <Unit filename="Core/GenerateBindingsCode.hpp" />
+    <Unit filename="Core/GlobalPropertyBindings.hpp" />
+    <Unit filename="Core/Object.cpp" />
+    <Unit filename="Core/Object.hpp" />
+    <Unit filename="Core/RegisteredTypes.hpp" />
+    <Unit filename="Editor/BlockVisualizer.cpp" />
+    <Unit filename="Editor/BlockVisualizer.hpp" />
+    <Unit filename="Editor/Editor.cpp" />
+    <Unit filename="Editor/Editor.hpp" />
+    <Unit filename="Editor/EditorSprite.hpp" />
+    <Unit filename="Editor/PropertiesListUI.cpp" />
+    <Unit filename="Editor/PropertiesListUI.hpp" />
+    <Unit filename="Editor/RadiusGizmoPlugin.cpp" />
+    <Unit filename="Editor/RadiusGizmoPlugin.hpp" />
+    <Unit filename="Editor/Script.hpp" />
+    <Unit filename="Editor/ScriptEditor.cpp" />
+    <Unit filename="Editor/ScriptEditor.hpp" />
+    <Unit filename="Editor/TransformGizmo2D.cpp" />
+    <Unit filename="Editor/TransformGizmo2D.hpp" />
+    <Unit filename="Editor/Windows/FilePickerWindow.cpp">
+      <Option target="Debug-BOOST" />
+      <Option target="Release-BOOST" />
+    </Unit>
+    <Unit filename="Editor/Windows/FilePickerWindow.hpp">
+      <Option target="Debug-BOOST" />
+      <Option target="Release-BOOST" />
+    </Unit>
+    <Unit filename="Editor/Windows/FilePickerWindowWin32.cpp">
+      <Option target="Debug" />
+      <Option target="Release" />
+    </Unit>
+    <Unit filename="Editor/Windows/FilePickerWindowWin32.hpp">
+      <Option target="Debug" />
+      <Option target="Release" />
+    </Unit>
+    <Unit filename="Editor/Windows/GlobalAlertWindow.cpp" />
+    <Unit filename="Editor/Windows/GlobalAlertWindow.hpp" />
+    <Unit filename="FileSystemUtils.cpp" />
+    <Unit filename="FileSystemUtils.hpp" />
+    <Unit filename="Globals.hpp" />
+    <Unit filename="Nodes/CircleShapeNode.cpp" />
+    <Unit filename="Nodes/CircleShapeNode.hpp" />
+    <Unit filename="Nodes/Node.cpp" />
+    <Unit filename="Nodes/Node.hpp" />
+    <Unit filename="Nodes/RectangleShapeNode.cpp" />
+    <Unit filename="Nodes/RectangleShapeNode.hpp" />
+    <Unit filename="Nodes/SpriteNode.cpp" />
+    <Unit filename="Nodes/SpriteNode.hpp" />
+    <Unit filename="UI/UIButton.cpp" />
+    <Unit filename="UI/UIButton.hpp" />
+    <Unit filename="UI/Container.cpp" />
+    <Unit filename="UI/Container.hpp" />
+    <Unit filename="UI/TabBar.cpp" />
+    <Unit filename="UI/TabBar.hpp" />
+    <Unit filename="UI/UIBaseClass.hpp" />
+    <Unit filename="UI/UIDropDown.cpp" />
+    <Unit filename="UI/UIDropDown.hpp" />
+    <Unit filename="UI/UILabel.cpp" />
+    <Unit filename="UI/UILabel.hpp" />
+    <Unit filename="UI/UILineInput.cpp" />
+    <Unit filename="UI/UILineInput.hpp" />
+    <Unit filename="UI/UISprite.cpp" />
+    <Unit filename="UI/UISprite.hpp" />
+    <Unit filename="UI/UITreeView.cpp" />
+    <Unit filename="UI/UITreeView.h" />
+    <Unit filename="Utils.cpp" />
+    <Unit filename="Utils.hpp" />
+    <Unit filename="block/Block.cpp" />
+    <Unit filename="block/Block.hpp" />
+    <Unit filename="block/BlockBinder.cpp" />
+    <Unit filename="block/BlockBinder.hpp" />
+    <Unit filename="block/BuiltInBlocks.cpp" />
+    <Unit filename="block/BuiltInBlocks.hpp" />
+    <Unit filename="block/NODEBaseClass.cpp" />
+    <Unit filename="block/NODEBaseClass.hpp" />
+    <Unit filename="main.cpp" />
+    <Unit filename="thirdparty/RoundedRectangleShape.cpp" />
+    <Extensions>
+      <lib_finder disable_auto="1" />
+    </Extensions>
+  </Project>
 </CodeBlocks_project_file>

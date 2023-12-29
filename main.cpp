@@ -4,7 +4,7 @@
 #include "Globals.hpp"
 #include "Nodes/Node.hpp"
 #include "Nodes/SpriteNode.hpp"
-#include "UI/Button.hpp"
+#include "UI/UIButton.hpp"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 

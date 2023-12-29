@@ -2,8 +2,8 @@
 #define TAB_BAR_HPP
 
 #include "../Globals.hpp"
-#include "Button.hpp"
 #include "Container.hpp"
+#include "UIButton.hpp"
 #include <SFML/Graphics.hpp>
 #include <memory>
 
@@ -26,7 +26,7 @@ private:
   sf::Vector2f tab_bg_pos, tab_bg_size;
   sf::RectangleShape tab_bg;
 
-  std::vector<std::shared_ptr<Button>> tab_bar_buttons;
+  std::vector<std::shared_ptr<UIButton>> tab_bar_buttons;
   HBoxContainer tab_container;
 
   std::size_t currently_selected_tab = 0;

@@ -2,7 +2,7 @@
 #define NODEBASECLASS_HPP
 
 #include "../Globals.hpp"
-#include "../UI/Button.hpp"
+#include "../UI/UIButton.hpp"
 #include "../UI/UIDropDown.hpp"
 #include "../UI/UILabel.hpp"
 #include "../UI/UILineInput.hpp"
@@ -69,7 +69,7 @@ public:
 
 class ButtonNode : public NODEBaseClass {
 protected:
-  Button btn;
+  UIButton btn;
 
 public:
   ButtonNode(const std::string &p_text_str, const std::string &p_bind_str = "")
