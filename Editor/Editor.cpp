@@ -53,28 +53,23 @@ void Editor::_show_more_btn__hide_childrens() {
 }
 
 void Editor::_add_movement_script() {
-  std::cout << "Adding Movement Script to Player.\n";
-
   auto *script = selected_script_ptr();
   if (script == nullptr) {
     return;
   }
-
-  // TODO???Use 'namespace BUILT_IN_BLOCKS' functions.
-  // as the blocks will be spawned in the editor.
-  // As of now, we have a bool to indicate if we want to add a movement
-  // script,which will be write movement script when exporting the code. We
-  // have no way to change the params of the movement script in the editor at
-  // the moment with this hacky way.
 
   auto *sprite = selected_sprite_ptr();
   if (sprite == nullptr) {
     return;
   }
 
+  // As of now, we have a bool to indicate if we want to add a movement
+  // script, which will write movement script when exporting the code. We
+  // have no way to change the params of the movement script in the editor at
+  // the moment with this hacky way.
   sprite->add_movement_script = true;
 
-  std::cout << "[Done]Adding Movement Script to Player.\n";
+  ALERT("Added Movement Script.");
 }
 
 /////////////////////////////////////////////////////////////
