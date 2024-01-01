@@ -33,10 +33,16 @@ void GlobalAlertWindow::PopupWithMessage(const std::string &message) {
   ok_btn.setPosition(sf::Vector2f(20, message_label.getPosition().y +
                                           message_label_size.y + 20));
 
+  // Window width should contain the message label, which is the widest UIItem
+  // in this window, with 20 right padding.
+  float final_w = message_label.getPosition().x + message_label_size.x + 20;
+
+  // Window height should contain the ok_btn, as the ok_btn is the last UIItem
+  // in the window, with 20 pixels remaining below as padding.
   float final_h = ok_btn.getPosition().y + ok_btn.rect_size().y + 20;
 
-  alert_window.create(sf::VideoMode(message_label_size.x, final_h),
-                      "Important Message!!", sf::Style::Titlebar);
+  alert_window.create(sf::VideoMode(final_w, final_h), "Important Message!!",
+                      sf::Style::Titlebar);
 
   alert_window.setVisible(true);
   alert_window.requestFocus();
