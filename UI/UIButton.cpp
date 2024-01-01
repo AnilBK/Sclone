@@ -1,6 +1,6 @@
+#include "UIButton.hpp"
 #include "../Globals.hpp"
 #include "../Utils.hpp"
-#include "UIButton.hpp"
 #include <SFML/Graphics.hpp>
 
 void UIButton::set_button_size(sf::Vector2f new_size) {
@@ -60,6 +60,14 @@ void UIButton::reposition() {
 sf::Vector2f UIButton::getPosition() { return rectangle.getPosition(); }
 
 void UIButton::setPosition(sf::Vector2f pos) {
+  auto diff = getPosition() - pos;
+  if (MATH_UTILITIES::is_approx_zero(diff)) {
+    // Setting same pos as previous, so no need to set up the pos again and
+    // reposition all the children.
+    // TODO ?? Maybe the Container class should do it as well.
+    return;
+  }
+
   rectangle.setPosition(pos);
   reposition();
 }
