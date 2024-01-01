@@ -56,6 +56,12 @@ std::string format_string_with_precision(T value, int precision) {
 } // namespace STRING_UTILITIES
 
 namespace MATH_UTILITIES {
+
+bool is_approx_zero(sf::Vector2f p_vec) {
+  constexpr float EPSILON = 0.00001f;
+  return (fabs(p_vec.x) < EPSILON) && (fabs(p_vec.y) < EPSILON);
+}
+
 sf::Vector2f round(const sf::Vector2f p_vec) {
   return sf::Vector2f{std::round(p_vec.x), std::round(p_vec.y)};
 }

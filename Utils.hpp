@@ -18,6 +18,9 @@ std::string format_string_with_precision(T value, int precision);
 } // namespace STRING_UTILITIES
 
 namespace MATH_UTILITIES {
+
+[[nodiscard]] bool is_approx_zero(sf::Vector2f p_vec);
+
 [[nodiscard]] sf::Vector2f round(const sf::Vector2f p_vec);
 
 [[nodiscard]] sf::FloatRect merge_rects(sf::FloatRect rect,
