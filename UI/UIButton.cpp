@@ -11,12 +11,7 @@ void UIButton::set_button_size(sf::Vector2f new_size) {
 void UIButton::set_pressed(bool p_pressed) {
   pressed = p_pressed;
 
-  if (pressed) {
-    rectangle.setFillColor(pressed_fill_color);
-  } else {
-    rectangle.setFillColor(default_fill_color);
-  }
-
+  rectangle.setFillColor(pressed ? pressed_fill_color : default_fill_color);
   text.setFillColor(sf::Color::Black);
 }
 
