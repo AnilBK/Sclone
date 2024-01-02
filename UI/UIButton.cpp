@@ -13,11 +13,11 @@ void UIButton::set_pressed(bool p_pressed) {
 
   if (pressed) {
     rectangle.setFillColor(pressed_fill_color);
-    text.setFillColor(sf::Color(0, 136, 204));
   } else {
     rectangle.setFillColor(default_fill_color);
-    text.setFillColor(sf::Color::Black);
   }
+
+  text.setFillColor(sf::Color::Black);
 }
 
 void UIButton::set_outline_thickness(float p_thickness) {
