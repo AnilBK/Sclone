@@ -19,7 +19,10 @@ void UIButton::set_outline_thickness(float p_thickness) {
   rectangle.setOutlineThickness(p_thickness);
 }
 
-void UIButton::set_text(const std::string &str) { text.setString(str); }
+void UIButton::set_text(const std::string &str) {
+  text.setString(str);
+  reposition();
+}
 
 void UIButton::set_text_align(TEXT_ALIGN p_text_align) {
   text_align = p_text_align;
