@@ -51,7 +51,7 @@ void UIButton::reposition() {
   text.setPosition(rectangle_centre - text_centre);
 
   if (text_align == TEXT_ALIGN::LEFT) {
-    text.setPosition({getPosition().x + 10.0F, text.getPosition().y});
+    text.setPosition({getPosition().x + left_padding, text.getPosition().y});
   }
 }
 

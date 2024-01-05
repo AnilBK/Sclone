@@ -23,6 +23,8 @@ public:
   bool clicked = false;
   TEXT_ALIGN text_align;
 
+  float left_padding = 10.0F;
+
   sf::Color default_fill_color = sf::Color(150, 144, 80),
             pressed_fill_color = sf::Color(206, 207, 131);
 
