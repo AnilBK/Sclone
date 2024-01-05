@@ -28,6 +28,8 @@ public:
 
   std::function<void()> clicked_callback;
 
+  std::string get_text() { return text.getString(); }
+
   void deselect() { clicked = false; }
 
   bool is_clicked() { return clicked; }
