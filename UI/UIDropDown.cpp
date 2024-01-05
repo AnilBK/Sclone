@@ -1,118 +1,109 @@
 #include "UIDropDown.hpp"
 
-void UIDropDown::add_item(const std::string &str) {
-  std::shared_ptr<UILabel> btn(new UILabel(str));
-  // Cache the size of the largest label.
-  auto text_size = btn->rect_size();
-  largest_item_rect_size.x = std::max(largest_item_rect_size.x, text_size.x);
-  largest_item_rect_size.y = std::max(largest_item_rect_size.y, text_size.y);
+void UIDropDown::_add_item(const std::string &str) {
+  auto ui_btn = std::make_shared<UIButton>(str);
+  ui_btn.get()->left_padding = 0.0F;
+  ui_btn.get()->set_text_align(TEXT_ALIGN::LEFT);
 
-  items.push_back(btn);
+  list_item_buttons.push_back(ui_btn);
+  drop_down_vbox.add_child(*ui_btn.get());
 }
 
-void UIDropDown::add_items(std::initializer_list<std::string> options) {
+void UIDropDown::_add_items(std::initializer_list<std::string> options) {
   for (const auto &option : options) {
-    add_item(option);
+    _add_item(option);
   }
-}
 
-void UIDropDown::_compute_maximum_size_for_items() {
-  // Use a temporary label to get the max size of the characters.
-  UILabel l("ABCDE");
-  auto max_char_height = UILabel::max_character_size(l.get_label());
-  largest_item_rect_size.y = max_char_height;
-  largest_item_rect_size.y += 3; // Padding.
+  for (const auto &list_item_btn : list_item_buttons) {
+    auto btn_size = list_item_btn.get()->rect_size();
+    largest_item_rect_size.x = std::max(largest_item_rect_size.x, btn_size.x);
+    largest_item_rect_size.y = std::max(largest_item_rect_size.y, btn_size.y);
+  }
+
+  // Set the size of all the buttons in the DropDown to the largest button width
+  // & height.
+  for (auto &list_item_btn : list_item_buttons) {
+    list_item_btn.get()->set_button_size(largest_item_rect_size);
+  }
+
+  base_button.set_button_size(largest_item_rect_size);
 }
 
 sf::Vector2f UIDropDown::getPosition() { return position; }
 
 void UIDropDown::setPosition(sf::Vector2f pos) {
   position = pos;
-  base_label.setPosition(position);
 
-  sf::Vector2f draw_position = position;
-  const auto content_size = rect_size();
-
-  for (auto &item : items) {
-    draw_position.y += content_size.y;
-    item->setPosition(draw_position);
-  }
+  base_button.setPosition(pos);
+  drop_down_vbox.setPosition(pos + sf::Vector2f(0, largest_item_rect_size.y));
 }
 
-sf::Vector2f UIDropDown::rect_size() { return largest_item_rect_size; }
+sf::Vector2f UIDropDown::rect_size() {
+  return largest_item_rect_size;
+  // Same thing.
+  // return base_button.rect_size();
+}
 
 void UIDropDown::handle_inputs(sf::Event event) {
-  // Only the top rect.
-  mouse_over = is_mouse_over();
+  base_button.handle_inputs(event);
 
-  if (event.type == sf::Event::MouseButtonReleased &&
-      event.mouseButton.button == sf::Mouse::Left) {
-    if (mouse_over) {
-      dropdown_clicked = !dropdown_clicked;
-    } else {
-      // Clicked anywhere.
-      // So just select that item.
-      if (mouse_over_index != -1) {
-        select_item(mouse_over_index);
-        mouse_over_index = -1;
-        dropdown_clicked = false;
-      }
-    }
-  }
+  if (expanded) {
+    drop_down_vbox.handle_inputs(event);
 
-  if (dropdown_clicked) {
-    // Find the item over which the mouse is being hovered.
-    const auto content_size = rect_size();
-    for (std::size_t i = 0; i < items.size(); i++) {
-      sf::FloatRect bounds{items.at(i)->getPosition(), content_size};
-      if (isCachedMousePosOverRect(bounds)) {
-        mouse_over_index = i;
-        break;
-      }
+    bool was_left_clicked = event.type == sf::Event::MouseButtonReleased &&
+                            event.mouseButton.button == sf::Mouse::Left;
+
+    // Don't consume if we pressed in the base_button, as, if base_button was
+    // pressed, then base_button handles the toggling of this DropDown on click
+    // and we shouldn't toggle again. All this workaround because we don't
+    // consume inputs.
+
+    if (was_left_clicked && expanded && !base_button.is_mouse_over()) {
+      // If any dropdown button was pressed above then expanded = false;
+      // Still expanded means, we pressed outside the drop_down_vbox.
+      toggle_fold();
     }
   }
 }
 
-void UIDropDown::draw_item(std::size_t idx) {
-  auto &label_ref = items.at(idx);
-
-  sf::RectangleShape bg_rect;
-  bg_rect.setPosition(label_ref->getPosition());
-  bg_rect.setSize(rect_size());
-  bg_rect.setFillColor(sf::Color::Green);
-  bg_rect.setOutlineThickness(1.0);
-  bg_rect.setOutlineColor(sf::Color::Black);
-
-  if (idx == mouse_over_index) {
-    bg_rect.setOutlineThickness(2.5);
-    bg_rect.setOutlineColor(sf::Color(31, 142, 255, 255));
-  }
-
-  window.draw(bg_rect);
-  label_ref->Render();
-}
-
-void UIDropDown::_draw_base_button() {
-  sf::RectangleShape bg_rect;
-  bg_rect.setPosition(position);
-  bg_rect.setSize(rect_size());
-  bg_rect.setFillColor(sf::Color::Green);
-  bg_rect.setOutlineThickness(2.5);
-  bg_rect.setOutlineColor(sf::Color(31, 142, 255, 255));
-  window.draw(bg_rect);
-
-  base_label.Render();
-}
+void UIDropDown::_draw_base_button() { base_button.Render(); }
 
 void UIDropDown::_draw_whole_list() {
-  for (std::size_t i = 0; i < items.size(); i++) {
-    draw_item(i);
+  if (expanded) {
+    drop_down_vbox.Render();
   }
 }
 
 void UIDropDown::Render() {
-  _draw_base_button();
-  if (dropdown_clicked) {
-    _draw_whole_list();
+  if (!callbacks_registered) {
+    register_callbacks();
   }
+
+  _draw_base_button();
+  _draw_whole_list();
+}
+
+void UIDropDown::register_callbacks() {
+  // Serious BUG ???
+  // Setting all these callbacks in constructors work for
+  // UIDropdown object, but when those objects are used as member of
+  // DropDownNode of NodeBaseClass, then these std::functions act differently.
+  // For e.g : when the toggle_fold() is called, it doesn't change the
+  // 'expanded' value, instead the expanded value is changed to 97 or some
+  // random number.
+
+  base_button.clicked_callback = [this]() { toggle_fold(); };
+
+  // These functions could be set up in _add_item, but because of the bug
+  // explained above, we have to do it here.
+  std::size_t c = 0;
+  for (auto &list_item_btn : list_item_buttons) {
+    auto idx = c;
+    list_item_btn.get()->clicked_callback = [&, idx]() {
+      select_item_and_fold(idx);
+    };
+    c++;
+  }
+
+  callbacks_registered = true;
 }
