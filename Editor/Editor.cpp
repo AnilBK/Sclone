@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <memory>
+#include <thread>
 
 int Editor::_selected_sprite_layer() {
   int layer_value = std::stoi(sprite_layer_value_input.text.get_text());
@@ -865,5 +866,11 @@ void Editor::_render_block_spawner_tab() {
 void Editor::_build_and_run() {
   CodeGenerator CodeGen(*this);
   CodeGen.generate_code();
-  std::system("GeneratedOutput\\build_and_execute.bat");
+
+  std::thread build_thread([]() {
+    std::system("GeneratedOutput\\build_and_execute.bat");
+  });
+
+  // Detach the thread so it runs independently.
+  build_thread.detach();
 }
