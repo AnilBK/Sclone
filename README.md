@@ -12,6 +12,10 @@ The blocks above generates the following code:
 
 https://user-images.githubusercontent.com/17506575/213915911-f2efe65d-d225-42d7-bced-051c3bf254ff.mp4
 
+# Editor Controls:
+    'H' to toggle panning mode.
+    Mouse Scroll to zoom in/out.
+
 # Moving Sprite in Editor:
 
     'G' to enter sprite dragging mode & drag sprite relative to mouse.

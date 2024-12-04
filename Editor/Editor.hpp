@@ -40,6 +40,7 @@ private:
   sf::RectangleShape grid_x_axis_line, grid_y_axis_line, world2d_border;
   /// @brief Mouse tracking for world panning.
   sf::Vector2f old_mouse_pos, new_mouse_pos;
+  bool is_panning = false;
 
   // Inspector.
   UILineInput sprite_name = UILineInput("Cat");

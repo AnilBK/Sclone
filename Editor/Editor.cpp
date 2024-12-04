@@ -382,6 +382,15 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
   if (isMouseOverRect(world)) {
     if (event.type == sf::Event::MouseWheelMoved) {
       view.zoom(1.0f - event.mouseWheel.delta / 10.0f);
+    } else if (event.type == sf::Event::KeyReleased) {
+      if (event.key.code == sf::Keyboard::H) {
+        is_panning = !is_panning;
+        if (is_panning) {
+          setCursor(sf::Cursor::SizeAll);
+        } else {
+          setCursor(sf::Cursor::Arrow);
+        }
+      }
     }
 
     if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -427,7 +436,7 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
       }
     }
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
+    if (is_panning) {
       auto delta = old_mouse_pos - new_mouse_pos;
       view.move(delta);
     }
