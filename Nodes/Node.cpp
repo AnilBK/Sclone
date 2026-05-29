@@ -14,9 +14,8 @@ sf::FloatRect Node::getGlobalBounds() {
 
 sf::FloatRect Node::get_global_bounds() { return sf::FloatRect(); }
 
-void Node::addChild(Node *n) {
-  //   n->setOrigin(getPosition());
-  m_children.push_back(n);
+void Node::addChild(std::unique_ptr<Node> n) {
+  m_children.push_back(std::move(n));
 }
 
 void Node::draw(sf::RenderTarget &target, sf::RenderStates states) const {

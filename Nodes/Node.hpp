@@ -6,7 +6,7 @@
 
 class Node : public sf::Drawable, public sf::Transformable {
 public:
-  void addChild(Node *n);
+  void addChild(std::unique_ptr<Node> n);
 
   virtual sf::FloatRect getGlobalBounds();
 
@@ -18,7 +18,7 @@ public:
   virtual void draw(sf::RenderTarget &target, sf::RenderStates states) const;
 
 private:
-  std::vector<Node *> m_children;
+  std::vector<std::unique_ptr<Node>> m_children;
 };
 
 #endif // NODE_HPP
