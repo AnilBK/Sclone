@@ -23,8 +23,7 @@
                                                                                \
   using PropertyVariant = std::variant<ColorType, FloatType>;                  \
                                                                                \
-  inline static std::vector<PropertyVariant> *bounded_properties =             \
-      new std::vector<PropertyVariant>();                                      \
+  inline static std::vector<PropertyVariant> bounded_properties;               \
                                                                                \
   static void bind();
 
@@ -36,7 +35,7 @@
     property.params_count = RegisteredTypes::get_params_count<T>();            \
     property.getter_fn = GET;                                                  \
     property.setter_fn = SET;                                                  \
-    bounded_properties->push_back(property);                                   \
+    bounded_properties.push_back(property);                                    \
   }
 
 #endif // GENERATE_BINDINGS_CODE_HPP

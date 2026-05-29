@@ -14,16 +14,10 @@ public:
     RectangleShapeNode::bind();
   }
 
-  ~GlobalPropertyBindings() {
-    delete CircleShapeNode::bounded_properties;
-    delete RectangleShapeNode::bounded_properties;
-  }
-
   template <class T>
   static std::vector<typename T::PropertyVariant> *bounded_properties() {
-    // We assume the properties are bounded to a vector named
-    // 'bounded_properties' in the respective classes.
-    return T::bounded_properties;
+    // Return address of the statically allocated vector
+    return &T::bounded_properties;
   }
 };
 
