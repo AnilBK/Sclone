@@ -126,7 +126,7 @@ isCachedMousePosOverRect(const sf::FloatRect rect) {
   // We don't need that.
 }
 
-static void setCursor(sf::Cursor::Type cursor_type) {
+inline void setCursor(sf::Cursor::Type cursor_type) {
   sf::Cursor cursor;
   if (cursor.loadFromSystem(cursor_type)) {
     window.setMouseCursor(cursor);
