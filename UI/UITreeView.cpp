@@ -53,13 +53,12 @@ std::optional<int> UITreeView::index_of_item_with_id(int p_id) {
 
 int UITreeView::add_item(const std::string &p_text,
                          std::function<void()> clicked_callback) {
-
-  std::shared_ptr<UIButton> btn(new UIButton(p_text));
-  btn.get()->default_fill_color = list_bg.getFillColor();
-  btn.get()->set_pressed(false);
-  btn.get()->clicked_callback = clicked_callback;
-  btn.get()->set_text_align(TEXT_ALIGN::LEFT);
-  btn.get()->set_button_size({130.0F, 30.0F});
+  auto btn = std::make_shared<UIButton>(p_text);
+  btn->default_fill_color = list_bg.getFillColor();
+  btn->set_pressed(false);
+  btn->clicked_callback = clicked_callback;
+  btn->set_text_align(TEXT_ALIGN::LEFT);
+  btn->set_button_size({130.0F, 30.0F});
 
   // Assign an unique id to every tree_item.
   tree_item button;

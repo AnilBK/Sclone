@@ -79,7 +79,7 @@ void Editor::_add_movement_script() {
 
 std::optional<sf::Texture *>
 Editor::load_texture(const std::string &texture_file) {
-  std::shared_ptr<sf::Texture> texture(new sf::Texture());
+  auto texture = std::make_shared<sf::Texture>();
   if (!texture.get()->loadFromFile(texture_file)) {
     SHOW_ERROR_ALERT("Error while loading texture.");
     return std::nullopt;
@@ -318,8 +318,8 @@ void Editor::add_new_sprite(const std::string &p_sprite_name) {
   user_added_sprites.push_back(e_spr);
   update_sorted_sprites_cache();
 
-  std::shared_ptr<Script> script(new Script());
-  script.get()->attached_to_sprite_id = new_working_id;
+  auto script = std::make_shared<Script>();
+  script->attached_to_sprite_id = new_working_id;
   scripts.push_back(script);
 
   _total_sprites_added++;
@@ -876,9 +876,8 @@ void Editor::_build_and_run() {
   CodeGenerator CodeGen(*this);
   CodeGen.generate_code();
 
-  std::thread build_thread([]() {
-    std::system("GeneratedOutput\\build_and_execute.bat");
-  });
+  std::thread build_thread(
+      []() { std::system("GeneratedOutput\\build_and_execute.bat"); });
 
   // Detach the thread so it runs independently.
   build_thread.detach();

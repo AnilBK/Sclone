@@ -22,12 +22,12 @@ void FilePickerWindow::_generate_thumbnail_objects() {
   sf::Vector2f pos = sf::Vector2f(50, 50);
 
   for (const auto &file : file_names) {
-    std::shared_ptr<sf::Texture> texture(new sf::Texture());
-    if (!texture.get()->loadFromFile(file)) {
+    auto texture = std::make_shared<sf::Texture>();
+    if (!texture->loadFromFile(file)) {
       continue;
     }
 
-    texture.get()->setSmooth(true);
+    texture->setSmooth(true);
     textures.emplace_back(texture);
 
     sf::Sprite sprite;

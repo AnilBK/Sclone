@@ -26,7 +26,7 @@ void TabBar::add_tab(const std::string &tab_name) {
     select_tab(current_btn_index);
   };
 
-  std::shared_ptr<UIButton> btn(new UIButton(tab_name));
+  auto btn = std::make_shared<UIButton>(tab_name);
   btn->clicked_callback = select_it;
   btn->default_fill_color = btn_default_fill_color;
   btn->pressed_fill_color = btn_selected_fill_color;
