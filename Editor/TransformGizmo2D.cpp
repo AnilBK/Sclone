@@ -16,7 +16,6 @@ void TransformGizmo2D::setTargetEditorSprite(
 
 void TransformGizmo2D::_undrag_gizmos() {
   if (is_gizmo_selected()) {
-
     if (radius_gizmo.is_selected()) {
       radius_gizmo.DeselectGizmo();
     }
@@ -26,7 +25,62 @@ void TransformGizmo2D::_undrag_gizmos() {
   }
 }
 
+bool TransformGizmo2D::handle_inputs(const sf::Event &event) {
+  if (!target_node) {
+    return false;
+  }
+
+  if (event.type == sf::Event::MouseButtonPressed &&
+      event.mouseButton.button == sf::Mouse::Left) {
+    auto mouse_pos = get_mouse_position();
+    auto line_start = target_node->getPosition();
+    const sf::Vector2f gizmo_pick_size = sf::Vector2f(15.0f, 15.0f);
+
+    sf::FloatRect x_rect(line_start + sf::Vector2f(100.0f, 0.0f) -
+                             sf::Vector2f(0.0f, gizmo_pick_size.y * 0.5f),
+                         gizmo_pick_size);
+    sf::FloatRect y_rect(line_start - sf::Vector2f(0.0f, 100.0f) -
+                             gizmo_pick_size * 0.5f,
+                         gizmo_pick_size);
+    sf::FloatRect c_rect(line_start - gizmo_pick_size * 0.5f, gizmo_pick_size);
+    sf::FloatRect br_rect(
+        line_start + (target_node->getGlobalBounds().getSize() * 0.5F) -
+            (gizmo_pick_size * 0.5f),
+        gizmo_pick_size);
+
+    if (x_rect.contains(mouse_pos)) {
+      current_gizmo_state = GIZMO_SELECT_STATE::X;
+      offset.x = 100.f;
+      return true;
+    } else if (y_rect.contains(mouse_pos)) {
+      current_gizmo_state = GIZMO_SELECT_STATE::Y;
+      offset.y = 100.f;
+      return true;
+    } else if (c_rect.contains(mouse_pos)) {
+      current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
+      offset = mouse_pos - target_node->getPosition();
+      return true;
+    } else if (br_rect.contains(mouse_pos)) {
+      current_gizmo_state = GIZMO_SELECT_STATE::SCALE;
+      return true;
+    } else if (radius_gizmo.can_be_selected()) {
+      current_gizmo_state = GIZMO_SELECT_STATE::CUSTOM;
+      radius_gizmo.SelectGizmo();
+      return true;
+    }
+  }
+  return false;
+}
+
 void TransformGizmo2D::_update_gizmo() {
+  if (is_gizmo_selected()) {
+    if (current_gizmo_state == GIZMO_SELECT_STATE::SCALE) {
+      setCursor(sf::Cursor::SizeTopLeftBottomRight);
+    } else {
+      setCursor(sf::Cursor::SizeAll);
+    }
+  }
+
   switch (current_gizmo_state) {
   case GIZMO_SELECT_STATE::X: {
     const sf::Color x_line_color = sf::Color::Red;
@@ -235,9 +289,4 @@ void TransformGizmo2D::_draw_gizmo() {
 void TransformGizmo2D::Render() {
   _draw_gizmo();
   _update_gizmo();
-
-  // Reset the gizmo selection.
-  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-    _undrag_gizmos();
-  }
 }

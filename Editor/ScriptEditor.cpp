@@ -18,11 +18,31 @@ void ScriptEditor::setRect(sf::FloatRect rect) {
 }
 
 void ScriptEditor::handle_panning(sf::Event event) {
-  old_mouse_pos = new_mouse_pos;
-  new_mouse_pos = get_mouse_position();
-
   if (event.type == sf::Event::MouseWheelMoved) {
     view.zoom(1.0f - event.mouseWheel.delta / 10.0f);
+  }
+
+  if (event.type == sf::Event::MouseButtonPressed &&
+      event.mouseButton.button == sf::Mouse::Middle) {
+    is_panning = true;
+    setCursor(sf::Cursor::SizeAll);
+  }
+
+  if (event.type == sf::Event::MouseMoved) {
+    sf::Vector2i current_pixel_pos(event.mouseMove.x, event.mouseMove.y);
+    if (is_panning) {
+      sf::Vector2f old_world =
+          window.mapPixelToCoords(old_mouse_pixel_pos, view);
+      sf::Vector2f new_world = window.mapPixelToCoords(current_pixel_pos, view);
+      view.move(old_world - new_world);
+    }
+    old_mouse_pixel_pos = current_pixel_pos;
+  }
+
+  if (event.type == sf::Event::MouseButtonReleased &&
+      event.mouseButton.button == sf::Mouse::Middle) {
+    is_panning = false;
+    setCursor(sf::Cursor::Arrow);
   }
 
   if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -37,11 +57,6 @@ void ScriptEditor::handle_panning(sf::Event event) {
     view.zoom(0.99f);
   } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
     view.zoom(1.01f);
-  }
-
-  if (sf::Mouse::isButtonPressed(sf::Mouse::Middle)) {
-    auto delta = old_mouse_pos - new_mouse_pos;
-    view.move(delta);
   }
 }
 

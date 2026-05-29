@@ -40,6 +40,8 @@ public:
 
   void setTargetEditorSprite(EditorSprite *p_target_editor_sprite);
 
+  bool handle_inputs(const sf::Event &event);
+
   void Render();
 };
 

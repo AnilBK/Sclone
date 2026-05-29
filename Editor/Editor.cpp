@@ -382,14 +382,24 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
   if (isMouseOverRect(world)) {
     if (event.type == sf::Event::MouseWheelMoved) {
       view.zoom(1.0f - event.mouseWheel.delta / 10.0f);
-    } else if (event.type == sf::Event::KeyReleased) {
-      if (event.key.code == sf::Keyboard::H) {
-        is_panning = !is_panning;
-        if (is_panning) {
-          setCursor(sf::Cursor::SizeAll);
-        } else {
-          setCursor(sf::Cursor::Arrow);
-        }
+    }
+
+    // Middle Mouse to Pan Canvas.
+    if (event.type == sf::Event::MouseButtonPressed &&
+        event.mouseButton.button == sf::Mouse::Middle) {
+      is_panning = true;
+      setCursor(sf::Cursor::SizeAll);
+    }
+
+    // Left Mouse to Pick & Drag.
+    if (event.type == sf::Event::MouseButtonPressed &&
+        event.mouseButton.button == sf::Mouse::Left) {
+      window.setView(view);
+      bool gizmo_handled = gizmo_2D.handle_inputs(event);
+      window.setView(window.getDefaultView());
+
+      if (!gizmo_handled) {
+        _pick_sprite();
       }
     }
 
@@ -401,48 +411,33 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
       view.move(0.f, 5.f);
     } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down)) {
       view.move(0.f, -5.f);
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Add)) {
-      view.zoom(0.99f);
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Subtract)) {
-      view.zoom(1.01f);
-    } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::G)) {
-      gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
-
-      auto mouse_world_pos = window.mapPixelToCoords(
-          static_cast<sf::Vector2i>(get_mouse_position()), view);
-
-      gizmo_2D.offset =
-          mouse_world_pos - selected_sprite_ptr()->get_node()->getPosition();
     }
+  }
 
-    if (gizmo_2D.is_gizmo_selected()) {
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::C)) {
-        gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
-        gizmo_2D.offset = sf::Vector2f();
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
-        gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::X;
-
-        auto mouse_world_pos = window.mapPixelToCoords(
-            static_cast<sf::Vector2i>(get_mouse_position()), view);
-        gizmo_2D.offset.x = mouse_world_pos.x -
-                            selected_sprite_ptr()->get_node()->getPosition().x;
-      } else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
-        gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::Y;
-
-        auto mouse_world_pos = window.mapPixelToCoords(
-            static_cast<sf::Vector2i>(get_mouse_position()), view);
-        gizmo_2D.offset.y = mouse_world_pos.y -
-                            selected_sprite_ptr()->get_node()->getPosition().y;
-      }
-    }
+  // Evaluate smooth panning drag purely in Pixels.
+  // Mapped to World Coords implicitly.
+  if (event.type == sf::Event::MouseMoved) {
+    sf::Vector2i current_pixel_pos(event.mouseMove.x, event.mouseMove.y);
 
     if (is_panning) {
-      auto delta = old_mouse_pos - new_mouse_pos;
-      view.move(delta);
+      sf::Vector2f old_world =
+          window.mapPixelToCoords(old_mouse_pixel_pos, view);
+      sf::Vector2f new_world = window.mapPixelToCoords(current_pixel_pos, view);
+      // 1:1 view dragging.
+      view.move(old_world - new_world);
     }
 
-    if (sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
-      _pick_sprite();
+    old_mouse_pixel_pos = current_pixel_pos;
+  }
+
+  // Release globally so states aren't stuck if the cursor exits the bounds.
+  if (event.type == sf::Event::MouseButtonReleased) {
+    if (event.mouseButton.button == sf::Mouse::Left) {
+      // Mouse Release stops Dragging sprites completely!
+      gizmo_2D._undrag_gizmos();
+    } else if (event.mouseButton.button == sf::Mouse::Middle) {
+      is_panning = false;
+      setCursor(sf::Cursor::Arrow);
     }
   }
 }
@@ -453,9 +448,6 @@ void Editor::_handle_sprite_list_inputs(sf::Event event) {
 }
 
 void Editor::handle_inputs(sf::Event event) {
-  old_mouse_pos = new_mouse_pos;
-  new_mouse_pos = get_mouse_position();
-
   // TODO : Add these checks before handling inputs for different editor
   // sections.
   // if (isMouseOverRect(...)) {
@@ -642,6 +634,11 @@ void Editor::_pick_sprite() {
   for (auto &sprite : Cache.sprites_sorted_by_layers_reverse) {
     if (isMouseOverSprite(sprite->get_node())) {
       select_sprite_by_id(sprite->id);
+
+      // Instantly begin center dragging the sprite after picking it.
+      gizmo_2D.current_gizmo_state = GIZMO_SELECT_STATE::CENTER;
+      gizmo_2D.offset =
+          get_mouse_position() - sprite->get_node()->getPosition();
       break;
     }
   }
@@ -668,10 +665,6 @@ void Editor::Render() {
   // Render UI on top of all.
   _render_ui();
   _render_block_spawner_tab();
-
-  if (gizmo_2D.is_gizmo_selected()) {
-    escape_sprite_dragging_label.Render();
-  }
 
   script_editor.Render();
 }

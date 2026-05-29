@@ -38,8 +38,9 @@ private:
 
   /// @brief The lines that show X-axis and Y-axis inside the 2D world.
   sf::RectangleShape grid_x_axis_line, grid_y_axis_line, world2d_border;
-  /// @brief Mouse tracking for world panning.
-  sf::Vector2f old_mouse_pos, new_mouse_pos;
+
+  sf::Vector2i old_mouse_pixel_pos;
+  
   bool is_panning = false;
 
   // Inspector.
@@ -79,8 +80,6 @@ private:
   HBoxContainer new_sprite_hbox;
 
   TransformGizmo2D gizmo_2D;
-  UILabel escape_sprite_dragging_label =
-      UILabel("Enter Esc to stop dragging sprite.");
 
   // The editor spawn blocks section.
   sf::Vector2f tab_pos = sf::Vector2f(700, 0);
@@ -370,9 +369,6 @@ public:
     world2d_border.setFillColor(sf::Color(153, 195, 180));
     world2d_border.setOutlineColor(sf::Color(71, 71, 71));
     world2d_border.setOutlineThickness(4.0f);
-
-    escape_sprite_dragging_label.setPosition(world.getPosition() +
-                                             sf::Vector2f(10, 5));
 
     // World 2D and Script Editor fills the whole screen.
     auto script_editor_pos = sf::Vector2f(

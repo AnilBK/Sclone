@@ -19,7 +19,8 @@ private:
   sf::FloatRect world;
   sf::RectangleShape border;
 
-  sf::Vector2f old_mouse_pos, new_mouse_pos;
+  sf::Vector2i old_mouse_pixel_pos;
+  bool is_panning = false;
 
   void handle_panning(sf::Event event);
 
