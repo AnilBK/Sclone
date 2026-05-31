@@ -3,6 +3,7 @@
 
 #include "UIBaseClass.hpp"
 #include <SFML/Graphics.hpp>
+#include <string>
 
 inline sf::Font LabelFont;
 
@@ -40,10 +41,13 @@ public:
   UILabel(const std::string &str = "",
           const sf::Vector2f pos = sf::Vector2f(0.0F, 0.0F));
 
-  /// @brief Returns the maximum character size for a given font.
-  /// @param p_text Reference to the text object, whose character size is to be
-  /// calculated.
-  /// @return The maximum size.
+  /// @brief Returns the maximum character height for a given sf::Text.
   static std::size_t max_character_size(sf::Text &p_text);
+
+  /// @brief Returns stable local bounds (top/height driven by full font
+  ///        metrics) regardless of which characters are in the string.
+  ///        Results are cached per (font*, characterSize) pair.
+  static sf::FloatRect get_consistent_local_bounds(const sf::Text &p_text);
 };
-#endif
+
+#endif // UI_LABEL
