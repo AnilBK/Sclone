@@ -20,6 +20,7 @@
 #include "ScriptEditor.hpp"
 #include "TransformGizmo2D.hpp"
 #include "Windows/GlobalAlertWindow.hpp"
+#include "../thirdparty/RoundedRectangleShape.hpp"
 #include <map>
 #include <memory>
 #include <vector>
@@ -37,7 +38,9 @@ private:
   sf::FloatRect world;
 
   /// @brief The lines that show X-axis and Y-axis inside the 2D world.
-  sf::RectangleShape grid_x_axis_line, grid_y_axis_line, world2d_border;
+  sf::RectangleShape grid_x_axis_line, grid_y_axis_line;
+  
+  sf::RoundedRectangleShape world2d_border;
 
   sf::Vector2i old_mouse_pixel_pos;
   
@@ -100,7 +103,7 @@ private:
   /// that identify that block generator function.
   BlockBinder bound_blocks;
 
-  /// @brief The blocks found in different tabs, that helps to create new blocks
+/// @brief The blocks found in different tabs, that helps to create new blocks
   /// in the editor.
   std::map<BLOCKS_TAB_NAME, std::vector<Block>> editor_blocks;
 
@@ -109,16 +112,16 @@ private:
     int sprite_id;
   };
 
-  /// @brief We store pairs of (index assigned to the TreeView
+/// @brief We store pairs of (index assigned to the TreeView
   /// item,sprite_id). In this way we know, which sprite_id is associated with
   /// the TreeView item.
   std::vector<ListItemSpritePair> tree_item_sprite_index_pairs;
 
   UITreeView sprite_list_ui_tree =
-      UITreeView(sf::Vector2f(20, 110), sf::Vector2f(160, 180));
+UITreeView(sf::Vector2f(20, 110), sf::Vector2f(160, 180));
 
   std::optional<int>
-  _get_index_of_btn_related_to_editor_sprite(int p_sprite_id);
+_get_index_of_btn_related_to_editor_sprite(int p_sprite_id);
 
   std::vector<std::shared_ptr<sf::Texture>> textures;
 
@@ -147,6 +150,7 @@ private:
   std::optional<sf::Texture *> load_texture(const std::string &texture_file);
 
   std::string _position_to_string(sf::Vector2f pos);
+  
   void _create_new_sprite();
 
   void _update_sprite_texure();
@@ -175,8 +179,7 @@ private:
 
   void _build_and_run();
 
-  void _on_sprites_translation_update(bool update_translation,
-                                      bool update_scale);
+  void _on_sprites_translation_update(bool update_translation, bool update_scale);
 
   void _init_sprite_list_ui() {
     // Stuffs Related To Add New Sprite Inspector.
@@ -217,7 +220,7 @@ public:
 
     // Sprites sorted by layers (for rendering).
     std::vector<const EditorSprite *> sprites_sorted_by_layers;
-    // Sprites reversely sorted by layers (for picking up inputs).
+// Sprites reversely sorted by layers (for picking up inputs).
     // We may not need this additional reverse cache, we may just iterate the
     // 'sprites_sorted_by_layers' vector in reverse.
     std::vector<const EditorSprite *> sprites_sorted_by_layers_reverse;
@@ -239,8 +242,9 @@ public:
     blocks_tab_bar_collapse_btn.setPosition(
         tab_pos - sf::Vector2f(blocks_tab_bar_collapse_btn.rect_size().x, 0));
 
-    // Initially, this button is pressed, so make it green.
-    blocks_tab_bar_collapse_btn.default_fill_color = sf::Color::Green;
+    // Cute Pastel Mint Green for the open state.
+    blocks_tab_bar_collapse_btn.default_fill_color = sf::Color(170, 236, 170); 
+    blocks_tab_bar_collapse_btn.set_border_radius(6.0F);
 
     blocks_tab_bar_collapse_btn.clicked_callback = [&]() {
       toggle_tab_bar_folding();
@@ -254,6 +258,13 @@ public:
   }
 
   Editor() {
+    const sf::Color pastelMint(170, 236, 170);
+    const sf::Color pastelBlue(174, 198, 207);
+    const sf::Color pastelPink(255, 179, 186);
+    const sf::Color pastelLilac(203, 195, 227);
+    const sf::Color pastelPeach(255, 218, 185);
+    const sf::Color pastelGrey(230, 230, 235);
+    const sf::Color creamWhite(252, 250, 255);
 
     _initialize_built_in_blocks_tab_bar();
 
@@ -262,29 +273,29 @@ public:
     info_tab.select_tab(0);
 
     // Stuffs Related To Sprite Inspector.
-    sprite_texture_name.enter_pressed_callback = [&]() {
-      _update_sprite_texure();
-    };
-
+    sprite_texture_name.enter_pressed_callback = [&]() { _update_sprite_texure(); };
     sprite_name.enter_pressed_callback = [&]() { _update_sprite_name(); };
-
-    sprite_texture_load_btn.clicked_callback = [&]() {
-      _select_image_using_file_picker();
-    };
+    sprite_texture_load_btn.clicked_callback = [&]() { _select_image_using_file_picker(); };
 
     first_line.add_child(sprite_name);
-    // first_line.add_child(sprite_visibility);
 
+    sprite_texture_load_btn.default_fill_color = pastelPeach;
+    sprite_texture_load_btn.set_border_radius(8.0f);
     third_line.add_child(sprite_texture);
     third_line.add_child(sprite_texture_name);
     third_line.add_child(sprite_texture_load_btn);
 
-    sprite_move_layer_up.clicked_callback = [&]() {
-      _increment_sprite_layer();
-    };
-    sprite_move_layer_down.clicked_callback = [&]() {
-      _decrement_sprite_layer();
-    };
+    sprite_move_layer_up.set_button_width(30.0F);
+    sprite_move_layer_up.set_border_radius(10.0F);
+    sprite_move_layer_up.default_fill_color = pastelBlue;
+
+    sprite_move_layer_down.set_button_width(30.0F);
+    sprite_move_layer_down.set_border_radius(10.0F);
+    sprite_move_layer_down.default_fill_color = pastelPink;
+
+    sprite_move_layer_up.clicked_callback = [&]() { _increment_sprite_layer(); };
+    sprite_move_layer_down.clicked_callback = [&]() { _decrement_sprite_layer(); };
+    
     sprite_layer_value_input.enter_pressed_callback = [&]() {
       _set_sprite_layer(_selected_sprite_layer());
       sprite_layer_value_input.line_input_active = false;
@@ -295,13 +306,13 @@ public:
     fourth_line.add_child(sprite_layer_value_input);
     fourth_line.add_child(sprite_move_layer_up);
 
-    show_more_options_btn.default_fill_color = sf::Color(200, 200, 200);
-    show_more_options_btn.pressed_fill_color = sf::Color::Green;
+    show_more_options_btn.default_fill_color = pastelGrey;
+    show_more_options_btn.pressed_fill_color = pastelMint;
+    show_more_options_btn.set_border_radius(10.0f);
 
     show_more_options_btn.clicked_callback = [&]() {
       if (show_more_options_btn.is_clicked()) {
         show_more_options_btn.set_pressed(true);
-        // Green color, to indicate the button is enabled.
         _show_more_btn__show_childrens();
       } else {
         show_more_options_btn.set_pressed(false);
@@ -309,6 +320,8 @@ public:
       }
     };
 
+    add_movement_btn.default_fill_color = pastelLilac;
+    add_movement_btn.set_border_radius(10.0f);
     add_movement_btn.clicked_callback = [&]() { _add_movement_script(); };
 
     show_more_hbox.add_child(show_more_options_btn);
@@ -322,14 +335,19 @@ public:
 
     add_node_type_drop_down.setPosition({20, 40});
 
-    build_and_run_btn.setPosition(sf::Vector2f(600, 0));
+    build_and_run_btn.setPosition(sf::Vector2f(600, 5));
     build_and_run_btn.set_text_align(TEXT_ALIGN::EXPAND_BUTTON_TO_TEXT);
-    build_and_run_btn.default_fill_color = sf::Color::Green;
+    build_and_run_btn.set_border_radius(8.0F);
+    build_and_run_btn.default_fill_color = pastelMint;
+    build_and_run_btn.pressed_fill_color = pastelBlue;
 
     std::function<void()> build_and_run_func = [this]() { _build_and_run(); };
     build_and_run_btn.clicked_callback = build_and_run_func;
 
-    // add_new_sprite("StarFish");
+    add_new_sprite_btn.default_fill_color = pastelMint;
+    add_new_sprite_btn.set_button_width(32.0F);
+    add_new_sprite_btn.set_border_radius(6.0F);
+
     add_new_sprite("Cat");
 
     select_sprite_by_id(0);
@@ -343,7 +361,7 @@ public:
 
     script_editor.script = selected_script_ptr();
 
-    // Set up the 2D world.
+    // Set up the 2D world view.
     world = sf::FloatRect(sf::Vector2f(0, 305), sf::Vector2f(700, 455));
     view = sf::View({0, 0, 1200, 800});
 
@@ -367,8 +385,8 @@ public:
     world2d_border.setPosition(world.getPosition());
     world2d_border.setSize(world.getSize());
     world2d_border.setFillColor(sf::Color(153, 195, 180));
-    world2d_border.setOutlineColor(sf::Color(71, 71, 71));
-    world2d_border.setOutlineThickness(4.0f);
+    world2d_border.setOutlineColor(pastelLilac);
+    world2d_border.setOutlineThickness(6.0f);
 
     // World 2D and Script Editor fills the whole screen.
     auto script_editor_pos = sf::Vector2f(
@@ -386,7 +404,6 @@ public:
   }
 
   void spawn_and_bind_editor_blocks();
-
   void add_block_to_script(Block b);
 
   Script *selected_script_ptr();
@@ -407,7 +424,6 @@ public:
   void _pick_sprite();
 
   void toggle_tab_bar_folding();
-
   void _render_block_spawner_tab();
 
   sf::View *get_world_2d_view_ptr() { return &view; }

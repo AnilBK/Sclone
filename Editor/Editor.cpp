@@ -48,9 +48,9 @@ void Editor::_show_more_btn__hide_childrens() {
   if (show_more_hbox.children.size() < 2) {
     return;
   }
-  // We have a single child only, so remove that.
+// We have a single child only, so remove that.
   show_more_hbox.children.erase(show_more_hbox.children.begin() + 1);
-  // TODO??Disconnect it's signals as well.
+// TODO??Disconnect it's signals as well.
 }
 
 void Editor::_add_movement_script() {
@@ -64,7 +64,7 @@ void Editor::_add_movement_script() {
     return;
   }
 
-  // As of now, we have a bool to indicate if we want to add a movement
+// As of now, we have a bool to indicate if we want to add a movement
   // script, which will write movement script when exporting the code. We
   // have no way to change the params of the movement script in the editor at
   // the moment with this hacky way.
@@ -183,9 +183,9 @@ void Editor::select_sprite_by_id(int id) {
           FileSystemUtils::_image_file_name_from_full_path(sprite.texture));
       sprite_layer_value_input.set_text(std::to_string(sprite.layer));
       _highlight_btn_in_list(sprite.id);
-      // _refresh_layout();
+// _refresh_layout();
 
-      // Undrag if any sprite was being dragged.
+// Undrag if any sprite was being dragged.
       // This is because we use right click to de-drag a block.
       // TODO??Fix that.
       script_editor.reset_dragged_block();
@@ -201,7 +201,7 @@ void Editor::select_sprite_by_id(int id) {
 
 std::optional<int>
 Editor::_get_index_of_btn_related_to_editor_sprite(int p_sprite_id) {
-  // Find the id of UITree item that matches the provided sprite id.
+// Find the id of UITree item that matches the provided sprite id.
   int idx = -1;
   for (const auto &[item_id, sprite_id] : tree_item_sprite_index_pairs) {
     if (sprite_id == p_sprite_id) {
@@ -220,7 +220,7 @@ Editor::_get_index_of_btn_related_to_editor_sprite(int p_sprite_id) {
     return id.value();
   }
 
-  // Should never happen :(.
+// Should never happen :(.
   return {};
 }
 
@@ -232,19 +232,19 @@ void Editor::_highlight_btn_in_list(const int id) {
 }
 
 std::string Editor::get_unique_sprite_name_from(const std::string &name) {
-  // Search the name in the map.
+// Search the name in the map.
   auto it = added_sprite_names.find(name);
   auto found = it != added_sprite_names.end();
 
   if (found) {
-    // That name already exists.
+// That name already exists.
     auto new_count = it->second + 1;
     added_sprite_names[name] = new_count;
 
     auto new_name = name + "_" + std::to_string(new_count);
     return get_unique_sprite_name_from(new_name);
   } else {
-    // No names with that till now. So, register that name.
+// No names with that till now. So, register that name.
     added_sprite_names[name] = 0;
 
     return name;
@@ -281,27 +281,24 @@ void Editor::add_new_sprite(const std::string &p_sprite_name) {
 
   auto texture_ref = load_texture(e_spr.texture);
   if (!texture_ref) {
-    // Should never happen, because we always have "cat" & "fish" textures.
+// Should never happen, because we always have "cat" & "fish" textures.
     return;
   }
 
   std::shared_ptr<Node> n_node;
-
   const auto selection = add_node_type_drop_down.get_text();
 
   if (selection == "CircleShape") {
     sf::CircleShape shape;
     shape.setPosition(e_spr.position);
-    shape.setFillColor(sf::Color::Yellow);
+    shape.setFillColor(sf::Color(255, 218, 185));
     shape.setRadius(100.0F);
-
     n_node = std::make_shared<CircleShapeNode>(shape);
   } else if (selection == "RectangleShape") {
     sf::RectangleShape shape;
     shape.setPosition(e_spr.position);
     shape.setSize(sf::Vector2f(225, 150));
-    shape.setFillColor(sf::Color::Yellow);
-
+    shape.setFillColor(sf::Color(253, 253, 150));
     n_node = std::make_shared<RectangleShapeNode>(shape);
   } else if (selection == "Sprite" || true) {
     sf::Sprite spr;
@@ -309,12 +306,10 @@ void Editor::add_new_sprite(const std::string &p_sprite_name) {
     sf::FloatRect textureSize = spr.getGlobalBounds();
     spr.setOrigin(textureSize.width / 2.0f, textureSize.height / 2.0f);
     spr.setPosition(e_spr.position);
-
     n_node = std::make_shared<SpriteNode>(spr);
   }
 
   e_spr.node = std::move(n_node);
-
   user_added_sprites.push_back(e_spr);
   update_sorted_sprites_cache();
 
@@ -337,7 +332,6 @@ Script *Editor::selected_script_ptr() {
       return script.get();
     }
   }
-
   return nullptr;
 }
 
@@ -345,13 +339,11 @@ EditorSprite *Editor::_selected_sprite_ptr() {
   if (currently_selected_sprite_id == -1) {
     return nullptr;
   }
-
   for (auto &sprite : user_added_sprites) {
     if (sprite.id == currently_selected_sprite_id) {
       return &sprite;
     }
   }
-
   return nullptr;
 }
 
@@ -362,18 +354,18 @@ Script *Editor::get_script_attached_to_editor_sprite(EditorSprite *sprite) {
       return script.get();
     }
   }
-
   return nullptr;
 }
 
 void Editor::toggle_tab_bar_folding() {
   auto &render_status = built_in_blocks_tab_bar.render_status;
   if (render_status == TabBarStatus::SHOW_ALL) {
-    // Gray color,to indicate the button is disabled.
-    blocks_tab_bar_collapse_btn.default_fill_color = sf::Color(200, 200, 200);
+    blocks_tab_bar_collapse_btn.default_fill_color =
+        sf::Color(220, 220, 230); // Soft grey
     render_status = TabBarStatus::SHOW_ONLY_TITLE;
   } else {
-    blocks_tab_bar_collapse_btn.default_fill_color = sf::Color::Green;
+    blocks_tab_bar_collapse_btn.default_fill_color =
+        sf::Color(170, 236, 170); // Cute Pastel Green
     render_status = TabBarStatus::SHOW_ALL;
   }
 }
@@ -414,7 +406,7 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
     }
   }
 
-  // Evaluate smooth panning drag purely in Pixels.
+// Evaluate smooth panning drag purely in Pixels.
   // Mapped to World Coords implicitly.
   if (event.type == sf::Event::MouseMoved) {
     sf::Vector2i current_pixel_pos(event.mouseMove.x, event.mouseMove.y);
@@ -423,17 +415,17 @@ void Editor::_handle_2D_world_inputs(sf::Event event) {
       sf::Vector2f old_world =
           window.mapPixelToCoords(old_mouse_pixel_pos, view);
       sf::Vector2f new_world = window.mapPixelToCoords(current_pixel_pos, view);
-      // 1:1 view dragging.
+// 1:1 view dragging.
       view.move(old_world - new_world);
     }
 
     old_mouse_pixel_pos = current_pixel_pos;
   }
 
-  // Release globally so states aren't stuck if the cursor exits the bounds.
+// Release globally so states aren't stuck if the cursor exits the bounds.
   if (event.type == sf::Event::MouseButtonReleased) {
     if (event.mouseButton.button == sf::Mouse::Left) {
-      // Mouse Release stops Dragging sprites completely!
+// Mouse Release stops Dragging sprites completely!
       gizmo_2D._undrag_gizmos();
     } else if (event.mouseButton.button == sf::Mouse::Middle) {
       is_panning = false;
@@ -448,7 +440,7 @@ void Editor::_handle_sprite_list_inputs(sf::Event event) {
 }
 
 void Editor::handle_inputs(sf::Event event) {
-  // TODO : Add these checks before handling inputs for different editor
+// TODO : Add these checks before handling inputs for different editor
   // sections.
   // if (isMouseOverRect(...)) {
 
@@ -474,7 +466,7 @@ void Editor::handle_inputs(sf::Event event) {
     }
   } else if (event.type == sf::Event::MouseButtonPressed) {
     if (event.mouseButton.button == sf::Mouse::Button::XButton1) {
-      // The bottom button on left side of a gaming mouse.
+// The bottom button on left side of a gaming mouse.
       toggle_tab_bar_folding();
     }
   }
@@ -491,7 +483,7 @@ void Editor::_render_sprite_list_ui() {
 }
 
 void Editor::_render_ui() {
-  // TODO ??? move refreshing to where needed.
+// TODO ??? move refreshing to where needed.
   _refresh_layout();
   _render_sprite_list_ui();
   info_tab.Render();
@@ -509,7 +501,7 @@ void Editor::_render_ui() {
 }
 
 void Editor::update_sorted_sprites_cache() {
-  // Adding new sprite invalidates this ptr, so refetch it as well.
+// Adding new sprite invalidates this ptr, so refetch it as well.
   Cache.selected_sprite_ptr = _selected_sprite_ptr();
 
   Cache.sprites_sorted_by_layers.clear();
@@ -518,7 +510,7 @@ void Editor::update_sorted_sprites_cache() {
   Cache.sprites_sorted_by_layers_reverse.clear();
   Cache.sprites_sorted_by_layers_reverse = Cache.sprites_sorted_by_layers;
 
-  // Top most sprites need to pick up the inputs first, so we reverse the list.
+// Top most sprites need to pick up the inputs first, so we reverse the list.
   std::reverse(Cache.sprites_sorted_by_layers_reverse.begin(),
                Cache.sprites_sorted_by_layers_reverse.end());
 }
@@ -531,9 +523,9 @@ std::vector<const EditorSprite *> Editor::get_sprites_sorted_by_layers() const {
     layers.push_back(sprite.layer);
   }
 
-  // Sort Layers.
+// Sort Layers.
   std::sort(layers.begin(), layers.end());
-  // Remove duplicate layers.
+// Remove duplicate layers.
   layers.erase(std::unique(layers.begin(), layers.end()), layers.end());
 
   std::vector<const EditorSprite *> sorted_sprites;
@@ -547,14 +539,12 @@ std::vector<const EditorSprite *> Editor::get_sprites_sorted_by_layers() const {
       }
     }
   }
-
   return sorted_sprites;
 }
-
 void Editor::_render_bounding_box_over_selected_sprite() {
   // This could be done in _render_sprites() below.
   auto *target_object = selected_sprite_ptr();
-  if (target_object == nullptr) {
+  if (!target_object) {
     return;
   }
 
@@ -571,7 +561,7 @@ void Editor::_render_bounding_box_over_selected_sprite() {
 }
 
 void Editor::_render_sprites() {
-  /*
+/*
   for (const auto &sprite : user_added_sprites) {
     //TODO ?? if(!sprite.visible){continue;}
     window.draw(sprite.sprite);
@@ -604,7 +594,7 @@ void Editor::_on_sprites_translation_update(bool update_translation,
   }
 
   if (update_scale) {
-    // TODO ?? Custom Gizmos to change stuffs like circle's radius.
+// TODO ?? Custom Gizmos to change stuffs like circle's radius.
 
 #define OBJECT_IS(T) auto casted = dynamic_cast<T *>(target_object->node.get())
     if (OBJECT_IS(SpriteNode)) {
@@ -647,11 +637,11 @@ void Editor::_pick_sprite() {
 }
 
 void Editor::Render() {
-  // Setup & Draw 2D World.
+// Setup & Draw 2D World.
   auto deltaTime = frameClock.restart();
   auto delta = deltaTime.asSeconds();
 
-  window.draw(world2d_border);
+    window.draw(world2d_border);
   window.setView(view);
   window.draw(grid_x_axis_line);
   window.draw(grid_y_axis_line);
@@ -662,7 +652,7 @@ void Editor::Render() {
 
   block_visualizer.Update(delta);
 
-  // Render UI on top of all.
+// Render UI on top of all.
   _render_ui();
   _render_block_spawner_tab();
 
@@ -674,7 +664,7 @@ void Editor::spawn_and_bind_editor_blocks() {
   constexpr bool DEBUG_BLOCK_SPAWN_BIND_STATS = false;
 
   auto SPAWN_EDITOR_BLOCK_AND_BIND = [&](const block_generator_fn_ptr &fn_ptr) {
-    if (DEBUG_BLOCK_SPAWN_BIND_STATS) {
+if (DEBUG_BLOCK_SPAWN_BIND_STATS) {
       std::cout << "Spawn And Bind.\n";
     }
 
@@ -695,7 +685,7 @@ void Editor::spawn_and_bind_editor_blocks() {
       std::cout << "[Done] Spawn And Bind.\n";
     }
   };
-  // The advantage of this lambda is we don't need to manually register the
+// The advantage of this lambda is we don't need to manually register the
   // functions. In this way, we create a block for the editor and use that
   // oppurtunity to register it as well.
 
@@ -707,7 +697,7 @@ void Editor::spawn_and_bind_editor_blocks() {
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_if);
   SPAWN_EDITOR_BLOCK_AND_BIND(BUILT_IN_BLOCKS::block_alternate_between);
 
-  // There are two ways of adding character controller for a script.
+// There are two ways of adding character controller for a script.
   // By Using the editor block.
   // The caveat is that it should be placed in forever block(Recommended).
   // Another method is by using the editors "Add Controller" button, which
@@ -758,7 +748,7 @@ void Editor::spawn_and_bind_editor_blocks() {
 }
 
 void Editor::_spawn_block_at_mouse_pos(const Block &block) {
-  // std::cout << "User Adding a Block.\n";
+// std::cout << "User Adding a Block.\n";
 
   // Set mouse position to the middle of the script editor & spawn new blocks
   // there.
@@ -775,7 +765,7 @@ void Editor::_spawn_block_at_mouse_pos(const Block &block) {
   fn_ptr(&new_block);
   new_block.set_position(block_spawn_location);
   new_block.dragging = true;
-  // blocks.push_back(new_block);
+// blocks.push_back(new_block);
   add_block_to_script(new_block);
 
   // Hide the scripts tab, so we make space for new blocks to
@@ -815,11 +805,11 @@ void Editor::_render_block_spawner_tab() {
   sf::Vector2f draw_position = sf::Vector2f(
       50, 10 + built_in_blocks_tab_bar.get_current_tab_body_scroll() * 30.0f);
 
-  // This is the position of the first block.
+// This is the position of the first block.
   // Initially, the y is 10, if the first block has gone above this, then we
   // shouldn't allow to scroll down.
   if (draw_position.y > 10) {
-    // This will be picked in next frame & mouse scroll isn't registered by the
+// This will be picked in next frame & mouse scroll isn't registered by the
     // input handler.
     built_in_blocks_tab_bar.can_scroll_down = false;
   }
@@ -830,17 +820,17 @@ void Editor::_render_block_spawner_tab() {
   bool is_any_block_being_dragged = script_editor.is_any_block_dragging();
   bool can_spawn_editor_block = !is_any_block_being_dragged && tab_body_clicked;
 
-  // These are editor blocks which are for spawning new blocks.
+// These are editor blocks which are for spawning new blocks.
   for (auto &block : editor_blocks[currently_selected_tab]) {
     block.set_position(draw_position);
     block.Render();
 
-    // Even if the little bit of top of the block goes above the tab bar,
+// Even if the little bit of top of the block goes above the tab bar,
     // then make it unselectable, as the mouse clicks in that area is for the
     // actual buttons that are in that area.
     if (draw_position.y >= 0.0F) {
       if (can_spawn_editor_block) {
-        // Spawn New Block.
+// Spawn New Block.
         if (block.is_mouse_over()) {
           _spawn_block_at_mouse_pos(block);
           can_spawn_editor_block = false;
@@ -856,7 +846,7 @@ void Editor::_render_block_spawner_tab() {
     }
   }
 
-  // The bottom part of the last block has entered our view.
+// The bottom part of the last block has entered our view.
   // Now, we shouldn't allow to scroll up.
   if (draw_position.y < tab_world.top + tab_world.height) {
     built_in_blocks_tab_bar.can_scroll_up = false;
