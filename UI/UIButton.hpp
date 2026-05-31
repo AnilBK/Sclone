@@ -1,9 +1,11 @@
 #ifndef UI_BUTTON_HPP
 #define UI_BUTTON_HPP
 
+#include "../thirdparty/RoundedRectangleShape.hpp"
 #include "UIBaseClass.hpp"
 #include <SFML/Graphics.hpp>
 #include <functional>
+
 
 inline sf::Font button_font;
 
@@ -12,7 +14,7 @@ enum TEXT_ALIGN { CENTER, LEFT, EXPAND_BUTTON_TO_TEXT };
 class UIButton : public UIBaseClass {
 private:
   sf::Text text;
-  sf::RectangleShape rectangle;
+  sf::RoundedRectangleShape rectangle;
 
   bool mouse_over = false;
   bool pressed = false;
@@ -37,6 +39,10 @@ public:
   bool is_clicked() { return clicked; }
 
   void set_button_size(sf::Vector2f new_size);
+
+  void set_button_width(float p_width);
+
+  void set_border_radius(float radius);
 
   void set_pressed(bool p_pressed);
 
@@ -65,4 +71,4 @@ public:
   void handle_inputs_to(sf::Event event, sf::RenderWindow &target_window);
 };
 
-#endif // BUTTON_HPP
+#endif // UI_BUTTON_HPP
