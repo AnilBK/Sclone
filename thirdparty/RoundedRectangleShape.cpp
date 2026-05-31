@@ -60,15 +60,38 @@ void RoundedRectangleShape::setCornerPointCount(unsigned int count) {
 
 ////////////////////////////////////////////////////////////
 std::size_t RoundedRectangleShape::getPointCount() const {
+  // If there's no radius or no points, it's just a standard 4 corner rectangle.
+  if (myRadius <= 0.0f || myCornerPointCount == 0) {
+    return 4;
+  }
   return myCornerPointCount * 4;
 }
 
 ////////////////////////////////////////////////////////////
 sf::Vector2f RoundedRectangleShape::getPoint(std::size_t index) const {
+  // Plain rectangle corners if no radius or no points.
+  if (myRadius <= 0.0f || myCornerPointCount == 0) {
+    switch (index) {
+    default:
+    case 0:
+      return sf::Vector2f(mySize.x, 0.0f); // Top-Right
+    case 1:
+      return sf::Vector2f(0.0f, 0.0f); // Top-Left
+    case 2:
+      return sf::Vector2f(0.0f, mySize.y); // Bottom-Left
+    case 3:
+      return sf::Vector2f(mySize.x, mySize.y); // Bottom-Right
+    }
+  }
+
   if (index >= myCornerPointCount * 4)
     return sf::Vector2f(0, 0);
 
-  float deltaAngle = 90.0f / (myCornerPointCount - 1);
+  float deltaAngle = 0.0f;
+  if (myCornerPointCount > 1) {
+    deltaAngle = 90.0f / (myCornerPointCount - 1);
+  }
+
   sf::Vector2f center;
   unsigned int centerIndex = index / myCornerPointCount;
   static const float pi = 3.141592654f;
@@ -97,4 +120,7 @@ sf::Vector2f RoundedRectangleShape::getPoint(std::size_t index) const {
       -myRadius * sin(deltaAngle * (index - centerIndex) * pi / 180) +
           center.y);
 }
+
+void RoundedRectangleShape::update() { sf::Shape::update(); }
+
 } // namespace sf
